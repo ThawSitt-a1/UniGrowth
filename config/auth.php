@@ -38,11 +38,11 @@ return [
     */
 
     'guards' => [
-        'web' => [
-            'driver' => 'session',
-            'provider' => 'users',
-        ],
+    'web' => [
+        'driver' => 'session',
+        'provider' => 'users',
     ],
+],
 
     /*
     |--------------------------------------------------------------------------
@@ -95,8 +95,8 @@ return [
     'passwords' => [
         'users' => [
             'provider' => 'users',
-            'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'),
-            'expire' => 60,
+            'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_resets'),
+            'expire' => 20,
             'throttle' => 60,
         ],
     ],
@@ -113,5 +113,20 @@ return [
     */
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Email Verification Expiration
+    |--------------------------------------------------------------------------
+    |
+    | This defines the number of minutes a verification link is valid.
+    | Laravel's built-in VerifyEmail notification uses URL::temporarySignedRoute()
+    | with this config value (defaults to 60 min if not set).
+    |
+    */
+
+    'verification' => [
+        'expire' => 20,
+    ],
 
 ];
