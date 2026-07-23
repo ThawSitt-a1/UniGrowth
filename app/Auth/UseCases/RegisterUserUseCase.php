@@ -4,7 +4,7 @@ namespace App\Auth\UseCases;
 
 use App\Auth\DTOs\AuthCredentialsDTO;
 use App\Auth\Repositories\UserRepositoryInterface;
-use App\Models\User;
+use App\Auth\Models\User;
 use App\Services\AuthSessionService;
 use Illuminate\Auth\Events\Registered;
 
@@ -19,19 +19,27 @@ final class RegisterUserUseCase
 
     public function execute(AuthCredentialsDTO $credentials): array
     {
-        $user = $this->userRepository->create([
+        $userData = [
             'username' => $credentials->username,
             'email'    => $credentials->email,
             'password' => $credentials->password,
-        ]);
+        ];
+
+        // If "remember me" was checked, pre-generate remember_token with 30-day expiry
+        if ($credentials->remember) {
+            $userData['remember_token'] = \Illuminate\Support\Str::random(60);
+            $userData['remember_token_expires_at'] = now()->addDays(30);
+        }
+
+        $user = $this->userRepository->create($userData);
 
         $eloquentUser = $this->userModel->newQuery()->find($user['id']);
 
         // Fire the Registered event — triggers email verification notification
         event(new Registered($eloquentUser));
 
-        // Auto-login the user after successful registration
-        $this->authSessionService->login($eloquentUser, $credentials->remember);
+        // Note: User is NOT auto-logged in after registration.
+        // They must verify their email first before being allowed to log in.
 
         return [
             'id'       => $eloquentUser->id,

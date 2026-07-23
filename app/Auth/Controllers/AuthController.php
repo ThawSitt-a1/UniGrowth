@@ -77,29 +77,25 @@ class AuthController
             ], 201); // 201 Created
         }
 
-        // Web flow: auto-login and redirect to dashboard with verification message
-        return redirect()->intended('/dashboard')
-            ->with('status', 'Registration successful! Please check your email to verify your account.');
+        // Web flow: redirect to login page with verification message (no auto-login)
+        return redirect()->route('login')
+            ->with('status', 'Registration successful! Please check your email to verify your account before logging in.');
     }
 
     public function requestReset(RequestResetRequest $request): JsonResponse|RedirectResponse
     {
         $email = $request->string('email')->toString();
-        $token = $this->resetPasswordUseCase->requestReset($email);
+        $this->resetPasswordUseCase->requestReset($email);
 
-        // If the request expects JSON (API client), return token
+        // If the request expects JSON (API client), return success message
         if ($request->expectsJson()) {
             return response()->json([
-                'message' => 'Reset token generated successfully. Use it to reset your password.',
-                'token' => $token,
+                'message' => 'If the email exists in our system, a password reset link has been sent.',
             ]);
         }
 
-        // Web flow: redirect to the password reset form with token & email
-        return redirect()->route('password.reset', [
-            'token' => $token,
-            'email' => $email,
-        ]);
+        // Web flow: redirect back with a success message (anti-enumeration)
+        return redirect()->back()->with('status', 'If the email exists in our system, a password reset link has been sent.');
     }
 
     public function resetPassword(ResetPasswordRequest $request): JsonResponse|RedirectResponse
@@ -131,4 +127,3 @@ class AuthController
             ->withInput($request->only('email'));
     }
 }
-

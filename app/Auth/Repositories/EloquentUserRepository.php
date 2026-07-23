@@ -2,8 +2,8 @@
 
 namespace App\Auth\Repositories;
 
-use App\Models\PasswordReset;
-use App\Models\User;
+use App\Auth\Models\PasswordReset;
+use App\Auth\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -32,8 +32,8 @@ final class EloquentUserRepository implements UserRepositoryInterface
         'username' => $data['username'],
         'email'    => $data['email'],
         'role' => $data['role'] ?? 'user',
-        // Use Hash::make() - it automatically uses the driver from your .env
-        'password' => Hash::make($data['password']),
+        // The 'hashed' cast on the User model handles hashing automatically
+        'password' => $data['password'],
         'remember_token' => $data['remember_token'] ?? null,
         ]);
 
@@ -77,7 +77,7 @@ final class EloquentUserRepository implements UserRepositoryInterface
         }
 
         $user->forceFill([
-            'password' => Hash::make($password),
+            'password' => $password, // The 'hashed' cast handles hashing automatically
         ])->save();
     }
 }

@@ -3,8 +3,8 @@
 namespace App\Auth\UseCases;
 
 use App\Auth\DTOs\ResetPasswordDTO;
-use App\Models\PasswordReset;
-use App\Models\User;
+use App\Auth\Models\PasswordReset;
+use App\Auth\Models\User;
 use App\Services\AuthSessionService;
 use Illuminate\Support\Str;
 
@@ -35,6 +35,9 @@ final class ResetPasswordUseCase
                 'created_at' => now(),
             ]
         );
+
+        // Send password reset notification email with the token
+        $user->sendPasswordResetNotification($token);
 
         return $token;
     }
@@ -107,4 +110,3 @@ final class ResetPasswordUseCase
         ];
     }
 }
-

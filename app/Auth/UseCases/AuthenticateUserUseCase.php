@@ -4,7 +4,7 @@ namespace App\Auth\UseCases;
 
 use App\Auth\DTOs\AuthCredentialsDTO;
 use App\Auth\Repositories\UserRepositoryInterface;
-use App\Models\User;
+use App\Auth\Models\User;
 use App\Services\AuthSessionService;
 use Illuminate\Support\Facades\Hash;
 
@@ -31,6 +31,11 @@ final class AuthenticateUserUseCase
 
         if ($user === null) {
             throw new \RuntimeException('Invalid credentials');
+        }
+
+        // Enforce email verification: unverified users cannot log in
+        if (!$user->hasVerifiedEmail()) {
+            throw new \RuntimeException('Email not verified.');
         }
 
         // Create the authenticated session via AuthSessionService
