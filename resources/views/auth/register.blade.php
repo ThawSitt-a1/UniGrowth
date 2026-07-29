@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UniGrowth — Set New Password</title>
+    <title>UniGrowth — Student Development Platform</title>
     <!-- Bootstrap 5 CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Google reCAPTCHA Script -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <style>
         body {
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
@@ -81,11 +83,6 @@
             box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
         }
         .input-field::placeholder { color: #9ca3af; }
-        .input-field:readonly {
-            background: #f1f3f5;
-            color: #6b7280;
-            cursor: not-allowed;
-        }
         .input-error { border-color: #ef4444; }
         .input-error:focus { box-shadow: 0 0 0 3px rgba(239,68,68,0.1); }
         .btn-gradient {
@@ -112,6 +109,12 @@
             box-shadow: 0 4px 30px rgba(0,0,0,0.06), 0 1px 8px rgba(0,0,0,0.03);
             border: 1px solid rgba(0,0,0,0.04);
         }
+        .gradient-text {
+            background: linear-gradient(90deg, #a5b4fc, #c4b5fd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
         .tech-badge {
             display: inline-flex;
             align-items: center;
@@ -126,17 +129,6 @@
         }
         .tech-badge i {
             font-size: 0.85rem;
-        }
-        .back-link {
-            color: #6366f1;
-            font-size: 0.85rem;
-            font-weight: 500;
-            text-decoration: none;
-            transition: color 0.2s;
-        }
-        .back-link:hover {
-            color: #4f46e5;
-            text-decoration: underline;
         }
         /* Responsive styles for mobile */
         @media (max-width: 991.98px) {
@@ -185,11 +177,11 @@
                     </div>
 
                     <!-- Main heading -->
-                    <h1 class="display-4 fw-bold text-white mb-3" style="line-height: 1.2;">
-                       Set New Password
+                    <h1 class="display-4 fw-bold text-white mb-3" style="line-height: 1.2; white-space: nowrap;">
+                       UniGrowth
                     </h1>
                     <p class="text-white-50 fs-5 mb-4" style="color: rgba(199,210,254,0.8) !important;">
-                        Choose a strong, unique password to secure your account.
+                        Set goals, develop skills, and track your personal growth throughout your university journey.
                     </p>
 
                     <!-- Tech stack badges using Bootstrap Icons -->
@@ -204,32 +196,22 @@
                 </div>
             </div>
 
-            <!-- RIGHT: Reset Password Form -->
+            <!-- RIGHT: Registration Form -->
             <div class="col-lg-6 d-flex align-items-center justify-content-center p-3 p-sm-4 p-lg-5" style="background: #f9fafb;">
                 <div class="w-100" style="max-width: 32rem;">
                     <!-- Form Card -->
                     <div class="form-card p-4 p-lg-5">
                         <!-- Header -->
                         <div class="text-center mb-4">
-                            <div class="d-inline-flex align-items-center justify-content-center mb-3" style="width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg, #6366f1, #7c3aed);">
-                                <i class="bi bi-key text-white fs-4"></i>
-                            </div>
-                            <h2 class="fw-bold mb-1" style="color: #1f2937; font-size: 1.5rem;">Reset Your Password</h2>
-                            <p class="text-muted small mt-2">Enter your new password below</p>
+                            <h2 class="fw-bold mb-1" style="color: #1f2937; font-size: 1.5rem;">Create Account</h2>
+                            <p class="text-muted small mt-2">Fill in your details to get started</p>
                         </div>
 
-                        <!-- Flash Messages -->
-                        @if (session('error'))
-                            <div class="alert alert-danger d-flex align-items-center gap-2 py-3 px-4 mb-4 rounded-3 small" role="alert">
-                                <i class="bi bi-exclamation-circle-fill flex-shrink-0"></i>
-                                <span>{{ session('error') }}</span>
-                            </div>
-                        @endif
-
-                        @if (session('success'))
+                        <!-- Status Messages -->
+                        @if (session('status'))
                             <div class="alert alert-success d-flex align-items-center gap-2 py-3 px-4 mb-4 rounded-3 small" role="alert">
                                 <i class="bi bi-check-circle-fill flex-shrink-0"></i>
-                                <span>{{ session('success') }}</span>
+                                <span>{{ session('status') }}</span>
                             </div>
                         @endif
 
@@ -247,23 +229,38 @@
                             </div>
                         @endif
 
-                        <!-- Reset Password Form -->
-                        <form action="{{ route('password.update') }}" method="POST">
+                        <!-- Registration Form -->
+                        <form action="{{ route('register') }}" method="POST">
                             @csrf
 
-                            <!-- Hidden Token -->
-                            <input type="hidden" name="token" value="{{ $token }}">
-
                             <div class="d-flex flex-column gap-3">
-                                <!-- Email (read-only) -->
+                                <!-- Username -->
+                                <div>
+                                    <label for="username" class="form-label fw-semibold small" style="color: #374151;">Username</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0" style="border-radius: 10px 0 0 10px;">
+                                            <i class="bi bi-person text-muted"></i>
+                                        </span>
+                                        <input type="text" name="username" id="username" value="{{ old('username') }}"
+                                            placeholder="johndoe"
+                                            required autofocus
+                                            class="form-control input-field @error('username') input-error @enderror" style="border-radius: 0 10px 10px 0;">
+                                    </div>
+                                    @error('username')
+                                        <p class="text-danger small mt-1 mb-0">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <!-- Email -->
                                 <div>
                                     <label for="email" class="form-label fw-semibold small" style="color: #374151;">Email Address</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-light border-end-0" style="border-radius: 10px 0 0 10px;">
                                             <i class="bi bi-envelope text-muted"></i>
                                         </span>
-                                        <input type="email" name="email" id="email" value="{{ $email ?? old('email') }}"
-                                            required readonly
+                                        <input type="email" name="email" id="email" value="{{ old('email') }}"
+                                            placeholder="you@university.edu"
+                                            required
                                             class="form-control input-field @error('email') input-error @enderror" style="border-radius: 0 10px 10px 0;">
                                     </div>
                                     @error('email')
@@ -271,15 +268,15 @@
                                     @enderror
                                 </div>
 
-                                <!-- New Password -->
+                                <!-- Password -->
                                 <div>
-                                    <label for="password" class="form-label fw-semibold small" style="color: #374151;">New Password</label>
+                                    <label for="password" class="form-label fw-semibold small" style="color: #374151;">Password</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-light border-end-0" style="border-radius: 10px 0 0 10px;">
                                             <i class="bi bi-lock text-muted"></i>
                                         </span>
                                         <input type="password" name="password" id="password"
-                                            placeholder="Min. 8 characters, 1 letter, 1 number"
+                                            placeholder="Min. 8 characters, 1 letter, 1 number, 1 special"
                                             required
                                             class="form-control input-field @error('password') input-error @enderror" style="border-radius: 0 10px 10px 0;">
                                     </div>
@@ -288,35 +285,93 @@
                                     @enderror
                                 </div>
 
-                                <!-- Confirm New Password -->
+                                <!-- Row: Academic Year + Major -->
+                                <div class="row g-3">
+                                    <div class="col-12 col-md-6">
+                                        <label for="academic_year" class="form-label fw-semibold small" style="color: #374151;">Academic Year</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light border-end-0" style="border-radius: 10px 0 0 10px;">
+                                                <i class="bi bi-calendar3 text-muted"></i>
+                                            </span>
+                                            <select name="academic_year" id="academic_year" required
+                                                class="form-select input-field @error('academic_year') input-error @enderror" style="border-radius: 0 10px 10px 0;">
+                                                <option value="" disabled selected>Select year</option>
+                                                <option value="1st Year" {{ old('academic_year') == '1st Year' ? 'selected' : '' }}>1st Year</option>
+                                                <option value="2nd Year" {{ old('academic_year') == '2nd Year' ? 'selected' : '' }}>2nd Year</option>
+                                                <option value="3rd Year" {{ old('academic_year') == '3rd Year' ? 'selected' : '' }}>3rd Year</option>
+                                                <option value="4th Year" {{ old('academic_year') == '4th Year' ? 'selected' : '' }}>4th Year</option>
+                                                <option value="5th Year" {{ old('academic_year') == '5th Year' ? 'selected' : '' }}>5th Year</option>
+                                                <option value="Graduate" {{ old('academic_year') == 'Graduate' ? 'selected' : '' }}>Graduate</option>
+                                            </select>
+                                        </div>
+                                        @error('academic_year')
+                                            <p class="text-danger small mt-1 mb-0">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <label for="major" class="form-label fw-semibold small" style="color: #374151;">Major / Field</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light border-end-0" style="border-radius: 10px 0 0 10px;">
+                                                <i class="bi bi-book text-muted"></i>
+                                            </span>
+                                            <input type="text" name="major" id="major" value="{{ old('major') }}"
+                                                placeholder="e.g. Computer Science"
+                                                required
+                                                class="form-control input-field @error('major') input-error @enderror" style="border-radius: 0 10px 10px 0;">
+                                        </div>
+                                        @error('major')
+                                            <p class="text-danger small mt-1 mb-0">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <!-- University Name -->
                                 <div>
-                                    <label for="password_confirmation" class="form-label fw-semibold small" style="color: #374151;">Confirm New Password</label>
+                                    <label for="university_name" class="form-label fw-semibold small" style="color: #374151;">University / Institution</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-light border-end-0" style="border-radius: 10px 0 0 10px;">
-                                            <i class="bi bi-lock-fill text-muted"></i>
+                                            <i class="bi bi-building text-muted"></i>
                                         </span>
-                                        <input type="password" name="password_confirmation" id="password_confirmation"
-                                            placeholder="Re-enter your new password"
+                                        <input type="text" name="university_name" id="university_name" value="{{ old('university_name') }}"
+                                            placeholder="e.g. University of Technology"
                                             required
-                                            class="form-control input-field" style="border-radius: 0 10px 10px 0;">
+                                            class="form-control input-field @error('university_name') input-error @enderror" style="border-radius: 0 10px 10px 0;">
                                     </div>
+                                    @error('university_name')
+                                        <p class="text-danger small mt-1 mb-0">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <!-- reCAPTCHA -->
+                                <div class="d-flex justify-content-center py-2 flex-column align-items-center">
+                                    <div class="g-recaptcha" data-sitekey="{{ config('services.recaptcha.key') }}"></div>
+                                    @error('g-recaptcha-response')
+                                        <p class="text-danger small text-center mt-1 mb-0">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <!-- Remember Me -->
+                                <div class="form-check">
+                                    <input type="checkbox" name="remember" id="remember" class="form-check-input">
+                                    <label class="form-check-label small text-secondary" for="remember">Remember me</label>
                                 </div>
 
                                 <!-- Submit -->
                                 <button type="submit" class="btn-gradient">
                                     <span class="d-inline-flex align-items-center justify-content-center gap-2">
-                                        <i class="bi bi-check-lg"></i>
-                                        Reset Password
+                                        <i class="bi bi-person-plus"></i>
+                                        Register
                                     </span>
                                 </button>
                             </div>
                         </form>
 
-                        <!-- Back to Login Navigation -->
+                        <!-- Login Navigation -->
                         <div class="mt-4 pt-4 border-top text-center">
                             <p class="small text-secondary mb-0">
-                                <a href="/login" class="back-link">
-                                    <i class="bi bi-arrow-left me-1"></i>Back to sign in
+                                Already have an account?
+                                <a href="/login" class="fw-semibold text-decoration-none" style="color: #6366f1;">
+                                    Sign in
                                 </a>
                             </p>
                         </div>
@@ -328,4 +383,3 @@
     </div>
 </body>
 </html>
-
