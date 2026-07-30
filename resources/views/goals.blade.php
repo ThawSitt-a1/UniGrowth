@@ -195,11 +195,6 @@ NAVBAR — same as dashboard
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ route('overview.index') }}" class="nav-link nav-link-custom">
-                        <i class="bi bi-bar-chart-line"></i>Overview
-                    </a>
-                </li>
-                <li class="nav-item">
                     <a href="{{ route('core-assets.skills') }}" class="nav-link nav-link-custom">
                         <i class="bi bi-book"></i>Skills
                     </a>
@@ -212,11 +207,6 @@ NAVBAR — same as dashboard
                 <li class="nav-item">
                     <a href="{{ route('core-assets.index') }}" class="nav-link nav-link-custom">
                         <i class="bi bi-bullseye"></i>Goals
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('core.test-recommendations.index') }}" class="nav-link nav-link-custom">
-                        <i class="bi bi-stars"></i>Recommend
                     </a>
                 </li>
             </ul>

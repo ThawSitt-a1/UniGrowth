@@ -8,6 +8,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <style>
         body {
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
@@ -250,11 +252,6 @@
                 <!-- Quick Links as Nav Items -->
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0 gap-1">
                     <li class="nav-item">
-                        <a href="{{ route('overview.index') }}" class="nav-link nav-link-custom">
-                            <i class="bi bi-bar-chart-line"></i>Overview
-                        </a>
-                    </li>
-                    <li class="nav-item">
                         <a href="{{ route('core-assets.skills') }}" class="nav-link nav-link-custom">
                             <i class="bi bi-book"></i>Skills
                         </a>
@@ -267,11 +264,6 @@
                     <li class="nav-item">
                         <a href="{{ route('core-assets.index') }}" class="nav-link nav-link-custom">
                             <i class="bi bi-gear"></i>Assets
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ route('core.test-recommendations.index') }}" class="nav-link nav-link-custom">
-                            <i class="bi bi-stars"></i>Recommend
                         </a>
                     </li>
                     <li class="nav-item">
@@ -305,13 +297,29 @@
 
     <div class="container py-4">
 
-        <!-- Status Messages (from email verification, password reset, etc.) -->
+        <!-- Status Messages (from email verification, password reset, season actions, etc.) -->
         @if (session('status'))
             <div class="alert alert-success d-flex align-items-center gap-2 py-3 px-4 mb-4 rounded-3 small" role="alert">
                 <i class="bi bi-check-circle-fill flex-shrink-0"></i>
                 <span>{{ session('status') }}</span>
             </div>
-        @else
+        @endif
+
+        @if (session('success'))
+            <div class="alert alert-success d-flex align-items-center gap-2 py-3 px-4 mb-4 rounded-3 small" role="alert">
+                <i class="bi bi-check-circle-fill flex-shrink-0"></i>
+                <span>{{ session('success') }}</span>
+            </div>
+        @endif
+
+        @if (session('error'))
+            <div class="alert alert-danger d-flex align-items-center gap-2 py-3 px-4 mb-4 rounded-3 small" role="alert">
+                <i class="bi bi-exclamation-triangle-fill flex-shrink-0"></i>
+                <span>{{ session('error') }}</span>
+            </div>
+        @endif
+
+        @if (!session('status') && !session('success') && !session('error'))
             <!-- Welcome back message (shown on normal login, not after email verification) -->
             <div class="d-flex align-items-center gap-2 mb-4">
                 <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold" style="width: 42px; height: 42px; background: linear-gradient(135deg, #6366f1, #7c3aed); font-size: 1rem;">
@@ -379,9 +387,9 @@
                         </h2>
                         <p class="text-white-50 small mb-0 mt-1">{{ $currentSeasonName }}</p>
                     </div>
-                    <a href="{{ route('overview.index') }}" class="badge text-decoration-none" style="background: rgba(255,255,255,0.2); color: #fff; font-size: 0.75rem; padding: 6px 14px; border-radius: 8px;">
-                        Full Overview <i class="bi bi-arrow-right ms-1"></i>
-                    </a>
+                    <span class="badge text-decoration-none" style="background: rgba(255,255,255,0.2); color: #fff; font-size: 0.75rem; padding: 6px 14px; border-radius: 8px;">
+                        <i class="bi bi-trophy-fill me-1"></i>Season Standings
+                    </span>
                 </div>
             </div>
 
@@ -459,96 +467,370 @@
             @endif
         </div>
 
-        <!-- Recent Enrolled Skills + Recent Goals Row -->
-        <div class="row g-4 mb-4">
+        <!-- ============================================================ -->
+        <!-- OVERVIEW SECTIONS (Rendered server-side for authenticated users) -->
+        <!-- ============================================================ -->
 
-            <!-- Recent Enrolled Skills -->
-            <div class="col-md-6">
-                <div class="form-card p-4 h-100">
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <h5 class="fw-bold mb-0" style="color: #1f2937;">
-                            <i class="bi bi-bookmark-check me-2" style="color: #7c3aed;"></i>Recent Enrolled Skills
-                        </h5>
-                        <a href="{{ route('core-assets.skills') }}" class="small text-decoration-none" style="color: #6366f1;">
-                            View all <i class="bi bi-arrow-right ms-1"></i>
-                        </a>
-                    </div>
-                    @if ($recentEnrolledSkills->count() > 0)
-                        <ul class="list-unstyled mb-0">
-                            @foreach ($recentEnrolledSkills as $enrollment)
-                                <li class="d-flex align-items-center gap-3 py-2 border-bottom border-light">
-                                    <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold flex-shrink-0" style="width: 36px; height: 36px; background: linear-gradient(135deg, #6366f1, #7c3aed); font-size: 0.8rem;">
-                                        <i class="bi bi-book"></i>
-                                    </div>
-                                    <div class="flex-grow-1 min-width-0">
-                                        <p class="fw-semibold mb-0 text-truncate" style="color: #1f2937; font-size: 0.9rem;">
-                                            {{ $enrollment->skill->title ?? 'Unknown Skill' }}
-                                        </p>
-                                        <small class="text-muted">Enrolled {{ $enrollment->created_at->diffForHumans() }}</small>
-                                    </div>
-                                    <span class="badge rounded-pill" style="background: #eef2ff; color: #4f46e5; font-size: 0.7rem;">
-                                        {{ $enrollment->skill->tags[0] ?? 'General' }}
-                                    </span>
-                                </li>
-                            @endforeach
-                        </ul>
-                    @else
-                        <div class="text-center py-4 text-muted">
-                            <i class="bi bi-book fs-2 d-block mb-2"></i>
-                            <p class="small mb-0">No skills enrolled yet.</p>
-                            <a href="{{ route('core-assets.skills') }}" class="btn btn-sm mt-2" style="background: #eef2ff; color: #4f46e5; border-radius: 8px;">
-                                <i class="bi bi-search me-1"></i>Browse Skills
-                            </a>
-                        </div>
-                    @endif
-                </div>
+        @php
+            $overview = $overviewData ?? [];
+            $seasonInfo = $overview['season'] ?? [];
+            $activeGoalsList = $overview['active_goals'] ?? [];
+            $completedGoalsList = $overview['completed_goals'] ?? [];
+            $quizStats = $overview['quiz_statistics'] ?? [];
+            $enrolledSkillsList = $overview['enrolled_skills'] ?? [];
+            $seasonRank = $overview['season_rank'] ?? null;
+            $totalSeasonScore = $overview['total_season_score'] ?? 0;
+        @endphp
+
+        <!-- Season Status Banner -->
+        <div id="season-banner" class="form-card p-4 mb-4">
+            <div class="d-flex align-items-center gap-2 mb-3">
+                <i class="bi bi-calendar-event fs-4" style="color: #6366f1;"></i>
+                <h5 class="fw-bold mb-0" style="color: #1f2937;">Current Season</h5>
             </div>
-
-            <!-- Recent Goals -->
-            <div class="col-md-6">
-                <div class="form-card p-4 h-100">
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <h5 class="fw-bold mb-0" style="color: #1f2937;">
-                            <i class="bi bi-bullseye me-2" style="color: #059669;"></i>Recent Goals
-                        </h5>
-                        <a href="{{ route('core-assets.index') }}#goals" class="small text-decoration-none" style="color: #6366f1;">
-                            View all <i class="bi bi-arrow-right ms-1"></i>
-                        </a>
-                    </div>
-                    @if ($recentGoals->count() > 0)
-                        <ul class="list-unstyled mb-0">
-                            @foreach ($recentGoals as $goal)
-                                <li class="d-flex align-items-center gap-3 py-2 border-bottom border-light">
-                                    <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 36px; height: 36px; background: #ecfdf5; color: #059669; font-size: 0.8rem;">
-                                        <i class="bi bi-check2-circle"></i>
-                                    </div>
-                                    <div class="flex-grow-1 min-width-0">
-                                        <p class="fw-semibold mb-0 text-truncate" style="color: #1f2937; font-size: 0.9rem;">
-                                            {{ $goal->text }}
-                                        </p>
-                                        <small class="text-muted">{{ $goal->created_at->diffForHumans() }}</small>
-                                    </div>
-                                    <span class="badge rounded-pill" style="background: #fef3c7; color: #d97706; font-size: 0.7rem;">
-                                        {{ $goal->status }}
-                                    </span>
-                                </li>
-                            @endforeach
-                        </ul>
-                    @else
-                        <div class="text-center py-4 text-muted">
-                            <i class="bi bi-bullseye fs-2 d-block mb-2"></i>
-                            <p class="small mb-0">No goals created yet.</p>
-                            <a href="{{ route('core-assets.index') }}#goals" class="btn btn-sm mt-2" style="background: #ecfdf5; color: #059669; border-radius: 8px;">
-                                <i class="bi bi-plus-circle me-1"></i>Create a Goal
-                            </a>
+            <div class="row g-3">
+                @if (!empty($seasonInfo['is_active']))
+                    <div class="col-6 col-md-3">
+                        <div class="rounded p-3 text-center" style="background: #eef2ff;">
+                            <p class="fs-5 fw-bold mb-0" style="color: #4f46e5;">{{ $seasonInfo['season_name'] ?? 'Unnamed' }}</p>
+                            <p class="small text-muted mb-0">Season Name</p>
                         </div>
-                    @endif
-                </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="rounded p-3 text-center" style="background: #ecfdf5;">
+                            <p class="fs-5 fw-bold mb-0" style="color: #059669;">{{ $seasonInfo['days_remaining'] ?? 0 }}</p>
+                            <p class="small text-muted mb-0">Days Remaining</p>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="rounded p-3 text-center" style="background: #faf5ff;">
+                            <p class="fs-5 fw-bold mb-0" style="color: #7c3aed;">#{{ $seasonRank ?? '—' }}</p>
+                            <p class="small text-muted mb-0">Your Rank</p>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="rounded p-3 text-center" style="background: #fef3c7;">
+                            <p class="fs-5 fw-bold mb-0" style="color: #d97706;">{{ number_format((float) $totalSeasonScore, 1) }}</p>
+                            <p class="small text-muted mb-0">Season Score</p>
+                        </div>
+                    </div>
+                @else
+                    <div class="col-12">
+                        <div class="alert d-flex align-items-center gap-2 py-3 px-4 mb-0 rounded-3" style="background: #fef3c7; color: #92400e;">
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                            <span><strong>No active season running.</strong> Quizzes are only available during an active season. Contact an administrator to start one.</span>
+                        </div>
+                    </div>
+                @endif
             </div>
-
         </div>
 
+        <!-- Performance Analytics & Charts -->
+        <div class="form-card p-4 mb-4">
+            <div class="d-flex align-items-center gap-2 mb-3">
+                <i class="bi bi-graph-up-arrow fs-4" style="color: #7c3aed;"></i>
+                <h5 class="fw-bold mb-0" style="color: #1f2937;">Performance Analytics</h5>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-8">
+                    <div class="bg-light rounded-3 p-3" style="min-height: 260px;">
+                        <canvas id="quizPerformanceChart"></canvas>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="bg-light rounded-3 p-3" style="min-height: 260px;">
+                        <canvas id="scoreDistributionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Overview Grid: Goals + Quiz Stats | Enrolled Skills + Quick Links -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-6">
+                <div class="form-card p-4 mb-4">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <h5 class="fw-bold mb-0" style="color: #1f2937;">
+                            <i class="bi bi-bullseye me-2" style="color: #059669;"></i>My Goals
+                        </h5>
+                        <a href="{{ route('core-assets.index') }}#goals" class="small text-decoration-none" style="color: #6366f1;">
+                            Manage <i class="bi bi-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                    @if (!empty($activeGoalsList))
+                        <ul class="list-unstyled mb-0">
+                            @foreach ($activeGoalsList as $goal)
+                                <li class="d-flex align-items-start gap-3 py-2 border-bottom border-light">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 36px; height: 36px; background: #eef2ff; color: #4f46e5; font-size: 0.8rem;">
+                                        <i class="bi bi-pin-angle-fill"></i>
+                                    </div>
+                                    <div class="flex-grow-1 min-width-0">
+                                        <p class="fw-semibold mb-0" style="color: #1f2937; font-size: 0.9rem;">{{ $goal['text'] ?? 'Goal' }}</p>
+                                        <small class="text-muted">{{ !empty($goal['created_at']) ? \Carbon\Carbon::parse($goal['created_at'])->diffForHumans() : 'Recently added' }}</small>
+                                    </div>
+                                </li>
+                            @endforeach
+                        </ul>
+                    @else
+                        <div class="text-center py-3 text-muted">
+                            <i class="bi bi-bullseye fs-2 d-block mb-2"></i>
+                            <p class="small mb-0">No active goals. <a href="{{ route('core-assets.index') }}#goals" class="text-decoration-none" style="color: #6366f1;">Create one</a>.</p>
+                        </div>
+                    @endif
+
+                    <details class="mt-3">
+                        <summary class="text-sm fw-semibold text-muted cursor-pointer" style="font-size: 0.85rem;">
+                            Completed Goals ({{ count($completedGoalsList) }})
+                        </summary>
+                        <div class="mt-2">
+                            @if (!empty($completedGoalsList))
+                                <div class="space-y-2">
+                                    @foreach ($completedGoalsList as $goal)
+                                        <div class="d-flex align-items-start gap-3 py-2 border-bottom border-light">
+                                            <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 36px; height: 36px; background: #ecfdf5; color: #059669; font-size: 0.8rem;">
+                                                <i class="bi bi-check2-circle"></i>
+                                            </div>
+                                            <div class="flex-grow-1 min-width-0">
+                                                <p class="fw-semibold mb-0 text-decoration-line-through text-muted" style="font-size: 0.9rem;">{{ $goal['text'] ?? 'Goal' }}</p>
+                                                <small class="text-muted">Completed {{ !empty($goal['completed_at']) ? \Carbon\Carbon::parse($goal['completed_at'])->diffForHumans() : 'recently' }}</small>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @else
+                                <p class="text-muted small mb-0">No completed goals yet.</p>
+                            @endif
+                        </div>
+                    </details>
+                </div>
+
+                <div class="form-card p-4">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <i class="bi bi-pencil-square fs-4" style="color: #6366f1;"></i>
+                        <h5 class="fw-bold mb-0" style="color: #1f2937;">Quiz Statistics</h5>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <div class="bg-light rounded-3 p-3 text-center">
+                                <p class="fs-3 fw-bold mb-0" style="color: #6366f1;">{{ (int) ($quizStats['total_questions_answered'] ?? 0) }}</p>
+                                <p class="small text-muted mb-0">Questions Answered</p>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="bg-light rounded-3 p-3 text-center">
+                                <p class="fs-3 fw-bold mb-0" style="color: #7c3aed;">{{ (int) ($quizStats['total_attempts'] ?? 0) }}</p>
+                                <p class="small text-muted mb-0">Quiz Attempts</p>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="bg-light rounded-3 p-3 text-center">
+                                <p class="fs-3 fw-bold mb-0" style="color: #0891b2;">{{ number_format((float) ($quizStats['total_score'] ?? 0), 1) }}</p>
+                                <p class="small text-muted mb-0">Total Score</p>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="bg-light rounded-3 p-3 text-center">
+                                <p class="fs-3 fw-bold mb-0" style="color: #059669;">{{ number_format((float) ($quizStats['average_score_per_attempt'] ?? 0), 1) }}%</p>
+                                <p class="small text-muted mb-0">Avg Score/Attempt</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="form-card p-4 mb-4">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <h5 class="fw-bold mb-0" style="color: #1f2937;">
+                            <i class="bi bi-bookmark-check me-2" style="color: #7c3aed;"></i>Enrolled Skills
+                            <span class="badge rounded-pill ms-1" style="background: #eef2ff; color: #4f46e5; font-size: 0.7rem;">{{ count($enrolledSkillsList) }}</span>
+                        </h5>
+                        <a href="{{ route('core-assets.skills') }}" class="small text-decoration-none" style="color: #6366f1;">
+                            Browse <i class="bi bi-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                    @if (!empty($enrolledSkillsList))
+                        <div class="space-y-2">
+                            @foreach ($enrolledSkillsList as $skill)
+                                <div class="d-flex align-items-center justify-content-between py-2 border-bottom border-light">
+                                    <div class="flex-grow-1 min-width-0 me-2">
+                                        <p class="fw-semibold mb-0 text-truncate" style="color: #1f2937; font-size: 0.9rem;">
+                                            <i class="bi bi-book me-1" style="color: #7c3aed;"></i>{{ $skill['skill_title'] ?? 'Skill' }}
+                                        </p>
+                                        <small class="text-muted">Enrolled {{ !empty($skill['enrolled_at']) ? \Carbon\Carbon::parse($skill['enrolled_at'])->diffForHumans() : 'recently' }}</small>
+                                    </div>
+                                    <a href="{{ route('assessment.test.index') }}?skill_id={{ $skill['skill_id'] ?? '' }}" class="btn btn-sm flex-shrink-0" style="background: #6366f1; color: #fff; border-radius: 8px; font-size: 0.75rem;">
+                                        <i class="bi bi-pencil-square me-1"></i>Quiz
+                                    </a>
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="text-center py-3 text-muted">
+                            <i class="bi bi-book fs-2 d-block mb-2"></i>
+                            <p class="small mb-0">Not enrolled in any skills yet. <a href="{{ route('core-assets.skills') }}" class="text-decoration-none" style="color: #6366f1;">Browse skills</a>.</p>
+                        </div>
+                    @endif
+                </div>
+
+                <div class="form-card p-4 mb-4">
+                    <h5 class="fw-bold mb-3" style="color: #1f2937;">
+                        <i class="bi bi-calendar-event me-2" style="color: #d97706;"></i>Season Actions
+                    </h5>
+                    @if ($hasActiveSeason)
+                        <form action="{{ route('overview.season.end') }}" method="POST" onsubmit="return confirm('End the current season? This will snapshot scores and reset platform scores for all users.')">
+                            @csrf
+                            <button type="submit" class="btn btn-sm w-100" style="background: #fee2e2; color: #b91c1c; border-radius: 8px;">
+                                <i class="bi bi-stop-circle me-1"></i>End Current Season
+                            </button>
+                        </form>
+                        <p class="small text-muted mt-2 mb-0">Snapshot scores, reset platform scores, and create a new season.</p>
+                    @else
+                        <p class="small text-muted mb-0">No active season to end.</p>
+                    @endif
+                </div>
+
+                <div class="form-card p-4">
+                    <h5 class="fw-bold mb-3" style="color: #1f2937;">
+                        <i class="bi bi-link-45deg me-2" style="color: #6366f1;"></i>Quick Links
+                    </h5>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="{{ route('assessment.test.index') }}" class="btn btn-sm" style="background: #eef2ff; color: #4f46e5; border-radius: 8px;">
+                            <i class="bi bi-pencil-square me-1"></i>Take a Quiz
+                        </a>
+                        <a href="{{ route('core-assets.index') }}#goals" class="btn btn-sm" style="background: #ecfdf5; color: #059669; border-radius: 8px;">
+                            <i class="bi bi-plus-circle me-1"></i>Create Goal
+                        </a>
+                        <a href="{{ route('core-assets.skills') }}" class="btn btn-sm" style="background: #faf5ff; color: #7c3aed; border-radius: 8px;">
+                            <i class="bi bi-search me-1"></i>Browse Skills
+                        </a>
+                        <a href="{{ route('core.test-recommendations.index') }}" class="btn btn-sm" style="background: #fef3c7; color: #d97706; border-radius: 8px;">
+                            <i class="bi bi-stars me-1"></i>Recommendations
+                        </a>
+                        <a href="{{ route('profile.show') }}" class="btn btn-sm" style="background: #f3e8ff; color: #9333ea; border-radius: 8px;">
+                            <i class="bi bi-person me-1"></i>My Profile
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const stats = @json($quizStats);
+        const seasonInfo = @json($seasonInfo);
+
+        const barCtx = document.getElementById('quizPerformanceChart');
+        if (barCtx) {
+            new Chart(barCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Questions Answered', 'Quiz Attempts', 'Total Score', 'Avg Score/Attempt'],
+                    datasets: [{
+                        label: 'Performance Metrics',
+                        data: [
+                            stats.total_questions_answered || 0,
+                            stats.total_attempts || 0,
+                            stats.total_score || 0,
+                            stats.average_score_per_attempt || 0
+                        ],
+                        backgroundColor: [
+                            'rgba(99, 102, 241, 0.7)',
+                            'rgba(124, 58, 237, 0.7)',
+                            'rgba(8, 145, 178, 0.7)',
+                            'rgba(5, 150, 105, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(99, 102, 241, 1)',
+                            'rgba(124, 58, 237, 1)',
+                            'rgba(8, 145, 178, 1)',
+                            'rgba(5, 150, 105, 1)'
+                        ],
+                        borderWidth: 1,
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.dataset.label || '';
+                                    const val = context.parsed.y;
+                                    if (context.dataIndex === 3) {
+                                        return label + ': ' + val.toFixed(1) + '%';
+                                    }
+                                    return label + ': ' + val.toFixed(1);
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(0,0,0,0.05)' }
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        const doughnutCtx = document.getElementById('scoreDistributionChart');
+        if (doughnutCtx) {
+            const totalScore = stats.total_score || 0;
+            const maxPossible = Math.max(totalScore * 2, 100);
+            const remaining = Math.max(0, maxPossible - totalScore);
+
+            new Chart(doughnutCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Your Score', 'Remaining Potential'],
+                    datasets: [{
+                        data: [totalScore, remaining],
+                        backgroundColor: [
+                            'rgba(99, 102, 241, 0.8)',
+                            'rgba(229, 231, 235, 0.6)'
+                        ],
+                        borderColor: [
+                            'rgba(99, 102, 241, 1)',
+                            'rgba(229, 231, 235, 1)'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '65%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                boxWidth: 12,
+                                padding: 12,
+                                font: { size: 11 }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': ' + context.parsed.toFixed(1);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    });
+    </script>
 
 @else
     {{--

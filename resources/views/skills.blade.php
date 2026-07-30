@@ -3,11 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UniGrowth — Browse Skills</title>
+    <title>UniGrowth — Skills & Recommendations</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
-        body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: #f5f7fa; }
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(180deg, #f8faff 0%, #f3f6ff 100%);
+            color: #1f2937;
+        }
         .nav-link-custom { color: rgba(255,255,255,0.75); font-size: 0.875rem; font-weight: 500; padding: 6px 14px !important; border-radius: 8px; transition: all 0.2s; }
         .nav-link-custom:hover { color: #fff; background: rgba(255,255,255,0.1); }
         .nav-link-custom i { margin-right: 6px; font-size: 0.9rem; }
@@ -15,30 +19,36 @@
         .avatar-link:hover { background: rgba(255,255,255,0.1); color: #fff; }
         .avatar-img { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.3); }
         .avatar-initial { width: 34px; height: 34px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; background: rgba(255,255,255,0.2); color: #fff; border: 2px solid rgba(255,255,255,0.3); }
-        .form-card { background: #fff; border-radius: 16px; box-shadow: 0 4px 30px rgba(0,0,0,0.06), 0 1px 8px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.04); }
-        .skill-card { background: #fff; border-radius: 14px; border: 1px solid rgba(0,0,0,0.06); padding: 1.5rem; transition: all 0.3s ease; height: 100%; box-shadow: 0 2px 12px rgba(0,0,0,0.04); }
-        .skill-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(99,102,241,0.12); border-color: rgba(99,102,241,0.15); }
-        .skill-card.enrolled { border-color: #10b981; background: linear-gradient(135deg, #f0fdf4, #ecfdf5); }
-        .tag-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; background: #eef2ff; color: #4f46e5; text-decoration: none; transition: all 0.2s; }
-        .tag-badge:hover { background: #6366f1; color: #fff; }
-        .btn-gradient { padding: 8px 22px; border: none; border-radius: 10px; font-size: 0.85rem; font-weight: 600; color: #fff; background: linear-gradient(135deg, #6366f1, #7c3aed); cursor: pointer; transition: all 0.2s; }
-        .btn-gradient:hover { transform: translateY(-1px); box-shadow: 0 8px 25px rgba(99,102,241,0.35); color: #fff; }
-        .btn-gradient-sm { padding: 6px 16px; font-size: 0.8rem; border-radius: 8px; }
-        .btn-outline-custom { border: 2px solid #6366f1; color: #6366f1; background: transparent; border-radius: 10px; padding: 6px 16px; font-size: 0.8rem; font-weight: 600; transition: all 0.2s; }
-        .btn-outline-custom:hover { background: #6366f1; color: #fff; }
-        .stat-chip { display: inline-flex; align-items: center; gap: 4px; padding: 2px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 500; background: #f3f4f6; color: #6b7280; }
-        .search-input { width: 100%; padding: 10px 16px 10px 40px; border: 1px solid #e5e7eb; border-radius: 12px; font-size: 0.9rem; outline: none; }
-        .search-input:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,0.1); }
-        .search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #9ca3af; }
-        .sort-btn { padding: 6px 16px; border-radius: 8px; font-size: 0.8rem; font-weight: 500; text-decoration: none; color: #6b7280; background: #f3f4f6; }
-        .sort-btn:hover { background: #e5e7eb; color: #374151; }
-        .sort-btn.active { background: #6366f1; color: #fff; }
-        @media (max-width: 767.98px) { .skill-card { padding: 1rem !important; } }
+        .hero-card, .panel-card { background: #fff; border-radius: 24px; box-shadow: 0 18px 45px rgba(15, 23, 42, 0.07); border: 1px solid rgba(99, 102, 241, 0.08); }
+        .hero-card { background: linear-gradient(135deg, #f8fbff 0%, #eef2ff 100%); }
+        .pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; background: #eef2ff; color: #4338ca; font-size: 0.78rem; font-weight: 600; }
+        .chip-link { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 999px; background: #f8fafc; color: #475569; text-decoration: none; font-size: 0.8rem; border: 1px solid #e2e8f0; transition: all 0.2s; }
+        .chip-link:hover { background: #eef2ff; color: #4338ca; border-color: #c7d2fe; }
+        .chip-link.active { background: #4338ca; color: #fff; border-color: #4338ca; }
+        .skill-card { background: #fff; border-radius: 18px; border: 1px solid rgba(15, 23, 42, 0.06); padding: 1.25rem; transition: all 0.2s ease; height: 100%; }
+        .skill-card:hover { transform: translateY(-3px); box-shadow: 0 16px 30px rgba(99, 102, 241, 0.12); border-color: rgba(99, 102, 241, 0.18); }
+        .skill-card.enrolled { background: linear-gradient(135deg, #f0fdf4, #ecfdf5); border-color: #a7f3d0; }
+        .tag-badge { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 0.7rem; font-weight: 600; background: #eef2ff; color: #4338ca; }
+        .btn-gradient { background: linear-gradient(135deg, #6366f1, #7c3aed); color: #fff; border: none; border-radius: 10px; font-weight: 600; }
+        .btn-gradient:hover { color: #fff; box-shadow: 0 8px 20px rgba(99, 102, 241, 0.22); }
+        .btn-outline-soft { border: 1px solid #cbd5e1; color: #475569; background: #fff; border-radius: 10px; font-weight: 600; }
+        .btn-outline-soft:hover { background: #f8fafc; color: #0f172a; }
+        .muted-label { color: #64748b; font-size: 0.78rem; }
+        .recommend-card { border: 1px solid #e2e8f0; border-radius: 16px; padding: 1rem; background: #f8fafc; }
+        .search-shell { position: relative; }
+        .search-shell .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8; }
+        .search-input { width: 100%; border: 1px solid #e2e8f0; border-radius: 12px; padding: 10px 14px 10px 42px; font-size: 0.92rem; outline: none; }
+        .search-input:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12); }
+        .recommend-card .match-pill { background: #dcfce7; color: #166534; }
+        .recommend-card .cold-pill { background: #fef3c7; color: #92400e; }
+        .section-title { font-size: 1rem; font-weight: 700; color: #0f172a; }
+        @media (max-width: 767.98px) {
+            .hero-card { padding: 1.2rem !important; }
+            .skill-card { padding: 1rem !important; }
+        }
     </style>
 </head>
 <body>
-
-{{-- NAVBAR --}}
 <nav class="navbar navbar-expand-lg sticky-top" style="background: linear-gradient(135deg, #1e1b4b, #3730a3, #581c87);">
     <div class="container">
         <a class="navbar-brand fw-bold text-white" href="{{ route('dashboard') }}"><i class="bi bi-mortarboard-fill me-2"></i>UniGrowth</a>
@@ -46,11 +56,9 @@
         <div class="collapse navbar-collapse" id="skillsNav">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0 gap-1">
                 <li class="nav-item"><a href="{{ route('dashboard') }}" class="nav-link nav-link-custom"><i class="bi bi-house-door"></i>Dashboard</a></li>
-                <li class="nav-item"><a href="{{ route('overview.index') }}" class="nav-link nav-link-custom"><i class="bi bi-bar-chart-line"></i>Overview</a></li>
                 <li class="nav-item"><a href="{{ route('core-assets.skills') }}" class="nav-link nav-link-custom"><i class="bi bi-book"></i>Skills</a></li>
                 <li class="nav-item"><a href="{{ route('assessment.test.index') }}" class="nav-link nav-link-custom"><i class="bi bi-pencil-square"></i>Quiz</a></li>
                 <li class="nav-item"><a href="{{ route('core-assets.index') }}" class="nav-link nav-link-custom"><i class="bi bi-bullseye"></i>Goals</a></li>
-                <li class="nav-item"><a href="{{ route('core.test-recommendations.index') }}" class="nav-link nav-link-custom"><i class="bi bi-stars"></i>Recommend</a></li>
             </ul>
             <div class="d-flex align-items-center gap-3">
                 <a href="{{ route('profile.show') }}" class="avatar-link">
@@ -67,157 +75,178 @@
                     <button type="submit" class="btn btn-sm text-white border-0" style="background: rgba(255,255,255,0.1); border-radius: 8px;"><i class="bi bi-box-arrow-right me-1"></i>Logout</button>
                 </form>
             </div>
-    </div>
+        </div>
     </div>
 </nav>
 
-{{-- MAIN CONTENT --}}
 <div class="container py-4">
-
     @if (session('success'))
-    <div class="alert alert-success d-flex align-items-center gap-2 py-3 px-4 mb-4 rounded-3 small" role="alert">
-        <i class="bi bi-check-circle-fill flex-shrink-0"></i> <span>{{ session('success') }}</span>
-    </div>
+        <div class="alert alert-success d-flex align-items-center gap-2 py-3 px-4 mb-4 rounded-3 small" role="alert">
+            <i class="bi bi-check-circle-fill flex-shrink-0"></i><span>{{ session('success') }}</span>
+        </div>
     @endif
     @if (session('error'))
-    <div class="alert alert-danger d-flex align-items-center gap-2 py-3 px-4 mb-4 rounded-3 small" role="alert">
-        <i class="bi bi-exclamation-circle-fill flex-shrink-0"></i> <span>{{ session('error') }}</span>
-    </div>
+        <div class="alert alert-danger d-flex align-items-center gap-2 py-3 px-4 mb-4 rounded-3 small" role="alert">
+            <i class="bi bi-exclamation-circle-fill flex-shrink-0"></i><span>{{ session('error') }}</span>
+        </div>
     @endif
 
-    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
-        <div>
-            <h4 class="fw-bold mb-1" style="color: #1f2937;"><i class="bi bi-book me-2" style="color: #6366f1;"></i>Browse Skills</h4>
-            <p class="text-muted small mb-0">Discover and enroll in skill tracks to accelerate your growth</p>
-        </div>
-        <div class="d-flex gap-2">
-            <span class="stat-chip"><i class="bi bi-grid-3x3-gap"></i> {{ count($availableSkills['skills'] ?? []) }} skills</span>
-            @if ($availableSkills['selected_tag'])
-            <span class="stat-chip" style="background: #eef2ff; color: #4f46e5;"><i class="bi bi-tag"></i> {{ $availableSkills['selected_tag'] }}
-                <a href="{{ route('core-assets.skills', ['sort' => $availableSkills['sort_by']]) }}" class="text-decoration-none ms-1" style="color: inherit;"><i class="bi bi-x-circle"></i></a>
-            </span>
-            @endif
-        </div>
-    </div>
-
-    <div class="form-card p-4 mb-4">
-        <div class="row g-3 align-items-end">
-            <div class="col-12 col-md-6">
-                <label for="tagSearch" class="form-label small fw-semibold text-secondary mb-2"><i class="bi bi-search me-1"></i>Search by tag:</label>
-                <div class="position-relative">
-                    <i class="bi bi-search search-icon"></i>
-                    <input type="text" id="tagSearch" class="search-input" placeholder="Type a tag to filter skills..." oninput="filterSkillsByTag(this.value)">
+    <div class="hero-card p-4 p-lg-5 mb-4">
+        <div class="row g-4 align-items-center">
+            <div class="col-lg-7">
+                <span class="pill"><i class="bi bi-lightning-charge"></i> Smart learning path</span>
+                <h2 class="fw-bold mt-3 mb-2" style="color: #111827;">Discover skill tracks and follow what fits you best</h2>
+                <p class="text-muted mb-3" style="max-width: 680px;">Browse the platform’s skills, enroll in the ones that matter, and explore personalized recommendations curated from your current learning interests.</p>
+                <div class="d-flex flex-wrap gap-2 mb-2">
+                    <span class="pill"><i class="bi bi-bookmark-check"></i> {{ count($availableSkills['skills'] ?? []) }} skills available</span>
+                    <span class="pill"><i class="bi bi-stars"></i> {{ count($recommendations) }} recommendations</span>
                 </div>
             </div>
-            <div class="col-12 col-md-auto ms-auto">
-                <div class="d-flex flex-wrap align-items-center gap-2">
-                    <span class="small fw-semibold text-secondary"><i class="bi bi-arrow-up-down me-1"></i>Sort:</span>
-                    <a href="{{ route('core-assets.skills', ['sort' => 'newest']) }}" class="sort-btn {{ $availableSkills['sort_by'] === 'newest' ? 'active' : '' }}">Newest</a>
-                    <a href="{{ route('core-assets.skills', ['sort' => 'most_enrolled']) }}" class="sort-btn {{ $availableSkills['sort_by'] === 'most_enrolled' ? 'active' : '' }}">Most Enrolled</a>
+            <div class="col-lg-5">
+                <div class="row g-3">
+                    <div class="col-6">
+                        <div class="panel-card p-3 h-100 text-center">
+                            <div class="fs-3 fw-bold text-primary">{{ count($availableSkills['skills'] ?? []) }}</div>
+                            <div class="muted-label">Skill tracks</div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="panel-card p-3 h-100 text-center">
+                            <div class="fs-3 fw-bold text-success">{{ count($recommendations) }}</div>
+                            <div class="muted-label">Recommended</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div id="tagSuggestions" class="d-flex flex-wrap gap-2 mt-3" style="display: none !important;"></div>
     </div>
 
-    <div class="d-flex align-items-center gap-2 mb-3">
-        <span id="filteredCount" class="stat-chip"><i class="bi bi-grid-3x3-gap"></i> <span id="countValue">{{ count($availableSkills['skills'] ?? []) }}</span> skills</span>
-        <span id="activeTagChip" class="stat-chip" style="background: #eef2ff; color: #4f46e5; display: none;"><i class="bi bi-tag"></i> Filtered: <span id="activeTagName"></span>
-            <a href="#" onclick="clearTagFilter(); return false;" class="text-decoration-none ms-1" style="color: inherit;"><i class="bi bi-x-circle"></i></a>
-        </span>
-    </div>
+    <div class="row g-4">
+        <div class="col-xl-8">
+            <div class="panel-card p-4 mb-4">
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+                    <div>
+                        <div class="section-title"><i class="bi bi-compass me-2" style="color: #6366f1;"></i>Explore skills</div>
+                        <p class="text-muted small mb-0">Filter by tag and enroll in skills that support your goals.</p>
+                    </div>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="{{ route('core-assets.skills', ['sort' => 'newest']) }}" class="chip-link {{ ($sortBy ?? 'newest') === 'newest' ? 'active' : '' }}">Newest</a>
+                        <a href="{{ route('core-assets.skills', ['sort' => 'most_enrolled']) }}" class="chip-link {{ ($sortBy ?? 'newest') === 'most_enrolled' ? 'active' : '' }}">Most enrolled</a>
+                    </div>
+                </div>
 
-    <div id="skillsGrid" class="row g-4">
-        @forelse ($availableSkills['skills'] ?? [] as $skill)
-        <div class="col-12 col-sm-6 col-lg-4 col-xl-3 skill-col" data-tags="{{ implode(' ', $skill['tags']) }}">
-            <div class="skill-card {{ $skill['is_enrolled'] ? 'enrolled' : '' }} d-flex flex-column">
-                @if ($skill['is_enrolled'])
-                <div class="d-flex justify-content-end mb-1"><span class="badge rounded-pill" style="background: #10b981; font-size: 0.65rem;"><i class="bi bi-check-lg me-1"></i>Enrolled</span></div>
+                <form method="GET" action="{{ route('core-assets.skills') }}" class="d-flex flex-wrap gap-2 align-items-center mb-3">
+                    <div class="search-shell flex-grow-1">
+                        <i class="bi bi-search search-icon"></i>
+                        <input type="text" name="tag" class="search-input" placeholder="Search tags, e.g. php, design, data..." value="{{ $selectedTag ?? '' }}">
+                    </div>
+                    <input type="hidden" name="sort" value="{{ $sortBy ?? 'newest' }}">
+                    <button type="submit" class="btn btn-gradient"><i class="bi bi-funnel me-1"></i>Filter</button>
+                    <a href="{{ route('core-assets.skills', ['sort' => $sortBy ?? 'newest']) }}" class="btn btn-outline-soft">Reset</a>
+                </form>
+
+                <div id="tagChips" class="d-flex flex-wrap gap-2 mb-3">
+                    <a href="{{ route('core-assets.skills', ['sort' => $sortBy ?? 'newest']) }}" class="chip-link {{ empty($selectedTag) ? 'active' : '' }}">All skills</a>
+                    @foreach ($availableSkills['all_tags'] ?? [] as $tag)
+                        <a href="{{ route('core-assets.skills', ['tag' => $tag, 'sort' => $sortBy ?? 'newest']) }}" class="chip-link {{ ($selectedTag ?? '') === $tag ? 'active' : '' }}">{{ $tag }}</a>
+                    @endforeach
+                </div>
+
+                @if (!empty($availableSkills['skills']))
+                    <div class="row g-3">
+                        @foreach ($availableSkills['skills'] as $skill)
+                            <div class="col-12 col-md-6">
+                                <div class="skill-card {{ $skill['is_enrolled'] ? 'enrolled' : '' }} d-flex flex-column">
+                                    <div class="d-flex justify-content-between align-items-start gap-2">
+                                        <div>
+                                            <h5 class="fw-bold mb-2" style="color: #111827;">{{ $skill['title'] }}</h5>
+                                            <p class="small text-muted mb-3">{{ Str::limit($skill['description'], 100) }}</p>
+                                        </div>
+                                        @if ($skill['is_enrolled'])
+                                            <span class="badge rounded-pill bg-success-subtle text-success">Enrolled</span>
+                                        @endif
+                                    </div>
+                                    @if (!empty($skill['tags']))
+                                        <div class="d-flex flex-wrap gap-2 mb-3">
+                                            @foreach ($skill['tags'] as $skillTag)
+                                                <span class="tag-badge">{{ $skillTag }}</span>
+                                            @endforeach
+                                        </div>
+                                    @endif
+                                    <div class="d-flex align-items-center justify-content-between mt-auto pt-2 border-top">
+                                        <span class="muted-label"><i class="bi bi-people me-1"></i>{{ $skill['enrollments_count'] }} enrolled</span>
+                                        @if ($skill['is_enrolled'])
+                                            <span class="btn btn-sm btn-outline-soft" style="cursor: default;">Ready</span>
+                                        @else
+                                            <form action="{{ route('core-assets.action') }}" method="POST" class="m-0">
+                                                @csrf
+                                                <input type="hidden" name="type" value="skill">
+                                                <input type="hidden" name="action" value="enroll">
+                                                <input type="hidden" name="payload[skill_id]" value="{{ $skill['id'] }}">
+                                                <button type="submit" class="btn btn-sm btn-gradient"><i class="bi bi-plus-lg me-1"></i>Enroll</button>
+                                            </form>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="text-center py-4 text-muted">
+                        <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                        <p class="mb-0">No skills found for this selection.</p>
+                    </div>
                 @endif
-                <div class="flex-grow-1">
-                    <h5 class="fw-bold mb-2 text-truncate" style="color: #1f2937;">{{ $skill['title'] }}</h5>
-                    <p class="small text-muted mb-3" style="line-height: 1.5;">{{ Str::limit($skill['description'], 100) }}</p>
-                </div>
-                @if (count($skill['tags']) > 0)
-                <div class="d-flex flex-wrap gap-1 mb-3">@foreach ($skill['tags'] as $skillTag)<span class="tag-badge" style="font-size: 0.65rem; cursor: default;">{{ $skillTag }}</span>@endforeach</div>
+            </div>
+        </div>
+
+        <div class="col-xl-4">
+            <div class="panel-card p-4">
+                <div class="section-title mb-3"><i class="bi bi-stars me-2" style="color: #7c3aed;"></i>Recommended for you</div>
+                <p class="text-muted small mb-3">Based on your enrolled skills and common tags, these are the next best options.</p>
+
+                @if (!empty($recommendations))
+                    <div class="d-grid gap-3">
+                        @foreach ($recommendations as $recommendation)
+                            <div class="recommend-card">
+                                <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                                    <div>
+                                        <h6 class="fw-bold mb-1" style="color: #111827;">{{ $recommendation['title'] }}</h6>
+                                        <p class="small text-muted mb-0">{{ Str::limit($recommendation['description'], 90) }}</p>
+                                    </div>
+                                    @if (($recommendation['matching_tags_count'] ?? 0) > 0)
+                                        <span class="badge rounded-pill match-pill">{{ $recommendation['matching_tags_count'] }} match</span>
+                                    @else
+                                        <span class="badge rounded-pill cold-pill">Cold start</span>
+                                    @endif
+                                </div>
+                                @if (!empty($recommendation['matching_tags']))
+                                    <div class="d-flex flex-wrap gap-2 mb-2">
+                                        @foreach ($recommendation['matching_tags'] as $tag)
+                                            <span class="tag-badge">{{ $tag }}</span>
+                                        @endforeach
+                                    </div>
+                                @endif
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="muted-label"><i class="bi bi-percent me-1"></i>{{ number_format(($recommendation['score'] ?? 0) * 100, 1) }}% fit</span>
+                                    @if (!empty($recommendation['resource_link']))
+                                        <a href="{{ $recommendation['resource_link'] }}" class="btn btn-sm btn-outline-soft" target="_blank" rel="noopener noreferrer">Open</a>
+                                    @endif
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="text-center py-4 text-muted">
+                        <i class="bi bi-emoji-smile fs-2 d-block mb-2"></i>
+                        <p class="mb-0">No recommendations yet. Enroll in a few skills to unlock this section.</p>
+                    </div>
                 @endif
-        <div class="d-flex align-items-center justify-content-between pt-2 border-top">
-                    <span class="stat-chip"><i class="bi bi-people"></i> {{ $skill['enrollments_count'] }} enrolled</span>
-                    @if ($skill['is_enrolled'])
-                    <span class="btn btn-sm" style="background: #d1fae5; color: #065f46; border: none; font-weight: 600; border-radius: 8px; cursor: default; font-size: 0.75rem;"><i class="bi bi-check2 me-1"></i>Enrolled</span>
-                    @else
-                    <form action="{{ route('core-assets.action') }}" method="POST" class="m-0">@csrf
-                        <input type="hidden" name="type" value="skill"><input type="hidden" name="action" value="enroll"><input type="hidden" name="payload[skill_id]" value="{{ $skill['id'] }}">
-                        <button type="submit" class="btn btn-gradient btn-gradient-sm"><i class="bi bi-plus-lg me-1"></i>Enroll</button>
-                    </form>
-                    @endif
-                </div>
             </div>
         </div>
-        @empty
-        <div class="col-12">
-            <div class="form-card p-5 text-center" id="emptyState">
-                <div class="py-4"><i class="bi bi-inbox" style="font-size: 3rem; color: #d1d5db;"></i><h5 class="fw-bold mt-3 mb-1" style="color: #6b7280;">No skills available</h5><p class="small text-muted mb-0">No skills are available yet. Check back later!</p></div>
-            </div>
-        </div>
-        @endforelse
     </div>
-
-    <div class="text-center mt-4">
-        <a href="{{ route('dashboard') }}" class="btn btn-outline-custom" style="padding: 8px 24px;"><i class="bi bi-arrow-left me-1"></i>Back to Dashboard</a>
-    </div>
-
 </div>
 
-<script>
-const allTags = @json($availableSkills['all_tags'] ?? []);
-function filterSkillsByTag(query) {
-    const normalized = query.trim().toLowerCase();
-    const skillCols = document.querySelectorAll('.skill-col');
-    const emptyState = document.getElementById('emptyState');
-    const countSpan = document.getElementById('countValue');
-    const activeChip = document.getElementById('activeTagChip');
-    const activeTagName = document.getElementById('activeTagName');
-    const suggestions = document.getElementById('tagSuggestions');
-    let visibleCount = 0;
-    let matchedTag = '';
-    if (normalized.length > 0) {
-        const exact = allTags.find(t => t.toLowerCase() === normalized);
-        const partial = allTags.find(t => t.toLowerCase().includes(normalized));
-        matchedTag = exact || partial || '';
-    }
-    skillCols.forEach(col => {
-        const tags = (col.dataset.tags || '').toLowerCase();
-        const matches = matchedTag ? tags.includes(matchedTag.toLowerCase()) : true;
-        col.style.display = matches ? '' : 'none';
-        if (matches) visibleCount++;
-    });
-    countSpan.textContent = visibleCount;
-    if (matchedTag) { activeTagName.textContent = matchedTag; activeChip.style.display = 'inline-flex'; } else { activeChip.style.display = 'none'; }
-    if (normalized.length > 0 && !allTags.some(t => t.toLowerCase() === normalized)) {
-        const matches = allTags.filter(t => t.toLowerCase().includes(normalized)).slice(0, 8);
-        if (matches.length > 0) { suggestions.style.display = 'flex'; suggestions.innerHTML = matches.map(t => '<span class="tag-badge" style="cursor: pointer;" onclick="selectTag(\'' + t + '\')">' + t + '</span>').join(''); }
-        else { suggestions.style.display = 'none'; }
-    } else { suggestions.style.display = 'none'; }
-    if (visibleCount === 0 && skillCols.length > 0) {
-        if (!emptyState) {
-            const grid = document.getElementById('skillsGrid');
-            const emptyDiv = document.createElement('div'); emptyDiv.className = 'col-12'; emptyDiv.id = 'emptyState';
-            emptyDiv.innerHTML = '<div class="form-card p-5 text-center"><div class="py-4"><i class="bi bi-inbox" style="font-size: 3rem; color: #d1d5db;"></i><h5 class="fw-bold mt-3 mb-1" style="color: #6b7280;">No skills match</h5><p class="small text-muted mb-0">No skills found with tag matching "<strong>' + (matchedTag || normalized) + '</strong>". Try a different search.</p></div>';
-            grid.appendChild(emptyDiv);
-        } else { emptyState.style.display = ''; const strong = emptyState.querySelector('strong'); if (strong) strong.textContent = matchedTag || normalized; }
-    } else if (emptyState) { emptyState.style.display = 'none'; }
-}
-function selectTag(tag) { document.getElementById('tagSearch').value = tag; filterSkillsByTag(tag); }
-function clearTagFilter() { document.getElementById('tagSearch').value = ''; filterSkillsByTag(''); document.getElementById('tagSearch').focus(); }
-document.getElementById('tagSearch')?.addEventListener('focus', function() {
-    if (this.value.trim() === '') {
-        const s = document.getElementById('tagSuggestions');
-        s.style.display = 'flex'; s.innerHTML = allTags.slice(0, 12).map(t => '<span class="tag-badge" style="cursor: pointer;" onclick="selectTag(\'' + t + '\')">' + t + '</span>').join('');
-    }
-});
-document.getElementById('tagSearch')?.addEventListener('blur', function() { setTimeout(() => { document.getElementById('tagSuggestions').style.display = 'none'; }, 200); });
-</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
