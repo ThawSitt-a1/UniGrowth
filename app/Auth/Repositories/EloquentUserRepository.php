@@ -29,12 +29,15 @@ final class EloquentUserRepository implements UserRepositoryInterface
     public function create(array $data): array
     {
     $user = User::query()->create([
-        'username' => $data['username'],
-        'email'    => $data['email'],
-        'role' => $data['role'] ?? 'user',
+        'username'        => $data['username'],
+        'email'           => $data['email'],
+        'role'            => $data['role'] ?? 'user',
         // The 'hashed' cast on the User model handles hashing automatically
-        'password' => $data['password'],
-        'remember_token' => $data['remember_token'] ?? null,
+        'password'        => $data['password'],
+        'remember_token'  => $data['remember_token'] ?? null,
+        'academic_year'   => $data['academic_year'] ?? null,
+        'major'           => $data['major'] ?? null,
+        'university_name' => $data['university_name'] ?? null,
         ]);
 
     return [

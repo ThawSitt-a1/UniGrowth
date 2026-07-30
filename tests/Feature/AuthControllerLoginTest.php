@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
+use App\Auth\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
@@ -48,6 +48,7 @@ class AuthControllerLoginTest extends TestCase
             'email' => 'john@example.com',
             'password' => Hash::make('CorrectPassword1!'),
             'role' => 'user',
+            'email_verified_at' => now(),
         ]);
 
         $response = $this->postJson('/login', [
@@ -80,5 +81,34 @@ class AuthControllerLoginTest extends TestCase
 
         $response->assertStatus(422); // validation: exists:users,email
     }
-}
 
+    public function test_login_with_unverified_email_returns_401(): void
+    {
+        Http::fake(function () {
+            return Http::response(['success' => true], 200);
+        });
+
+        // Create user with unverified email (email_verified_at = null)
+        User::query()->create([
+            'username' => 'unverifieduser',
+            'email' => 'unverified@example.com',
+            'password' => Hash::make('CorrectPassword1!'),
+            'role' => 'user',
+            'email_verified_at' => null,
+        ]);
+
+        $response = $this->postJson('/login', [
+            'email' => 'unverified@example.com',
+            'password' => 'CorrectPassword1!',
+            'g-recaptcha-response' => 'test-token',
+        ]);
+
+        $response->assertStatus(401)
+            ->assertJson([
+                'message' => 'Invalid credentials.',
+            ]);
+
+        // Verify the user is NOT authenticated
+        $this->assertGuest();
+    }
+}

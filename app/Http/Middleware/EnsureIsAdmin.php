@@ -14,16 +14,19 @@ class EnsureIsAdmin
         $user = Auth::guard('web')->user() ?? Auth::guard('sanctum')->user();
 
         if (! $user) {
-            return response()->json(['error' => 'Unauthenticated.'], 401);
+            if ($request->expectsJson()) {
+                return response()->json(['error' => 'Unauthenticated.'], 401);
+            }
+            return redirect()->route('login');
         }
 
         $role = (string) ($user->role ?? '');
 
-        // Enforce 'admin' or 'super_admin' as "admin or above".
-        $isAllowed = in_array($role, ['admin', 'super_admin'], true);
-
-        if (! $isAllowed) {
-            return response()->json(['error' => 'Forbidden. Admin access required.'], 403);
+        if ($role !== 'admin') {
+            if ($request->expectsJson()) {
+                return response()->json(['error' => 'Forbidden. Admin access required.'], 403);
+            }
+            abort(403, 'Admin access required.');
         }
 
         return $next($request);

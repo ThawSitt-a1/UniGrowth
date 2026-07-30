@@ -231,22 +231,22 @@ TOP NAVIGATION BAR (Same as Dashboard)
             <ul class="navbar-nav me-auto mb-2 mb-lg-0 gap-1">
                 <li class="nav-item">
                     <a href="{{ route('dashboard') }}" class="nav-link nav-link-custom">
-                        <i class="bi bi-speedometer2"></i>Dashboard
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('profile.show') }}" class="nav-link nav-link-custom" style="color: #fff; background: rgba(255,255,255,0.15);">
-                        <i class="bi bi-person"></i>Profile
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('assessment.test.index') }}" class="nav-link nav-link-custom">
-                        <i class="bi bi-pencil-square"></i>Assessments
+                        <i class="bi bi-house-door"></i>Dashboard
                     </a>
                 </li>
                 <li class="nav-item">
                     <a href="{{ route('core-assets.skills') }}" class="nav-link nav-link-custom">
-                        <i class="bi bi-book"></i>Browse Skills
+                        <i class="bi bi-book"></i>Skills
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('assessment.test.index') }}" class="nav-link nav-link-custom">
+                        <i class="bi bi-pencil-square"></i>Quiz
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('core-assets.index') }}" class="nav-link nav-link-custom">
+                        <i class="bi bi-bullseye"></i>Goals
                     </a>
                 </li>
             </ul>

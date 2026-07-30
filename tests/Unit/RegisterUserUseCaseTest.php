@@ -5,7 +5,7 @@ namespace Tests\Unit;
 use App\Auth\DTOs\AuthCredentialsDTO;
 use App\Auth\Repositories\UserRepositoryInterface;
 use App\Auth\UseCases\RegisterUserUseCase;
-use App\Models\User;
+use App\Auth\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery;
 use Mockery\MockInterface;
@@ -24,7 +24,7 @@ class RegisterUserUseCaseTest extends TestCase
     public function test_it_creates_user_auto_logins_and_returns_public_shape(): void
     {
         // Create an actual user in the database so the User query resolves the model
-        $existingUser = \App\Models\User::factory()->create([
+        $existingUser = \App\Auth\Models\User::factory()->create([
             'username' => 'johnny',
             'email' => 'john@example.com',
         ]);
@@ -35,7 +35,10 @@ class RegisterUserUseCaseTest extends TestCase
                 ->with(Mockery::on(function (array $data) {
                     return $data['username'] === 'johnny' &&
                         $data['email'] === 'john@example.com' &&
-                        $data['password'] === 'Secret123!';
+                        $data['password'] === 'Secret123!' &&
+                        $data['academic_year'] === '2nd Year' &&
+                        $data['major'] === 'Computer Science' &&
+                        $data['university_name'] === 'Test University';
                 }))
                 ->andReturn([
                     'id' => $existingUser->id,
@@ -52,6 +55,9 @@ class RegisterUserUseCaseTest extends TestCase
             password: 'Secret123!',
             username: 'johnny',
             remember: false,
+            academic_year: '2nd Year',
+            major: 'Computer Science',
+            university_name: 'Test University',
         );
 
         $result = $useCase->execute($dto);

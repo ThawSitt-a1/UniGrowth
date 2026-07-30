@@ -2,7 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
+use App\Auth\Models\User;
+use App\Auth\Models\PasswordReset;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
@@ -25,12 +26,15 @@ class AuthControllerResetPasswordTest extends TestCase
             'role' => 'user',
         ]);
 
-        // Request a reset token first (uses the consolidated flow)
-        $response = $this->postJson('/request-reset', [
+        // Generate a reset token directly via the use case through the controller
+        $this->postJson('/request-reset', [
             'email' => $this->user->email,
         ]);
 
-        $this->token = $response->json('token');
+        // Retrieve the token from the database
+        $resetRecord = PasswordReset::query()->where('user_id', $this->user->id)->first();
+        $this->assertNotNull($resetRecord);
+        $this->token = $resetRecord->token;
     }
 
     public function test_request_reset_generates_token(): void
@@ -40,14 +44,11 @@ class AuthControllerResetPasswordTest extends TestCase
         ]);
 
         $response->assertStatus(200)
-            ->assertJsonStructure([
-                'message',
-                'token',
+            ->assertJson([
+                'message' => 'If the email exists in our system, a password reset link has been sent.',
             ]);
 
-        $this->assertNotNull($response->json('token'));
-
-        // Verify token exists in the new password_resets table
+        // Verify token exists in the password_resets table
         $this->assertDatabaseHas('password_resets', [
             'user_id' => $this->user->id,
         ]);
@@ -151,4 +152,3 @@ class AuthControllerResetPasswordTest extends TestCase
         $this->assertAuthenticated();
     }
 }
-

@@ -39,6 +39,10 @@ class RegisterRequest extends FormRequest
                             ->uncompromised(),],  // Have I been pwned check],
             'g-recaptcha-response' => ['required', new Recaptcha()],
             'remember' => ['boolean'],
+            // Core biographical data
+            'academic_year' => ['required', 'string', 'max:50'],
+            'major' => ['required', 'string', 'max:100'],
+            'university_name' => ['required', 'string', 'max:150'],
         ];
     }
 
@@ -64,6 +68,14 @@ class RegisterRequest extends FormRequest
             // Recaptcha messages
             'g-recaptcha-response.required' => 'Please complete the verification.',
             'g-recaptcha-response'          => 'Invalid verification. Please try again.',
+
+            // Biographical data messages
+            'academic_year.required' => 'Please select your academic year.',
+            'academic_year.max'      => 'Academic year cannot exceed 50 characters.',
+            'major.required'         => 'Please enter your major/field of study.',
+            'major.max'              => 'Major cannot exceed 100 characters.',
+            'university_name.required' => 'Please enter your university name.',
+            'university_name.max'    => 'University name cannot exceed 150 characters.',
         ];
     }
 }

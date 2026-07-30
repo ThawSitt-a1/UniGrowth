@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\User;
+use App\Auth\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -12,6 +12,11 @@ use Illuminate\Support\Str;
  */
 class UserFactory extends Factory
 {
+    /**
+     * The name of the factory's corresponding model.
+     */
+    protected $model = \App\Auth\Models\User::class;
+
     /**
      * The current password being used by the factory.
      */
@@ -28,8 +33,11 @@ class UserFactory extends Factory
             'username' => fake()->unique()->userName(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
-            'password' => static::$password ??= Hash::make('password'),
+            'password' => static::$password ??= 'password', // The 'hashed' cast on User model handles hashing automatically
             'remember_token' => Str::random(10),
+            'academic_year' => fake()->randomElement(['1st Year', '2nd Year', '3rd Year', '4th Year', 'Graduate']),
+            'major' => fake()->randomElement(['Computer Science', 'Business Administration', 'Engineering', 'Mathematics', 'Biology']),
+            'university_name' => fake()->company() . ' University',
         ];
     }
 

@@ -27,7 +27,7 @@ final class Enrollment extends Model
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(\App\Models\User::class);
+        return $this->belongsTo(\App\Auth\Models\User::class);
     }
 
     public function skill(): BelongsTo

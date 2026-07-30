@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Analytics\Calculators;
 
 use App\Core\Assets\Models\Goal;
-use App\Models\User;
+use App\Auth\Models\User;
 use App\Services\Analytics\MetricCalculatorInterface;
 use Illuminate\Database\Query\Builder;
 

@@ -17,11 +17,14 @@ return new class extends Migration
             // Link to the user who owns this goal
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
 
-            // Simplified content field
-            $table->string('content', 255);
+            // Goal text content
+            $table->string('text', 255);
 
-            // Status tracker
-            $table->boolean('is_completed')->default(false);
+            // Status: active | completed
+            $table->string('status', 50)->default('active');
+
+            // When the goal was completed (null if not yet completed)
+            $table->timestamp('completed_at')->nullable();
 
             $table->timestamps();
         });

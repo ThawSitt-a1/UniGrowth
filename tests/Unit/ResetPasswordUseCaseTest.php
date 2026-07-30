@@ -4,8 +4,8 @@ namespace Tests\Unit;
 
 use App\Auth\DTOs\ResetPasswordDTO;
 use App\Auth\UseCases\ResetPasswordUseCase;
-use App\Models\PasswordReset;
-use App\Models\User;
+use App\Auth\Models\PasswordReset;
+use App\Auth\Models\User;
 use App\Services\AuthSessionService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;

@@ -26,8 +26,8 @@ class User extends Authenticatable implements MustVerifyEmail
     }
     // Note: The 'CanResetPassword' trait is already included inside Authenticatable by default!
 
-    public const ROLE_ADMIN = 'admins';
-    public const ROLE_SUPER_ADMIN = 'superadmin';
+    public const ROLE_ADMIN = 'admin';
+    public const ROLE_EDITOR = 'editor';
     public const ROLE_USER = 'user';
 
     protected $fillable = [
@@ -36,6 +36,10 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
         'role',
         'account_status',
+        'platform_score',
+        'academic_year',
+        'major',
+        'university_name',
         'email_verified_at',
         'remember_token',
         'remember_token_expires_at',
@@ -97,5 +101,23 @@ class User extends Authenticatable implements MustVerifyEmail
     public function goals()
     {
         return $this->hasMany(\App\Core\Assets\Models\Goal::class, 'user_id');
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Profile & Account Manager Relationships
+    |--------------------------------------------------------------------------
+    */
+
+    /** @return \Illuminate\Database\Eloquent\Relations\HasMany */
+    public function socialAccounts()
+    {
+        return $this->hasMany(\App\Profile\Models\UserSocialAccount::class, 'user_id');
+    }
+
+    /** @return \Illuminate\Database\Eloquent\Relations\HasMany */
+    public function bugReports()
+    {
+        return $this->hasMany(\App\Profile\Models\BugReport::class, 'user_id');
     }
 }

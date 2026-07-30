@@ -38,16 +38,34 @@ class EnsureAuthenticated
                     $this->performLogout($request);
                     return response()->json(['error' => 'Invalid or expired session token.'], 401);
                 }
+
+                // Check if the remember token has expired (date-based expiration)
+                if (method_exists($user, 'isRememberTokenExpired') && $user->isRememberTokenExpired()) {
+                    $this->performLogout($request);
+                    return response()->json(['error' => 'Remember token has expired. Please log in again.'], 401);
+                }
             }
         }
 
-        // 3. Account status check
-        if (($user->account_status ?? '') !== 'allowed') {
+        // 3. Email verification check
+        if (!$user->hasVerifiedEmail()) {
             $this->performLogout($request);
             return response()->json([
-                'error' => 'Forbidden. Your account is not active.',
-                'account_status' => $user->account_status,
+                'error' => 'Email not verified. Please verify your email before accessing this page.',
             ], 403);
+        }
+
+        // 4. Account status check
+        if (($user->account_status ?? '') !== 'allowed') {
+            $this->performLogout($request);
+            $contactMessage = 'You are banned due to violation of our policy. Contact ourcompany@gmail.com';
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'error' => $contactMessage,
+                    'account_status' => $user->account_status,
+                ], 403);
+            }
+            abort(403, $contactMessage);
         }
 
         // Ensure session is available for any downstream logic (this middleware may be tested via JSON requests)

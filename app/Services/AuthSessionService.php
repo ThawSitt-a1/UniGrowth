@@ -16,8 +16,20 @@ class AuthSessionService
 
     public function login(Authenticatable $user, bool $remember): void
     {
-
         if ($remember) {
+            // Only generate a new token+expiry if none exists or the existing one is expired.
+            // This ensures the same token persists across logins until it naturally expires.
+            if (empty($user->getRememberToken()) || ($user instanceof \App\Auth\Models\User && $user->isRememberTokenExpired())) {
+                $token = \Illuminate\Support\Str::random(60);
+                $user->forceFill([
+                    'remember_token' => $token,
+                    'remember_token_expires_at' => now()->addDays(30),
+                ])->save();
+
+                // Reload the user so the guard picks up the fresh token
+                $user->refresh();
+            }
+
             Auth::guard('web')->login($user, true);
 
             session()->put('login_via_remember', true);

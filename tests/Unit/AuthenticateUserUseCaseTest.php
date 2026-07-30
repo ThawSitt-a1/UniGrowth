@@ -5,7 +5,7 @@ namespace Tests\Unit;
 use App\Auth\DTOs\AuthCredentialsDTO;
 use App\Auth\Repositories\UserRepositoryInterface;
 use App\Auth\UseCases\AuthenticateUserUseCase;
-use App\Models\User;
+use App\Auth\Models\User;
 use App\Services\AuthSessionService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
@@ -26,6 +26,7 @@ class AuthenticateUserUseCaseTest extends TestCase
             'email' => 'john@example.com',
             'password' => Hash::make('Secret123!'),
             'role' => 'user',
+            'email_verified_at' => now(),
         ]);
 
         $repo = Mockery::mock(UserRepositoryInterface::class, function (MockInterface $mock) use ($user) {
@@ -70,6 +71,7 @@ class AuthenticateUserUseCaseTest extends TestCase
             'email' => 'john@example.com',
             'password' => Hash::make('Different123!'),
             'role' => 'user',
+            'email_verified_at' => now(),
         ]);
 
         $repo = Mockery::mock(UserRepositoryInterface::class);
@@ -96,6 +98,45 @@ class AuthenticateUserUseCaseTest extends TestCase
             email: 'john@example.com',
             password: 'Secret123!',
             username: 'john',
+        ));
+    }
+
+    public function test_it_throws_when_email_not_verified(): void
+    {
+        // Create user with email_verified_at = null (unverified)
+        $user = User::query()->create([
+            'username' => 'jane',
+            'email' => 'jane@example.com',
+            'password' => Hash::make('Secret123!'),
+            'role' => 'user',
+            'email_verified_at' => null,
+        ]);
+
+        $repo = Mockery::mock(UserRepositoryInterface::class, function (MockInterface $mock) use ($user) {
+            $mock->shouldReceive('findByEmail')
+                ->once()
+                ->with('jane@example.com')
+                ->andReturn([
+                    'id' => $user->id,
+                    'email' => 'jane@example.com',
+                    'role' => 'user',
+                    'password_hash' => $user->password,
+                    'session_id' => null,
+                ]);
+        });
+
+        $authSessionService = $this->app->make(AuthSessionService::class);
+        $userModel = new User();
+
+        $useCase = new AuthenticateUserUseCase($repo, $authSessionService, $userModel);
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Email not verified.');
+
+        $useCase->execute(new AuthCredentialsDTO(
+            email: 'jane@example.com',
+            password: 'Secret123!',
+            username: 'jane',
         ));
     }
 }
