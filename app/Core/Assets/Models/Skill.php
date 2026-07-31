@@ -16,14 +16,20 @@ final class Skill extends Model
 
     protected $fillable = [
         'title',
+        'slug',
         'tags',
         'description',
         'content',
         'resource_link',
+        'is_active',
+        'editor_id',
+        'locked_by_admin',
+        'admin_comment',
     ];
 
     protected $casts = [
         'tags' => 'array',
+        'resource_links' => 'array',
     ];
 
     public function enrollments(): HasMany

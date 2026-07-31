@@ -488,30 +488,36 @@
                 <i class="bi bi-calendar-event fs-4" style="color: #6366f1;"></i>
                 <h5 class="fw-bold mb-0" style="color: #1f2937;">Current Season</h5>
             </div>
-            <div class="row g-3">
+            <div class="row g-3 row-cols-2 row-cols-md-5">
                 @if (!empty($seasonInfo['is_active']))
-                    <div class="col-6 col-md-3">
+                    <div class="col">
                         <div class="rounded p-3 text-center" style="background: #eef2ff;">
                             <p class="fs-5 fw-bold mb-0" style="color: #4f46e5;">{{ $seasonInfo['season_name'] ?? 'Unnamed' }}</p>
                             <p class="small text-muted mb-0">Season Name</p>
                         </div>
                     </div>
-                    <div class="col-6 col-md-3">
+                    <div class="col">
                         <div class="rounded p-3 text-center" style="background: #ecfdf5;">
                             <p class="fs-5 fw-bold mb-0" style="color: #059669;">{{ $seasonInfo['days_remaining'] ?? 0 }}</p>
                             <p class="small text-muted mb-0">Days Remaining</p>
                         </div>
                     </div>
-                    <div class="col-6 col-md-3">
+                    <div class="col">
                         <div class="rounded p-3 text-center" style="background: #faf5ff;">
                             <p class="fs-5 fw-bold mb-0" style="color: #7c3aed;">#{{ $seasonRank ?? '—' }}</p>
                             <p class="small text-muted mb-0">Your Rank</p>
                         </div>
                     </div>
-                    <div class="col-6 col-md-3">
+                    <div class="col">
                         <div class="rounded p-3 text-center" style="background: #fef3c7;">
                             <p class="fs-5 fw-bold mb-0" style="color: #d97706;">{{ number_format((float) $totalSeasonScore, 1) }}</p>
                             <p class="small text-muted mb-0">Season Score</p>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="rounded p-3 text-center" style="background: #fee2e2;">
+                            <p class="fs-5 fw-bold mb-0" style="color: #dc2626;">{{ number_format((float) ($seasonInfo['highest_score'] ?? 0), 1) }}</p>
+                            <p class="small text-muted mb-0">Highest Score</p>
                         </div>
                     </div>
                 @else
@@ -670,23 +676,6 @@
                             <i class="bi bi-book fs-2 d-block mb-2"></i>
                             <p class="small mb-0">Not enrolled in any skills yet. <a href="{{ route('core-assets.skills') }}" class="text-decoration-none" style="color: #6366f1;">Browse skills</a>.</p>
                         </div>
-                    @endif
-                </div>
-
-                <div class="form-card p-4 mb-4">
-                    <h5 class="fw-bold mb-3" style="color: #1f2937;">
-                        <i class="bi bi-calendar-event me-2" style="color: #d97706;"></i>Season Actions
-                    </h5>
-                    @if ($hasActiveSeason)
-                        <form action="{{ route('overview.season.end') }}" method="POST" onsubmit="return confirm('End the current season? This will snapshot scores and reset platform scores for all users.')">
-                            @csrf
-                            <button type="submit" class="btn btn-sm w-100" style="background: #fee2e2; color: #b91c1c; border-radius: 8px;">
-                                <i class="bi bi-stop-circle me-1"></i>End Current Season
-                            </button>
-                        </form>
-                        <p class="small text-muted mt-2 mb-0">Snapshot scores, reset platform scores, and create a new season.</p>
-                    @else
-                        <p class="small text-muted mb-0">No active season to end.</p>
                     @endif
                 </div>
 

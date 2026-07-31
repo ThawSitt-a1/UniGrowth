@@ -20,6 +20,10 @@ final class SkillRepository implements SkillRepositoryInterface
                 'title' => $data->title,
                 'slug' => $data->slug,
                 'description' => $data->description,
+                'tags' => $data->tags ?? [],
+                'content' => $data->content ?? '',
+                'resource_link' => $data->resourceLink ?? '',
+                'resource_links' => $data->resourceLinks ?? [],
             ]);
             return true;
         }
@@ -29,7 +33,10 @@ final class SkillRepository implements SkillRepositoryInterface
             'title' => $data->title,
             'slug' => $data->slug,
             'description' => $data->description,
-            'content' => $data->description,
+            'tags' => $data->tags ?? [],
+            'content' => $data->content ?? '',
+            'resource_link' => $data->resourceLink ?? '',
+            'resource_links' => $data->resourceLinks ?? [],
             'is_active' => true,
             'locked_by_admin' => false,
         ]);

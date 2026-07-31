@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Overview\Services;
 
+use App\Assessment\Models\Question;
+use App\Assessment\Services\QuestionScoringService;
 use App\Auth\Models\User;
 use App\Overview\DTO\SeasonInfoDTO;
 use App\Overview\Models\Season;
@@ -15,6 +17,7 @@ final class SeasonService
     public function __construct(
         private readonly SeasonRepositoryInterface $seasonRepo,
         private readonly SeasonScoreRepositoryInterface $seasonScoreRepo,
+        private readonly QuestionScoringService $scoringService,
     ) {
     }
 
@@ -33,6 +36,17 @@ final class SeasonService
     {
         $season = $this->getCurrentSeason();
 
+        // Ensure highest_score is up-to-date
+        $highestScore = 0.0;
+        if ($season) {
+            $highestScore = $this->calculateHighestScore();
+            if ($season->highest_score != $highestScore) {
+                $this->seasonRepo->updateHighestScore($season->id, $highestScore);
+                $season->refresh();
+            }
+            $highestScore = (float) $season->highest_score;
+        }
+
         return new SeasonInfoDTO(
             seasonId: $season?->id,
             seasonName: $season?->name,
@@ -42,15 +56,39 @@ final class SeasonService
             daysRemaining: $season?->ends_at
                 ? max(0, now()->diffInDays($season->ends_at, false))
                 : 0,
+            highestScore: $highestScore,
         );
     }
 
     /**
      * Ensure an active season exists. If none, create one.
+     * Also updates the highest_score for the season.
      */
     public function ensureActiveSeason(): Season
     {
-        return $this->seasonRepo->getOrCreateCurrentSeason();
+        $season = $this->seasonRepo->getOrCreateCurrentSeason();
+
+        // Update highest_score = sum of all active question marks
+        $highestScore = $this->calculateHighestScore();
+        if ($season->highest_score != $highestScore) {
+            $this->seasonRepo->updateHighestScore($season->id, $highestScore);
+            $season->refresh();
+        }
+
+        return $season;
+    }
+
+    /**
+     * Calculate the highest possible score for the current season.
+     * This equals the total combined marks of all active questions.
+     */
+    public function calculateHighestScore(): float
+    {
+        $questions = Question::query()
+            ->where('is_active', true)
+            ->get(['marks', 'question_type', 'difficulty']);
+
+        return $this->scoringService->calculateTotalMarks($questions);
     }
 
     /**

@@ -572,6 +572,10 @@ MAIN CONTENT
             @if ($quiz)
                 @php
                     $totalQuestions = count($quiz['questions']);
+                    $totalMarks = 0;
+                    foreach ($quiz['questions'] as $q) {
+                        $totalMarks += (float) ($q['marks'] ?? 0);
+                    }
                 @endphp
 
                 <div class="form-card overflow-hidden mb-4 animate-fade-up stagger-1">
@@ -620,9 +624,18 @@ MAIN CONTENT
                                             <span style="color: var(--indigo);">Q{{ $qIndex + 1 }}.</span>
                                             {{ $question['question_text'] }}
                                         </h6>
-                                        <span class="badge-difficulty {{ $question['difficulty'] }} ms-2 flex-shrink-0">
-                                            <i class="bi bi-signal"></i>{{ $question['difficulty'] }}
-                                        </span>
+                                        <div class="d-flex align-items-center gap-2 flex-shrink-0 ms-2">
+                                            <span class="badge" style="background: #eef2ff; color: #4338ca; font-size: 0.7rem; padding: 3px 10px; border-radius: 20px;">
+                                                <i class="bi bi-{{ $question['question_type'] === 'true_false' ? 'toggle2-on' : 'list-ul' }} me-1"></i>
+                                                {{ $question['question_type'] === 'true_false' ? 'True/False' : 'Multiple Choice' }}
+                                            </span>
+                                            <span class="badge" style="background: #fef3c7; color: #92400e; font-size: 0.7rem; padding: 3px 10px; border-radius: 20px;">
+                                                <i class="bi bi-star-fill me-1"></i>{{ number_format((float) ($question['marks'] ?? 0), 1) }} marks
+                                            </span>
+                                            <span class="badge-difficulty {{ $question['difficulty'] }}">
+                                                <i class="bi bi-signal"></i>{{ $question['difficulty'] }}
+                                            </span>
+                                        </div>
                                     </div>
 
                                     <div class="options-group" data-question-id="{{ $question['id'] }}">
@@ -720,14 +733,14 @@ MAIN CONTENT
                                 <div class="row g-2">
                                     <div class="col-6">
                                         <div class="bg-light rounded-3 p-3 text-center">
-                                            <p class="fs-4 fw-bold mb-0" style="color: var(--indigo);">{{ $r['score'] }}</p>
-                                            <small class="text-muted">Correct</small>
+                                            <p class="fs-4 fw-bold mb-0" style="color: var(--indigo);">{{ number_format((float) $r['score'], 1) }}</p>
+                                            <small class="text-muted">Marks Earned</small>
                                         </div>
                                     </div>
                                     <div class="col-6">
                                         <div class="bg-light rounded-3 p-3 text-center">
-                                            <p class="fs-4 fw-bold mb-0" style="color: var(--gray-400);">{{ $r['max_score'] - $r['score'] }}</p>
-                                            <small class="text-muted">Incorrect</small>
+                                            <p class="fs-4 fw-bold mb-0" style="color: var(--gray-400);">{{ number_format((float) ($r['max_score'] - $r['score']), 1) }}</p>
+                                            <small class="text-muted">Marks Lost</small>
                                         </div>
                                     </div>
                                 </div>
@@ -746,7 +759,7 @@ MAIN CONTENT
                                         <span class="fw-bold" style="color: {{ $qr['correct'] ? '#059669' : '#e11d48' }}; font-size: 1.1rem;">
                                             <i class="bi {{ $qr['correct'] ? 'bi-check-circle-fill' : 'bi-x-circle-fill' }}"></i>
                                         </span>
-                                        <div>
+                                        <div class="flex-grow-1">
                                             <small class="fw-semibold" style="color: var(--gray-700);">
                                                 Question #{{ $qr['question_id'] }}
                                             </small>
@@ -754,6 +767,9 @@ MAIN CONTENT
                                                 {{ $qr['correct'] ? 'Correct answer' : 'Incorrect answer' }}
                                             </small>
                                         </div>
+                                        <span class="badge" style="background: {{ $qr['correct'] ? '#d1fae5' : '#fee2e2' }}; color: {{ $qr['correct'] ? '#065f46' : '#991b1b' }}; font-size: 0.75rem; padding: 4px 12px; border-radius: 20px;">
+                                            <i class="bi bi-star-fill me-1"></i>{{ number_format((float) ($qr['marks'] ?? 0), 1) }} marks
+                                        </span>
                                     </div>
                                 @endforeach
                             </div>

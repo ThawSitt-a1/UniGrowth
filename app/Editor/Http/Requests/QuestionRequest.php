@@ -20,6 +20,8 @@ final class QuestionRequest extends FormRequest
             'skill_id' => ['required', 'integer', 'exists:skills,id'],
             'question_text' => ['required', 'string'],
             'difficulty' => ['required', 'string', 'in:easy,medium,hard'],
+            'question_type' => ['required', 'string', 'in:multiple_choice,true_false'],
+            'marks' => ['required', 'numeric', 'min:0', 'max:100'],
         ];
     }
 }

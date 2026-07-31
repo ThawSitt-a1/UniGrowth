@@ -157,35 +157,33 @@
                         @foreach ($availableSkills['skills'] as $skill)
                             <div class="col-12 col-md-6">
                                 <div class="skill-card {{ $skill['is_enrolled'] ? 'enrolled' : '' }} d-flex flex-column">
-                                    <div class="d-flex justify-content-between align-items-start gap-2">
-                                        <div>
-                                            <h5 class="fw-bold mb-2" style="color: #111827;">{{ $skill['title'] }}</h5>
-                                            <p class="small text-muted mb-3">{{ Str::limit($skill['description'], 100) }}</p>
+                                    <a href="{{ route('core-assets.skills.detail', $skill['slug'] ?? $skill['id']) }}" class="text-decoration-none">
+                                        <div class="d-flex justify-content-between align-items-start gap-2">
+                                            <div>
+                                                <h5 class="fw-bold mb-2" style="color: #111827;">{{ $skill['title'] }}</h5>
+                                                <p class="small text-muted mb-3">{{ Str::limit($skill['description'], 100) }}</p>
+                                            </div>
+                                            @if ($skill['is_enrolled'])
+                                                <span class="badge rounded-pill bg-success-subtle text-success">Enrolled</span>
+                                            @endif
                                         </div>
-                                        @if ($skill['is_enrolled'])
-                                            <span class="badge rounded-pill bg-success-subtle text-success">Enrolled</span>
+                                        @if (!empty($skill['tags']))
+                                            <div class="d-flex flex-wrap gap-2 mb-3">
+                                                @foreach ($skill['tags'] as $skillTag)
+                                                    <span class="tag-badge">{{ $skillTag }}</span>
+                                                @endforeach
+                                            </div>
                                         @endif
-                                    </div>
-                                    @if (!empty($skill['tags']))
-                                        <div class="d-flex flex-wrap gap-2 mb-3">
-                                            @foreach ($skill['tags'] as $skillTag)
-                                                <span class="tag-badge">{{ $skillTag }}</span>
-                                            @endforeach
-                                        </div>
-                                    @endif
+                                    </a>
                                     <div class="d-flex align-items-center justify-content-between mt-auto pt-2 border-top">
-                                        <span class="muted-label"><i class="bi bi-people me-1"></i>{{ $skill['enrollments_count'] }} enrolled</span>
-                                        @if ($skill['is_enrolled'])
-                                            <span class="btn btn-sm btn-outline-soft" style="cursor: default;">Ready</span>
-                                        @else
-                                            <form action="{{ route('core-assets.action') }}" method="POST" class="m-0">
-                                                @csrf
-                                                <input type="hidden" name="type" value="skill">
-                                                <input type="hidden" name="action" value="enroll">
-                                                <input type="hidden" name="payload[skill_id]" value="{{ $skill['id'] }}">
-                                                <button type="submit" class="btn btn-sm btn-gradient"><i class="bi bi-plus-lg me-1"></i>Enroll</button>
-                                            </form>
-                                        @endif
+                                        <a href="{{ route('core-assets.skills.detail', $skill['slug'] ?? $skill['id']) }}" class="muted-label text-decoration-none"><i class="bi bi-people me-1"></i>{{ $skill['enrollments_count'] }} enrolled</a>
+                                        <a href="{{ route('core-assets.skills.detail', $skill['slug'] ?? $skill['id']) }}" class="btn btn-sm {{ $skill['is_enrolled'] ? 'btn-outline-soft' : 'btn-gradient' }}">
+                                            @if($skill['is_enrolled'])
+                                                <i class="bi bi-eye me-1"></i>View
+                                            @else
+                                                <i class="bi bi-plus-lg me-1"></i>Enroll
+                                            @endif
+                                        </a>
                                     </div>
                                 </div>
                             </div>

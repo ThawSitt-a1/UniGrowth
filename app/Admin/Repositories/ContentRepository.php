@@ -27,7 +27,6 @@ final class ContentRepository implements ContentRepositoryInterface
     public function deleteQuestion(int $questionId): bool
     {
         $question = Question::query()->findOrFail($questionId);
-        // Options cascade delete via foreign key
         return (bool) $question->delete();
     }
 
@@ -51,11 +50,17 @@ final class ContentRepository implements ContentRepositoryInterface
         return (bool) $skill->delete();
     }
 
+    public function addSkillAdminComment(int $skillId, string $comment): bool
+    {
+        return (bool) Skill::query()
+            ->where('id', $skillId)
+            ->update(['admin_comment' => $comment]);
+    }
+
     public function fetchSuspendedContent(): array
     {
         $suspended = [];
 
-        // Suspended questions
         $questions = Question::query()
             ->where('is_active', false)
             ->with('skill:id,title')
@@ -72,7 +77,6 @@ final class ContentRepository implements ContentRepositoryInterface
             ];
         }
 
-        // Suspended skills
         $skills = Skill::query()
             ->where('is_active', false)
             ->get();
@@ -89,6 +93,16 @@ final class ContentRepository implements ContentRepositoryInterface
         }
 
         return $suspended;
+    }
+
+    public function fetchAllEditorContent(): array
+    {
+        return Skill::query()
+            ->select(['skills.id', 'skills.title', 'skills.is_active', 'skills.editor_id', 'skills.admin_comment', 'skills.created_at', 'users.username as editor_name', 'users.email as editor_email'])
+            ->leftJoin('users', 'skills.editor_id', '=', 'users.id')
+            ->orderBy('skills.created_at', 'desc')
+            ->get()
+            ->toArray();
     }
 }
 

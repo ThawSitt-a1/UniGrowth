@@ -16,12 +16,15 @@ final class Question extends Model
     protected $fillable = [
         'skill_id',
         'question_text',
+        'question_type',
         'difficulty',
+        'marks',
         'is_active',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
+        'marks' => 'float',
     ];
 
     public function skill(): BelongsTo

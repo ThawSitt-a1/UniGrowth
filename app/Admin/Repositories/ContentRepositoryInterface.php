@@ -37,10 +37,22 @@ interface ContentRepositoryInterface
     public function deleteSkill(int $skillId): bool;
 
     /**
+     * Add an admin comment to a skill.
+     */
+    public function addSkillAdminComment(int $skillId, string $comment): bool;
+
+    /**
      * Get all suspended/flagged content for review.
      *
      * @return array<int, array<string, mixed>>
      */
     public function fetchSuspendedContent(): array;
+
+    /**
+     * Get all editor-created content (skills) with editor info.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    public function fetchAllEditorContent(): array;
 }
 

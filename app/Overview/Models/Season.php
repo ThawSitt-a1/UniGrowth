@@ -17,12 +17,14 @@ final class Season extends Model
         'started_at',
         'ends_at',
         'is_active',
+        'highest_score',
     ];
 
     protected $casts = [
         'started_at' => 'datetime',
         'ends_at' => 'datetime',
         'is_active' => 'boolean',
+        'highest_score' => 'float',
     ];
 
     public function scores(): HasMany

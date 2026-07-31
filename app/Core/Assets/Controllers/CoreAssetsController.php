@@ -5,11 +5,15 @@ declare(strict_types=1);
 namespace App\Core\Assets\Controllers;
 
 use App\Core\Assets\DTO\AssetActionDTO;
+use App\Core\Assets\Helpers\ContentBlockParser;
 use App\Core\Assets\Http\Requests\AssetActionRequest;
 use App\Core\Assets\UseCases\GetUserActivityUseCase;
 use App\Core\Assets\UseCases\ListAvailableSkillsUseCase;
 use App\Core\Assets\UseCases\ManageUserAssetsUseCase;
 use App\Core\Recommendation\UseCases\GenerateRecommendationsUseCase;
+use App\Assessment\Models\Question;
+use App\Core\Assets\Models\Enrollment;
+use App\Core\Assets\Models\Skill;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -51,6 +55,49 @@ final class CoreAssetsController
             'recommendations' => $recommendations,
             'sortBy' => $sortBy,
             'selectedTag' => $tag,
+        ]);
+    }
+
+    public function skillDetail(Request $request, string $identifier): View
+    {
+        $userId = (int) $request->user()->getAuthIdentifier();
+
+        // Support both slug (string) and ID (numeric)
+        $skillQuery = Skill::query()->withCount('enrollments');
+
+        if (is_numeric($identifier)) {
+            $skillQuery->where('id', (int) $identifier);
+        } else {
+            $skillQuery->where('slug', $identifier);
+        }
+
+        $skill = $skillQuery->firstOrFail();
+
+        $isEnrolled = Enrollment::query()
+            ->where('user_id', $userId)
+            ->where('skill_id', $skill->id)
+            ->exists();
+
+        $questions = Question::query()
+            ->where('skill_id', $skill->id)
+            ->with('options')
+            ->get();
+
+        // Parse content blocks for enhanced rendering
+        $contentBlocks = !empty($skill->content)
+            ? ContentBlockParser::parse($skill->content)
+            : [];
+
+        $headings = !empty($skill->content)
+            ? ContentBlockParser::extractHeadings($skill->content)
+            : [];
+
+        return view('skill-detail', [
+            'skill' => $skill,
+            'isEnrolled' => $isEnrolled,
+            'questions' => $questions,
+            'contentBlocks' => $contentBlocks,
+            'headings' => $headings,
         ]);
     }
 

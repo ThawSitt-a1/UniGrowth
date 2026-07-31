@@ -54,5 +54,16 @@ final class SeasonRepository implements SeasonRepositoryInterface
             'is_active' => true,
         ]);
     }
+
+    /**
+     * Update the highest_score for a season.
+     * The highest_score equals the total combined marks of all active questions.
+     */
+    public function updateHighestScore(int $seasonId, float $highestScore): void
+    {
+        Season::query()->where('id', $seasonId)->update([
+            'highest_score' => $highestScore,
+        ]);
+    }
 }
 

@@ -66,5 +66,23 @@ final class ManageContentUseCase
     {
         return $this->contentRepository->fetchSuspendedContent();
     }
+
+    /**
+     * Get all editor-created content (skills) with editor info.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    public function getAllEditorContent(): array
+    {
+        return $this->contentRepository->fetchAllEditorContent();
+    }
+
+    /**
+     * Add an admin comment to a skill.
+     */
+    public function addSkillComment(int $skillId, string $comment): bool
+    {
+        return $this->contentRepository->addSkillAdminComment($skillId, $comment);
+    }
 }
 

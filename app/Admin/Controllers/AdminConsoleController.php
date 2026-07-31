@@ -22,40 +22,40 @@ final class AdminConsoleController
     }
 
     /**
-     * Admin dashboard with platform metrics.
-     *
-     * GET /admin
+     * @return array<string, mixed>
      */
-    public function dashboard(Request $request): View
+    private function getSharedData(Request $request): array
     {
         $timeFrame = $request->query('time_frame', 'all');
-        $metrics = $this->adminService->getDashboardData($timeFrame);
+        $search = $request->query('search');
+        $roleFilter = $request->query('role', 'all');
 
-        return view('admin.dashboard', [
-            'metrics' => $metrics,
+        return [
+            'metrics' => $this->adminService->getDashboardData($timeFrame),
             'timeFrame' => $timeFrame,
-        ]);
+            'users' => $this->adminService->getAllUsers($search),
+            'search' => $search,
+            'roleFilter' => $roleFilter,
+            'allUsersAndEditors' => $this->adminService->getAllUsersAndEditors($search, $roleFilter),
+            'editors' => $this->adminService->getAllEditors(),
+            'allContent' => $this->adminService->getAllEditorContent(),
+            'suspendedContent' => $this->adminService->getSuspendedContent(),
+            'reports' => $this->adminService->getBugReports(),
+            'settings' => $this->adminService->getSystemSettings(),
+            'seasonStatus' => $this->adminService->getSeasonStatus(),
+        ];
     }
 
-    /**
-     * User management page.
-     *
-     * GET /admin/users
-     */
-    public function users(): View
+    public function dashboard(Request $request): View
     {
-        $users = $this->adminService->getAllUsers();
-
-        return view('admin.users', [
-            'users' => $users,
-        ]);
+        return view('admin.dashboard', $this->getSharedData($request));
     }
 
-    /**
-     * Update a user's account status (ban/suspend/restore).
-     *
-     * POST /admin/users/{id}/status
-     */
+    public function users(Request $request): View
+    {
+        return view('admin.users-editors', $this->getSharedData($request));
+    }
+
     public function updateAccountStatus(Request $request, int $id): RedirectResponse
     {
         $request->validate([
@@ -75,20 +75,15 @@ final class AdminConsoleController
             $this->adminService->updateAccountStatus($dto);
 
             return redirect()
-                ->route('admin.users')
+                ->back()
                 ->with('success', "User #{$id} status updated to '{$request->input('status')}'.");
         } catch (\Exception $e) {
             return redirect()
-                ->route('admin.users')
+                ->back()
                 ->with('error', 'Failed to update user status: ' . $e->getMessage());
         }
     }
 
-    /**
-     * Assign a new role to a user.
-     *
-     * POST /admin/users/{id}/role
-     */
     public function assignRole(Request $request, int $id): RedirectResponse
     {
         $request->validate([
@@ -104,34 +99,20 @@ final class AdminConsoleController
             $this->adminService->assignUserRole($dto);
 
             return redirect()
-                ->route('admin.users')
+                ->back()
                 ->with('success', "User #{$id} role updated to '{$request->input('role')}'.");
         } catch (\Exception $e) {
             return redirect()
-                ->route('admin.users')
+                ->back()
                 ->with('error', 'Failed to assign role: ' . $e->getMessage());
         }
     }
 
-    /**
-     * Content moderation page.
-     *
-     * GET /admin/content
-     */
     public function content(): View
     {
-        $suspendedContent = $this->adminService->getSuspendedContent();
-
-        return view('admin.content', [
-            'suspendedContent' => $suspendedContent,
-        ]);
+        return view('admin.content', $this->getSharedData(request()));
     }
 
-    /**
-     * Execute a content moderation action.
-     *
-     * POST /admin/content/action
-     */
     public function contentAction(ContentActionRequest $request): RedirectResponse
     {
         try {
@@ -145,34 +126,39 @@ final class AdminConsoleController
             $this->adminService->manageContent($dto);
 
             return redirect()
-                ->route('admin.content')
+                ->back()
                 ->with('success', "Content action '{$dto->action}' executed on {$dto->targetType} #{$dto->targetId}.");
         } catch (\Exception $e) {
             return redirect()
-                ->route('admin.content')
+                ->back()
                 ->with('error', 'Failed to execute content action: ' . $e->getMessage());
         }
     }
 
-    /**
-     * System settings page.
-     *
-     * GET /admin/settings
-     */
-    public function settings(): View
+    public function addContentComment(Request $request, int $skillId): RedirectResponse
     {
-        $settings = $this->adminService->getSystemSettings();
-
-        return view('admin.settings', [
-            'settings' => $settings,
+        $request->validate([
+            'comment' => ['required', 'string', 'max:5000'],
         ]);
+
+        try {
+            $this->adminService->addSkillComment($skillId, $request->input('comment'));
+
+            return redirect()
+                ->back()
+                ->with('success', "Comment added to skill #{$skillId}.");
+        } catch (\Exception $e) {
+            return redirect()
+                ->back()
+                ->with('error', 'Failed to add comment: ' . $e->getMessage());
+        }
     }
 
-    /**
-     * Update a system setting.
-     *
-     * POST /admin/settings/update
-     */
+    public function settings(): View
+    {
+        return view('admin.settings', $this->getSharedData(request()));
+    }
+
     public function updateSettings(UpdateSystemSettingsRequest $request): RedirectResponse
     {
         try {
@@ -182,27 +168,143 @@ final class AdminConsoleController
             );
 
             return redirect()
-                ->route('admin.settings')
+                ->back()
                 ->with('success', "Setting '{$request->input('setting_key')}' updated.");
         } catch (\Exception $e) {
             return redirect()
-                ->route('admin.settings')
+                ->back()
                 ->with('error', 'Failed to update setting: ' . $e->getMessage());
         }
     }
 
-    /**
-     * Bug reports page.
-     *
-     * GET /admin/bug-reports
-     */
     public function bugReports(): View
     {
-        $reports = $this->adminService->getBugReports();
+        return view('admin.bugs', $this->getSharedData(request()));
+    }
 
-        return view('admin.bug-reports', [
-            'reports' => $reports,
+    public function updateBugReport(Request $request, int $id): RedirectResponse
+    {
+        $request->validate([
+            'status' => ['required', 'string', 'in:pending,reviewed,in_progress,resolved'],
         ]);
+
+        try {
+            $this->adminService->updateBugReportStatus($id, $request->input('status'));
+
+            return redirect()
+                ->back()
+                ->with('success', "Bug report #{$id} status updated to '{$request->input('status')}'.");
+        } catch (\Exception $e) {
+            return redirect()
+                ->back()
+                ->with('error', 'Failed to update bug report: ' . $e->getMessage());
+        }
+    }
+
+    public function editors(): View
+    {
+        return view('admin.users-editors', $this->getSharedData(request()));
+    }
+
+    public function suspendEditor(Request $request, int $id): RedirectResponse
+    {
+        $request->validate([
+            'suspended_until' => ['nullable', 'date', 'after:now'],
+        ]);
+
+        try {
+            $this->adminService->suspendEditor($id, $request->input('suspended_until'));
+
+            return redirect()
+                ->back()
+                ->with('success', "Editor #{$id} suspended.");
+        } catch (\Exception $e) {
+            return redirect()
+                ->back()
+                ->with('error', 'Failed to suspend editor: ' . $e->getMessage());
+        }
+    }
+
+    public function demoteEditor(int $id): RedirectResponse
+    {
+        try {
+            $this->adminService->demoteEditor($id);
+
+            return redirect()
+                ->back()
+                ->with('success', "Editor #{$id} demoted to user.");
+        } catch (\Exception $e) {
+            return redirect()
+                ->back()
+                ->with('error', 'Failed to demote editor: ' . $e->getMessage());
+        }
+    }
+
+    public function deleteEditor(int $id): RedirectResponse
+    {
+        try {
+            $this->adminService->deleteEditor($id);
+
+            return redirect()
+                ->back()
+                ->with('success', "Editor #{$id} deleted.");
+        } catch (\Exception $e) {
+            return redirect()
+                ->back()
+                ->with('error', 'Failed to delete editor: ' . $e->getMessage());
+        }
+    }
+
+    public function clearEditorRememberToken(int $id): RedirectResponse
+    {
+        try {
+            $this->adminService->clearEditorRememberToken($id);
+
+            return redirect()
+                ->back()
+                ->with('success', "Remember me token cleared for editor #{$id}.");
+        } catch (\Exception $e) {
+            return redirect()
+                ->back()
+                ->with('error', 'Failed to clear remember token: ' . $e->getMessage());
+        }
+    }
+
+    public function startSeason(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'name' => ['required', 'string', 'max:100'],
+            'ends_at' => ['required', 'date', 'after:now'],
+        ]);
+
+        try {
+            $season = $this->adminService->startNewSeason(
+                $request->input('name'),
+                $request->input('ends_at'),
+            );
+
+            return redirect()
+                ->back()
+                ->with('success', "Season '{$season['name']}' started. Ends {$season['ends_at']}.");
+        } catch (\Exception $e) {
+            return redirect()
+                ->back()
+                ->with('error', 'Failed to start season: ' . $e->getMessage());
+        }
+    }
+
+    public function endSeason(): RedirectResponse
+    {
+        try {
+            $newSeason = $this->adminService->endCurrentSeason();
+
+            return redirect()
+                ->back()
+                ->with('success', "Current season ended. New season '{$newSeason['name']}' started.");
+        } catch (\Exception $e) {
+            return redirect()
+                ->back()
+                ->with('error', 'Failed to end season: ' . $e->getMessage());
+        }
     }
 }
-

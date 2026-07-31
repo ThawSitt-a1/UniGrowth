@@ -36,8 +36,9 @@ final class StudentOverviewService
             endsAt: $currentSeason?->ends_at?->toISOString(),
             isActive: $currentSeason?->is_active ?? false,
             daysRemaining: $currentSeason?->ends_at
-                ? max(0, now()->diffInDays($currentSeason->ends_at, false))
+                ? (int) max(0, now()->diffInDays($currentSeason->ends_at, false))
                 : 0,
+            highestScore: (float) ($currentSeason?->highest_score ?? 0),
         );
 
         // Goals

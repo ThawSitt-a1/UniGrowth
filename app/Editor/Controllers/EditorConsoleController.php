@@ -18,6 +18,7 @@ use App\Editor\UseCases\ManageQuestionUseCase;
 use App\Editor\UseCases\ManageSkillUseCase;
 use App\Core\Assets\Models\Skill;
 use App\Assessment\Models\Question;
+use App\Assessment\Services\QuestionScoringService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -29,6 +30,7 @@ final class EditorConsoleController
         private readonly ManageQuestionUseCase $manageQuestionUseCase,
         private readonly ManageOptionUseCase $manageOptionUseCase,
         private readonly FetchEditorContentUseCase $fetchEditorContentUseCase,
+        private readonly QuestionScoringService $scoringService,
     ) {
     }
 
@@ -50,10 +52,48 @@ final class EditorConsoleController
         );
 
         $content = $this->fetchEditorContentUseCase->execute($filters);
-        $skills = Skill::query()->where('editor_id', $editorId)->get();
+
+        // Fetch skills with enrollment counts for dashboard metrics
+        $skills = Skill::query()
+            ->where('editor_id', $editorId)
+            ->withCount('enrollments')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // Top enrolled skill
+        $topEnrolledSkill = $skills->sortByDesc('enrollments_count')->first();
+
+        // Recent skills with enrollment
+        $recentSkills = $skills->take(5);
+
+        // Total stats
+        $totalSkills = $skills->count();
+        $totalQuestions = Question::query()->where('editor_id', $editorId)->count();
+        $totalEnrollments = $skills->sum('enrollments_count');
 
         return view('editor.dashboard', [
             'content' => $content,
+            'skills' => $skills,
+            'topEnrolledSkill' => $topEnrolledSkill,
+            'recentSkills' => $recentSkills,
+            'totalSkills' => $totalSkills,
+            'totalQuestions' => $totalQuestions,
+            'totalEnrollments' => $totalEnrollments,
+        ]);
+    }
+
+    /** Skill management index view. GET /editor/skills */
+    public function skillsIndex(Request $request): View
+    {
+        $editorId = (int) $request->user()->id;
+
+        $skills = Skill::query()
+            ->where('editor_id', $editorId)
+            ->withCount('enrollments')
+            ->orderBy('created_at', 'desc')
+            ->paginate(15);
+
+        return view('editor.skills-index', [
             'skills' => $skills,
         ]);
     }
@@ -85,18 +125,35 @@ final class EditorConsoleController
         $editorId = (int) $request->user()->id;
 
         try {
+            // Process resource links - filter out empty ones
+            $resourceLinks = [];
+            if ($request->has('resource_links')) {
+                foreach ($request->input('resource_links', []) as $link) {
+                    if (!empty($link['url'])) {
+                        $resourceLinks[] = [
+                            'url' => $link['url'],
+                            'label' => $link['label'] ?? '',
+                        ];
+                    }
+                }
+            }
+
             $dto = new SkillDataDTO(
                 skillId: $request->input('skill_id'),
                 editorId: $editorId,
                 title: $request->input('title'),
                 slug: $request->input('slug'),
                 description: $request->input('description', ''),
+                tags: $request->input('tags', []),
+                content: $request->input('content', ''),
+                resourceLink: $request->input('resource_link', ''),
+                resourceLinks: $resourceLinks,
             );
 
             $this->manageSkillUseCase->execute($dto);
 
             return redirect()
-                ->route('editor.dashboard')
+                ->route('editor.skills.index')
                 ->with('success', 'Skill saved successfully.');
         } catch (\RuntimeException $e) {
             return redirect()
@@ -119,13 +176,32 @@ final class EditorConsoleController
             $this->manageSkillUseCase->delete($id, $editorId);
 
             return redirect()
-                ->route('editor.dashboard')
+                ->route('editor.skills.index')
                 ->with('success', 'Skill deleted successfully.');
         } catch (\RuntimeException $e) {
             return redirect()
-                ->route('editor.dashboard')
+                ->route('editor.skills.index')
                 ->with('error', $e->getMessage());
         }
+    }
+
+    /** Question management index view. GET /editor/questions */
+    public function questionsIndex(Request $request): View
+    {
+        $editorId = (int) $request->user()->id;
+
+        $questions = Question::query()
+            ->where('editor_id', $editorId)
+            ->with(['skill', 'options'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(15);
+
+        $skills = Skill::query()->where('editor_id', $editorId)->get();
+
+        return view('editor.questions-index', [
+            'questions' => $questions,
+            'skills' => $skills,
+        ]);
     }
 
     /**
@@ -146,6 +222,7 @@ final class EditorConsoleController
         return view('editor.questions-form', [
             'question' => $question,
             'skills' => $skills,
+            'marksMatrix' => $this->scoringService->getMarksMatrix(),
         ]);
     }
 
@@ -159,18 +236,24 @@ final class EditorConsoleController
         $editorId = (int) $request->user()->id;
 
         try {
+            $questionType = $request->input('question_type', 'multiple_choice');
+            $difficulty = $request->input('difficulty');
+            $marks = (float) $request->input('marks', $this->scoringService->calculateMarks($questionType, $difficulty));
+
             $dto = new QuestionDataDTO(
                 questionId: $request->input('question_id'),
                 editorId: $editorId,
                 skillId: (int) $request->input('skill_id'),
                 questionText: $request->input('question_text'),
-                difficulty: $request->input('difficulty'),
+                difficulty: $difficulty,
+                questionType: $questionType,
+                marks: $marks,
             );
 
             $this->manageQuestionUseCase->execute($dto);
 
             return redirect()
-                ->route('editor.dashboard')
+                ->route('editor.questions.index')
                 ->with('success', 'Question saved successfully.');
         } catch (\RuntimeException $e) {
             return redirect()
@@ -193,11 +276,11 @@ final class EditorConsoleController
             $this->manageQuestionUseCase->delete($id, $editorId);
 
             return redirect()
-                ->route('editor.dashboard')
+                ->route('editor.questions.index')
                 ->with('success', 'Question deleted successfully.');
         } catch (\RuntimeException $e) {
             return redirect()
-                ->route('editor.dashboard')
+                ->route('editor.questions.index')
                 ->with('error', $e->getMessage());
         }
     }
@@ -223,7 +306,7 @@ final class EditorConsoleController
             $this->manageOptionUseCase->execute($dto);
 
             return redirect()
-                ->route('editor.dashboard')
+                ->route('editor.questions.index')
                 ->with('success', 'Option saved successfully.');
         } catch (\RuntimeException $e) {
             return redirect()
@@ -246,12 +329,49 @@ final class EditorConsoleController
             $this->manageOptionUseCase->delete($id, $editorId);
 
             return redirect()
-                ->route('editor.dashboard')
+                ->route('editor.questions.index')
                 ->with('success', 'Option deleted successfully.');
         } catch (\RuntimeException $e) {
             return redirect()
-                ->route('editor.dashboard')
+                ->route('editor.questions.index')
                 ->with('error', $e->getMessage());
         }
+    }
+
+    /** History log view. GET /editor/history */
+    public function history(Request $request): View
+    {
+        $editorId = (int) $request->user()->id;
+
+        $search = $request->query('search');
+
+        $skills = Skill::query()
+            ->where('editor_id', $editorId)
+            ->withCount('enrollments')
+            ->when($search, function ($q) use ($search) {
+                $q->where(function ($query) use ($search) {
+                    $query->where('title', 'like', '%' . $search . '%')
+                        ->orWhere('slug', 'like', '%' . $search . '%')
+                        ->orWhere('id', (int) $search ?: '')
+                        ->orWhere('tags', 'like', '%' . $search . '%');
+                });
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+
+        return view('editor.history-index', [
+            'skills' => $skills,
+            'search' => $search,
+        ]);
+    }
+
+    /** Editor settings view. GET /editor/settings */
+    public function settings(Request $request): View
+    {
+        $user = $request->user();
+
+        return view('editor.settings', [
+            'user' => $user,
+        ]);
     }
 }

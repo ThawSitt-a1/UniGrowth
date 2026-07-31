@@ -12,6 +12,10 @@ final class SkillDataDTO
         public readonly string $title,
         public readonly string $slug,
         public readonly string $description,
+        public readonly ?array $tags = [],
+        public readonly ?string $content = '',
+        public readonly ?string $resourceLink = '',
+        public readonly ?array $resourceLinks = [],
     ) {
     }
 }

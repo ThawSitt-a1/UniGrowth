@@ -11,6 +11,7 @@ use InvalidArgumentException;
 final class ManageSystemSettingsUseCase
 {
     private const ALLOWED_KEYS = [
+        // Existing
         'maintenance_mode',
         'app_timezone',
         'default_language',
@@ -20,6 +21,22 @@ final class ManageSystemSettingsUseCase
         'allow_user_registration',
         'require_email_verification',
         'max_login_attempts',
+        // Site Identity
+        'site_platform_name',
+        'site_logo_path',
+        'site_favicon_path',
+        'support_email',
+        // Localization
+        'date_display_format',
+        'time_display_format',
+        // Feature Kill Switches
+        'feature_kill_skills',
+        'feature_kill_quiz',
+        'feature_kill_season',
+        // Password Policy
+        'password_min_length',
+        'password_require_special',
+        'password_require_numbers',
     ];
 
     public function __construct(

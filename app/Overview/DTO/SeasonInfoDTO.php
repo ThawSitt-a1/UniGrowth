@@ -13,6 +13,7 @@ final class SeasonInfoDTO
         public readonly ?string $endsAt,
         public readonly bool $isActive,
         public readonly int $daysRemaining,
+        public readonly float $highestScore = 0.0,
     ) {
     }
 
@@ -28,6 +29,7 @@ final class SeasonInfoDTO
             'ends_at' => $this->endsAt,
             'is_active' => $this->isActive,
             'days_remaining' => $this->daysRemaining,
+            'highest_score' => $this->highestScore,
         ];
     }
 }

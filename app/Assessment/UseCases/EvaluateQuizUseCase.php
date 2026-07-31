@@ -6,6 +6,7 @@ namespace App\Assessment\UseCases;
 
 use App\Assessment\DTO\AssessmentResultDTO;
 use App\Assessment\Repositories\AssessmentRepositoryInterface;
+use App\Assessment\Services\QuestionScoringService;
 use App\Assessment\Services\RankingAggregatorService;
 use App\Core\Assets\Models\Skill;
 use App\Overview\Services\SeasonService;
@@ -13,11 +14,6 @@ use Illuminate\Support\Facades\DB;
 
 final class EvaluateQuizUseCase
 {
-    /**
-     * Score per question (before difficulty multiplier).
-     */
-    private const SCORE_PER_QUESTION = 10.0;
-
     /**
      * Passing percentage threshold.
      */
@@ -27,6 +23,7 @@ final class EvaluateQuizUseCase
         private readonly AssessmentRepositoryInterface $assessmentRepository,
         private readonly RankingAggregatorService $rankingService,
         private readonly SeasonService $seasonService,
+        private readonly QuestionScoringService $scoringService,
     ) {
     }
 
@@ -48,10 +45,16 @@ final class EvaluateQuizUseCase
         // Fetch correct options from the server (never trust client-side)
         $correctOptionsMap = $this->assessmentRepository->fetchCorrectOptions($questionIds);
 
+        // Fetch question marks from the database (marks are based on type + difficulty)
+        $questionsMap = \App\Assessment\Models\Question::query()
+            ->whereIn('id', $questionIds)
+            ->get()
+            ->keyBy('id');
+
         // Evaluate each answer server-side
         $questionResults = [];
         $rawScore = 0;
-        $totalRawScore = count($answers) * self::SCORE_PER_QUESTION;
+        $totalRawScore = 0;
 
         foreach ($answers as $answer) {
             $questionId = (int) $answer['question_id'];
@@ -60,17 +63,24 @@ final class EvaluateQuizUseCase
             $correctOptionIds = $correctOptionsMap[$questionId] ?? [];
             $isCorrect = in_array($selectedOptionId, $correctOptionIds, true);
 
-            // Determine difficulty for weighted scoring
-            $difficulty = $this->getQuestionDifficulty($questionId);
+            // Get the marks for this question from the database
+            $question = $questionsMap->get($questionId);
+            $marks = $question?->marks ?? $this->scoringService->calculateMarks(
+                $question?->question_type ?? 'multiple_choice',
+                $question?->difficulty ?? 'medium',
+            );
+
+            $totalRawScore += $marks;
 
             if ($isCorrect) {
-                $rawScore += self::SCORE_PER_QUESTION;
+                $rawScore += $marks;
             }
 
             $questionResults[] = [
                 'question_id' => $questionId,
                 'correct' => $isCorrect,
                 'correct_option_ids' => $correctOptionIds,
+                'marks' => $marks,
             ];
         }
 

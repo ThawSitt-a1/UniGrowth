@@ -48,7 +48,9 @@ final class QuizDeliveryService
             $sanitizedQuestions[] = [
                 'id' => $question->id,
                 'question_text' => $question->question_text,
+                'question_type' => $question->question_type,
                 'difficulty' => $question->difficulty,
+                'marks' => (float) $question->marks,
                 'options' => $sanitizedOptions,
             ];
         }

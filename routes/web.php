@@ -156,6 +156,7 @@ Route::post('/logout', function () {
 Route::middleware('auth')->prefix('core-assets')->name('core-assets.')->group(function () {
     Route::get('/', [\App\Core\Assets\Controllers\CoreAssetsController::class, 'index'])->name('index');
     Route::get('/skills', [\App\Core\Assets\Controllers\CoreAssetsController::class, 'skills'])->name('skills');
+    Route::get('/skills/{identifier}', [\App\Core\Assets\Controllers\CoreAssetsController::class, 'skillDetail'])->name('skills.detail');
     Route::post('/action', [\App\Core\Assets\Controllers\CoreAssetsController::class, 'handleAssetAction'])->name('action');
 });
 
@@ -255,9 +256,24 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureIsAdmin::class])->prefix('
     Route::post('/users/{id}/role', [\App\Admin\Controllers\AdminConsoleController::class, 'assignRole'])->name('users.role');
     Route::get('/content', [\App\Admin\Controllers\AdminConsoleController::class, 'content'])->name('content');
     Route::post('/content/action', [\App\Admin\Controllers\AdminConsoleController::class, 'contentAction'])->name('content.action');
+    Route::post('/content/{skillId}/comment', [\App\Admin\Controllers\AdminConsoleController::class, 'addContentComment'])->name('content.comment');
     Route::get('/settings', [\App\Admin\Controllers\AdminConsoleController::class, 'settings'])->name('settings');
     Route::post('/settings/update', [\App\Admin\Controllers\AdminConsoleController::class, 'updateSettings'])->name('settings.update');
     Route::get('/bug-reports', [\App\Admin\Controllers\AdminConsoleController::class, 'bugReports'])->name('bug-reports');
+
+    // Editor Management
+    Route::get('/editors', [\App\Admin\Controllers\AdminConsoleController::class, 'editors'])->name('editors');
+    Route::post('/editors/{id}/suspend', [\App\Admin\Controllers\AdminConsoleController::class, 'suspendEditor'])->name('editors.suspend');
+    Route::post('/editors/{id}/demote', [\App\Admin\Controllers\AdminConsoleController::class, 'demoteEditor'])->name('editors.demote');
+    Route::post('/editors/{id}/delete', [\App\Admin\Controllers\AdminConsoleController::class, 'deleteEditor'])->name('editors.delete');
+    Route::post('/editors/{id}/clear-remember', [\App\Admin\Controllers\AdminConsoleController::class, 'clearEditorRememberToken'])->name('editors.clear-remember');
+
+    // Bug Report Status
+    Route::post('/bug-reports/{id}/status', [\App\Admin\Controllers\AdminConsoleController::class, 'updateBugReport'])->name('bug-reports.status');
+
+    // Season Management
+    Route::post('/seasons/start', [\App\Admin\Controllers\AdminConsoleController::class, 'startSeason'])->name('seasons.start');
+    Route::post('/seasons/end', [\App\Admin\Controllers\AdminConsoleController::class, 'endSeason'])->name('seasons.end');
 });
 
 /*
@@ -271,14 +287,18 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureIsAdmin::class])->prefix('
 */
 Route::middleware(['auth', \App\Http\Middleware\EnsureIsEditor::class])->prefix('editor')->name('editor.')->group(function () {
     Route::get('/', [\App\Editor\Controllers\EditorConsoleController::class, 'dashboard'])->name('dashboard');
+    Route::get('/skills', [\App\Editor\Controllers\EditorConsoleController::class, 'skillsIndex'])->name('skills.index');
     Route::get('/skills/create', [\App\Editor\Controllers\EditorConsoleController::class, 'editSkill'])->name('skills.create');
     Route::get('/skills/{id}/edit', [\App\Editor\Controllers\EditorConsoleController::class, 'editSkill'])->name('skills.edit');
     Route::post('/skills', [\App\Editor\Controllers\EditorConsoleController::class, 'saveSkill'])->name('skills.save');
     Route::post('/skills/{id}/delete', [\App\Editor\Controllers\EditorConsoleController::class, 'deleteSkill'])->name('skills.delete');
+    Route::get('/questions', [\App\Editor\Controllers\EditorConsoleController::class, 'questionsIndex'])->name('questions.index');
     Route::get('/questions/create', [\App\Editor\Controllers\EditorConsoleController::class, 'editQuestion'])->name('questions.create');
     Route::get('/questions/{id}/edit', [\App\Editor\Controllers\EditorConsoleController::class, 'editQuestion'])->name('questions.edit');
     Route::post('/questions', [\App\Editor\Controllers\EditorConsoleController::class, 'saveQuestion'])->name('questions.save');
     Route::post('/questions/{id}/delete', [\App\Editor\Controllers\EditorConsoleController::class, 'deleteQuestion'])->name('questions.delete');
     Route::post('/options', [\App\Editor\Controllers\EditorConsoleController::class, 'saveOption'])->name('options.save');
     Route::post('/options/{id}/delete', [\App\Editor\Controllers\EditorConsoleController::class, 'deleteOption'])->name('options.delete');
+    Route::get('/history', [\App\Editor\Controllers\EditorConsoleController::class, 'history'])->name('history.index');
+    Route::get('/settings', [\App\Editor\Controllers\EditorConsoleController::class, 'settings'])->name('settings.index');
 });

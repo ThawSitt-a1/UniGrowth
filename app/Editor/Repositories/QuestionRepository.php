@@ -19,7 +19,9 @@ final class QuestionRepository implements QuestionRepositoryInterface
             $question->update([
                 'skill_id' => $data->skillId,
                 'question_text' => $data->questionText,
+                'question_type' => $data->questionType,
                 'difficulty' => $data->difficulty,
+                'marks' => $data->marks,
             ]);
             return true;
         }
@@ -28,7 +30,9 @@ final class QuestionRepository implements QuestionRepositoryInterface
             'editor_id' => $data->editorId,
             'skill_id' => $data->skillId,
             'question_text' => $data->questionText,
+            'question_type' => $data->questionType,
             'difficulty' => $data->difficulty,
+            'marks' => $data->marks,
             'is_active' => true,
             'locked_by_admin' => false,
         ]);
