@@ -1,17 +1,26 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Core :: Test Assets</title>
     <style>
         body { font-family:monospace; padding:2rem; max-width:700px; margin:auto; background:#f5f5f5; }
         h2 { color:#333; }
         .note { font-size:0.85rem; color:#888; }
-        .box { background:#fff; padding:1rem; border:1px solid #ccc; margin-bottom:1rem; }
+        .box { background:#fff; padding:1rem; border:1px solid #ccc; margin-bottom:1rem; overflow-x:auto; }
         .msg-success { background:#d4edda; border:1px solid #c3e6cb; color:#155724; padding:0.5rem; margin-bottom:1rem; }
         .msg-error   { background:#f8d7da; border:1px solid #f5c6cb; color:#721c24; padding:0.5rem; margin-bottom:1rem; }
         table { width:100%; border-collapse:collapse; }
         td, th { border:1px solid #ddd; padding:0.4rem; text-align:left; font-size:0.9rem; }
         input, button { padding:0.4rem; }
+        @media (max-width: 600px) {
+            body { padding:1rem; }
+            table { font-size:0.8rem; }
+            td, th { padding:0.3rem; }
+            input, button { font-size:0.8rem; padding:0.3rem; }
+            pre { font-size:0.65rem !important; }
+        }
     </style>
 </head>
 <body>
@@ -104,7 +113,8 @@
     <div class="box">
         <h3>🔍 Raw Profile Data</h3>
         <pre style="font-size:0.8rem; background:#eee; padding:0.5rem; overflow-x:auto;">{{ json_encode($profile, JSON_PRETTY_PRINT) }}</pre>
-    </div>
+</div>
+    @include('partials.footer')
 </body>
 </html>
 

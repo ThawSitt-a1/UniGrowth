@@ -226,6 +226,10 @@
                 <h1 class="page-title">@yield('title', 'Dashboard')</h1>
             </div>
             <div class="topbar-actions">
+                @include('partials.theme-toggle', [
+                    'btnClasses' => 'btn btn-sm border',
+                    'style' => 'background: #fff; color: #374151; border-color: #e5e7eb; border-radius: 6px;',
+                ])
                 <a href="{{ route('dashboard') }}" class="btn-main-site"><i class="bi bi-box-arrow-up-right"></i>Main Site</a>
                 <form method="POST" action="{{ route('logout') }}" class="m-0">@csrf<button type="submit" class="btn-logout-editor"><i class="bi bi-box-arrow-right"></i>Logout</button></form>
             </div>

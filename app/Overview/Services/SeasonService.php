@@ -53,20 +53,28 @@ final class SeasonService
             startedAt: $season?->started_at?->toISOString(),
             endsAt: $season?->ends_at?->toISOString(),
             isActive: $season?->is_active ?? false,
-            daysRemaining: $season?->ends_at
-                ? max(0, now()->diffInDays($season->ends_at, false))
+daysRemaining: $season?->ends_at
+                ? (int) max(0, now()->diffInDays($season->ends_at, false))
                 : 0,
             highestScore: $highestScore,
         );
     }
 
     /**
-     * Ensure an active season exists. If none, create one.
+     * Ensure an active season exists.
      * Also updates the highest_score for the season.
+     *
+     * @throws \RuntimeException if no active season exists (admin must start one).
      */
     public function ensureActiveSeason(): Season
     {
-        $season = $this->seasonRepo->getOrCreateCurrentSeason();
+        $season = $this->seasonRepo->getCurrentActiveSeason();
+
+        if (!$season) {
+            throw new \RuntimeException(
+                'No active season is running. Scores can only be recorded during an active season.'
+            );
+        }
 
         // Update highest_score = sum of all active question marks
         $highestScore = $this->calculateHighestScore();
@@ -115,7 +123,10 @@ final class SeasonService
     }
 
     /**
-     * End the current season: snapshot scores, reset platform scores, create new season.
+     * End the current season: snapshot scores, reset platform scores.
+     *
+     * Note: No new season is created here — the admin decides when to start
+     * the next season via initializeNewSeason()/createSeason().
      */
     public function endCurrentSeason(): Season
     {
@@ -134,27 +145,24 @@ final class SeasonService
         // 3. End the current season
         $this->seasonRepo->endSeason($currentSeason->id);
 
-        // 4. Create new season
-        $newSeason = $this->seasonRepo->create([
-            'name' => 'Season ' . (now()->format('Y-m-d')),
-            'started_at' => now(),
-            'ends_at' => now()->addMonths(3),
-            'is_active' => true,
-        ]);
-
-        return $newSeason;
+        // Return the ended (now inactive) season
+        return $currentSeason->refresh();
     }
 
     /**
      * Initialize a new season manually.
+     *
+     * @throws \RuntimeException if an active season already exists. The admin
+     *                           must explicitly end the current season first —
+     *                           ending and starting are kept as separate actions.
      */
     public function initializeNewSeason(string $name, string $endsAt): Season
     {
-        // End any existing active season first
         $existing = $this->seasonRepo->getCurrentActiveSeason();
         if ($existing) {
-            $this->seasonScoreRepo->archiveScores($existing->id);
-            $this->seasonRepo->endSeason($existing->id);
+            throw new \RuntimeException(
+                "An active season ('{$existing->name}') is already running. End it first before starting a new season."
+            );
         }
 
         return $this->seasonRepo->create([

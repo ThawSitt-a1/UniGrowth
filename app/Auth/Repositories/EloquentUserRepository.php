@@ -28,7 +28,7 @@ final class EloquentUserRepository implements UserRepositoryInterface
 
     public function create(array $data): array
     {
-    $user = User::query()->create([
+$user = User::query()->create([
         'username'        => $data['username'],
         'email'           => $data['email'],
         'role'            => $data['role'] ?? 'user',
@@ -38,6 +38,7 @@ final class EloquentUserRepository implements UserRepositoryInterface
         'academic_year'   => $data['academic_year'] ?? null,
         'major'           => $data['major'] ?? null,
         'university_name' => $data['university_name'] ?? null,
+        'agreed_to_terms' => $data['agreed_to_terms'] ?? false,
         ]);
 
     return [

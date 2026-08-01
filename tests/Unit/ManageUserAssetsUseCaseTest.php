@@ -8,6 +8,7 @@ use App\Core\Assets\DTO\AssetActionDTO;
 use App\Core\Assets\Models\Goal;
 use App\Core\Assets\Repositories\EnrollmentRepositoryInterface;
 use App\Core\Assets\Repositories\GoalRepositoryInterface;
+use App\Core\Assets\Repositories\HabitRepositoryInterface;
 use App\Core\Assets\UseCases\ManageUserAssetsUseCase;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Auth;
@@ -51,9 +52,10 @@ final class ManageUserAssetsUseCaseTest extends TestCase
             ])
             ->andReturn($goalModel);
 
-        $enrollmentRepo = Mockery::mock(EnrollmentRepositoryInterface::class);
+$enrollmentRepo = Mockery::mock(EnrollmentRepositoryInterface::class);
+        $habitRepo = Mockery::mock(HabitRepositoryInterface::class);
 
-        $useCase = new ManageUserAssetsUseCase($goalRepo, $enrollmentRepo);
+        $useCase = new ManageUserAssetsUseCase($goalRepo, $enrollmentRepo, $habitRepo);
 
         $dto = new AssetActionDTO('goal', 'create', ['text' => 'Test goal']);
 
@@ -76,8 +78,9 @@ final class ManageUserAssetsUseCaseTest extends TestCase
 
         $goalRepo = Mockery::mock(GoalRepositoryInterface::class);
         $enrollmentRepo = Mockery::mock(EnrollmentRepositoryInterface::class);
+        $habitRepo = Mockery::mock(HabitRepositoryInterface::class);
 
-        $useCase = new ManageUserAssetsUseCase($goalRepo, $enrollmentRepo);
+        $useCase = new ManageUserAssetsUseCase($goalRepo, $enrollmentRepo, $habitRepo);
 
         $dto = new AssetActionDTO('goal', 'create', ['text' => 'Test goal']);
 
@@ -103,8 +106,9 @@ final class ManageUserAssetsUseCaseTest extends TestCase
 
         $goalRepo = Mockery::mock(GoalRepositoryInterface::class);
         $enrollmentRepo = Mockery::mock(EnrollmentRepositoryInterface::class);
+        $habitRepo = Mockery::mock(HabitRepositoryInterface::class);
 
-        $useCase = new ManageUserAssetsUseCase($goalRepo, $enrollmentRepo);
+        $useCase = new ManageUserAssetsUseCase($goalRepo, $enrollmentRepo, $habitRepo);
 
         $dto = new AssetActionDTO('goal', 'update', ['text' => 'Test']);
 

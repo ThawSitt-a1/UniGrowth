@@ -28,6 +28,10 @@ class AppServiceProvider extends ServiceProvider
             \App\Core\Assets\Repositories\GoalRepository::class
         );
         $this->app->bind(
+            \App\Core\Assets\Repositories\HabitRepositoryInterface::class,
+            \App\Core\Assets\Repositories\HabitRepository::class
+        );
+        $this->app->bind(
             \App\Core\Assets\Repositories\EnrollmentRepositoryInterface::class,
             \App\Core\Assets\Repositories\EnrollmentRepository::class
         );

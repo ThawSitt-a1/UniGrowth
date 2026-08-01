@@ -30,7 +30,7 @@ class User extends Authenticatable implements MustVerifyEmail
     public const ROLE_EDITOR = 'editor';
     public const ROLE_USER = 'user';
 
-    protected $fillable = [
+protected $fillable = [
         'username',
         'email',
         'password',
@@ -40,6 +40,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'academic_year',
         'major',
         'university_name',
+        'agreed_to_terms',
         'email_verified_at',
         'remember_token',
         'remember_token_expires_at',
@@ -50,13 +51,14 @@ class User extends Authenticatable implements MustVerifyEmail
         'remember_token',
     ];
 
-    protected function casts(): array
+protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'preferences' => 'array',
             'remember_token_expires_at' => 'datetime',
+            'agreed_to_terms' => 'boolean',
         ];
     }
 
@@ -101,6 +103,12 @@ class User extends Authenticatable implements MustVerifyEmail
     public function goals()
     {
         return $this->hasMany(\App\Core\Assets\Models\Goal::class, 'user_id');
+    }
+
+    /** @return \Illuminate\Database\Eloquent\Relations\HasMany */
+    public function habits()
+    {
+        return $this->hasMany(\App\Core\Assets\Models\Habit::class, 'user_id');
     }
 
     /*

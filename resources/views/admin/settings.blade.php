@@ -349,10 +349,10 @@
                                 Started: {{ $seasonStatus['started_at'] ? \Carbon\Carbon::parse($seasonStatus['started_at'])->format('M j, Y') : 'N/A' }}<br>
                                 Ends: {{ $seasonStatus['ends_at'] ? \Carbon\Carbon::parse($seasonStatus['ends_at'])->format('M j, Y g:i A') : 'N/A' }}
                             </div>
-                            <form method="POST" action="{{ route('admin.seasons.end') }}" onsubmit="return confirm('End current season and start a new one?')">
+                            <form method="POST" action="{{ route('admin.seasons.end') }}" onsubmit="return confirm('End current season? Scores will be snapshotted, platform scores reset, and no new season will be created. You can start a new season at any time.')">
                                 @csrf
                                 <button type="submit" class="btn btn-sm btn-outline-warning">
-                                    <i class="bi bi-arrow-repeat me-1"></i>End & Start New Season
+                                    <i class="bi bi-stop-circle me-1"></i>End Season
                                 </button>
                             </form>
                         </div>

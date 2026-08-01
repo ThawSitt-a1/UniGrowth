@@ -192,7 +192,7 @@
             color: #fff;
             border: 2px solid rgba(255,255,255,0.3);
         }
-        @media (max-width: 767.98px) {
+@media (max-width: 767.98px) {
             .profile-sidebar {
                 position: static;
                 margin-bottom: 1rem;
@@ -203,12 +203,31 @@
                 flex-wrap: nowrap;
                 gap: 4px;
                 padding-bottom: 4px;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: thin;
+            }
+            .profile-sidebar .nav::-webkit-scrollbar {
+                height: 4px;
+            }
+            .profile-sidebar .nav::-webkit-scrollbar-thumb {
+                background: #cbd5e1;
+                border-radius: 4px;
             }
             .profile-sidebar .nav-link {
                 white-space: nowrap;
                 font-size: 0.8rem;
                 padding: 8px 12px;
             }
+        }
+        @media (max-width: 400px) {
+            body { overflow-x: hidden; }
+            .section-card { padding: 1rem !important; }
+            .section-card h5 { font-size: 1rem !important; }
+            .avatar-xl { width: 60px; height: 60px; }
+            .avatar-initial-xl { width: 60px; height: 60px; font-size: 1.5rem; }
+            .stat-display { padding: 0.5rem !important; }
+            .stat-display .stat-value { font-size: 1.1rem !important; }
+            .danger-zone-card { padding: 1rem !important; }
         }
     </style>
 </head>
@@ -251,6 +270,10 @@ TOP NAVIGATION BAR (Same as Dashboard)
                 </li>
             </ul>
             <div class="d-flex align-items-center gap-3">
+                @include('partials.theme-toggle', [
+                    'btnClasses' => 'btn btn-sm text-white border-0',
+                    'style' => 'background: rgba(255,255,255,0.1); border-radius: 8px;',
+                ])
                 <a href="{{ route('profile.show') }}" class="avatar-link">
                     @php $user = auth()->user(); @endphp
                     @if (!empty($user->avatar_path))
@@ -674,5 +697,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 @livewireScripts
+@include('partials.footer')
 </body>
 </html>

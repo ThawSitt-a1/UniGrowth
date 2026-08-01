@@ -338,17 +338,20 @@ final class AdminService
 
     /**
      * End the current season.
+     *
+     * Note: No new season is created — the admin can start one later via
+     * startNewSeason() whenever they are ready.
      */
     public function endCurrentSeason(): array
     {
-        $newSeason = $this->seasonService->endCurrentSeason();
+        $endedSeason = $this->seasonService->endCurrentSeason();
 
         return [
-            'season_id' => $newSeason->id,
-            'name' => $newSeason->name,
-            'started_at' => $newSeason->started_at?->toISOString(),
-            'ends_at' => $newSeason->ends_at?->toISOString(),
-            'is_active' => $newSeason->is_active,
+            'season_id' => $endedSeason->id,
+            'name' => $endedSeason->name,
+            'started_at' => $endedSeason->started_at?->toISOString(),
+            'ended_at' => $endedSeason->ends_at?->toISOString(),
+            'is_active' => $endedSeason->is_active,
         ];
     }
 

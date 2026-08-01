@@ -35,7 +35,7 @@ final class StudentOverviewWebController
     public function endSeason(Request $request): RedirectResponse
     {
         try {
-            $newSeason = $this->seasonService->endCurrentSeason();
+            $endedSeason = $this->seasonService->endCurrentSeason();
         } catch (\RuntimeException $e) {
             return redirect()
                 ->route('dashboard')
@@ -44,7 +44,7 @@ final class StudentOverviewWebController
 
         return redirect()
             ->route('dashboard')
-            ->with('success', 'Season ended. New season "' . $newSeason->name . '" created successfully.');
+            ->with('success', 'Season "' . $endedSeason->name . '" ended. No new season was created — an administrator can start one at any time.');
     }
 }
 

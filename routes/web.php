@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Auth\Controllers\AuthController;
 use Illuminate\Http\Request;
-
+use App\Http\Controllers\DashboardController;
 /*
 |--------------------------------------------------------------------------
 | Password Reset Routes
@@ -92,48 +92,32 @@ Route::post('/email/verification-notification', function (Request $request) {
 
 /*
 |--------------------------------------------------------------------------
+| Legal Pages Routes
+|--------------------------------------------------------------------------
+*/
+Route::get('/terms-of-service', function () {
+    return view('legal.terms-of-service');
+})->name('terms-of-service');
+
+Route::get('/privacy-policy', function () {
+    return view('legal.privacy-policy');
+})->name('privacy-policy');
+
+/*
+|--------------------------------------------------------------------------
+| About Team Route
+|--------------------------------------------------------------------------
+*/
+Route::get('/about-team', function () {
+    return view('about-team');
+})->name('about-team');
+
+/*
+|--------------------------------------------------------------------------
 | Dashboard & Utility Routes
 |--------------------------------------------------------------------------
 */
-
-Route::get('/dashboard', function (\Illuminate\Http\Request $request) {
-    $isAuthenticated = auth()->check();
-
-    $leaderboard = [];
-    $hasActiveSeason = false;
-    $currentSeasonName = 'No active season';
-    $recentGoals = collect();
-    $recentEnrolledSkills = collect();
-
-    if ($isAuthenticated) {
-        $user = auth()->user();
-
-        $seasonService = app(\App\Overview\Services\SeasonService::class);
-        $currentSeason = $seasonService->getCurrentSeason();
-
-        if ($currentSeason) {
-            $leaderboard = $seasonService->getSeasonLeaderboard($currentSeason->id, 10);
-            $hasActiveSeason = true;
-            $currentSeasonName = $currentSeason->name;
-        }
-
-        $overviewService = app(\App\Overview\Services\StudentOverviewService::class);
-        $overviewData = $overviewService->getStudentOverview($user->id)->toArray();
-
-        $recentGoals = collect($overviewData['active_goals'] ?? []);
-        $recentEnrolledSkills = collect($overviewData['enrolled_skills'] ?? []);
-    }
-
-    return view('dashboard', [
-        'leaderboard' => $leaderboard,
-        'hasActiveSeason' => $hasActiveSeason,
-        'currentSeasonName' => $currentSeasonName,
-        'isAuthenticated' => $isAuthenticated,
-        'recentGoals' => $recentGoals,
-        'recentEnrolledSkills' => $recentEnrolledSkills,
-        'overviewData' => $overviewData ?? [],
-    ]);
-})->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
 Route::post('/logout', function () {
     auth()->guard('web')->logout();
@@ -141,6 +125,17 @@ Route::post('/logout', function () {
     request()->session()->regenerateToken();
     return redirect('/login');
 })->name('logout');
+
+/*
+|--------------------------------------------------------------------------
+| Theme Toggle Route
+|--------------------------------------------------------------------------
+|
+| POST /theme — Switch light / dark mode. Persists to the authenticated
+| user's preferences, or stores a `theme` cookie for guests.
+*/
+Route::post('/theme', [\App\Http\Controllers\ThemeController::class, 'toggle'])
+    ->name('theme.toggle');
 
 /*
 |--------------------------------------------------------------------------

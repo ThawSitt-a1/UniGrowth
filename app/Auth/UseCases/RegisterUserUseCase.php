@@ -19,13 +19,14 @@ final class RegisterUserUseCase
 
     public function execute(AuthCredentialsDTO $credentials): array
     {
-        $userData = [
+$userData = [
             'username'        => $credentials->username,
             'email'           => $credentials->email,
             'password'        => $credentials->password,
             'academic_year'   => $credentials->academic_year,
             'major'           => $credentials->major,
             'university_name' => $credentials->university_name,
+            'agreed_to_terms' => $credentials->agreedToTerms,
         ];
 
         // If "remember me" was checked, pre-generate remember_token with 30-day expiry

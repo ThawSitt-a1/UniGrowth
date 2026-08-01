@@ -158,10 +158,20 @@
                 padding-right: 1rem !important;
             }
         }
-        @media (max-width: 575.98px) {
+@media (max-width: 575.98px) {
             .form-card {
                 padding: 1.25rem !important;
             }
+        }
+        @media (max-width: 400px) {
+            body { overflow-x: hidden; }
+            .banner-section { padding: 2rem 1rem !important; }
+            .banner-section h1 { font-size: 1.8rem !important; }
+            .banner-section p { font-size: 0.9rem !important; }
+            .tech-badge { font-size: 0.65rem !important; padding: 2px 8px !important; }
+            .input-field { font-size: 0.85rem !important; padding: 8px 10px !important; }
+            .btn-gradient { font-size: 0.85rem !important; padding: 10px 16px !important; }
+            .form-card { padding: 1rem !important; }
         }
     </style>
 </head>
@@ -308,13 +318,19 @@
                             </div>
                         </form>
 
-                        <!-- Register Navigation -->
+<!-- Register Navigation -->
                         <div class="mt-4 pt-4 border-top text-center">
                             <p class="small text-secondary mb-0">
                                 Don't have an account?
                                 <a href="/register" class="fw-semibold text-decoration-none" style="color: #6366f1;">
                                     Create one
                                 </a>
+                            </p>
+                            <p class="small text-muted mt-2 mb-0">
+                                By signing in, you agree to our
+                                <a href="{{ route('terms-of-service') }}" target="_blank" class="text-decoration-none" style="color: #6366f1;">Terms of Service</a>
+                                and
+                                <a href="{{ route('privacy-policy') }}" target="_blank" class="text-decoration-none" style="color: #6366f1;">Privacy Policy</a>
                             </p>
                         </div>
                     </div>
@@ -323,6 +339,11 @@
 
         </div>
     </div>
+
+    @include('partials.theme-toggle', [
+        'btnClasses' => 'btn d-inline-flex align-items-center justify-content-center border-0 shadow-lg',
+        'style' => 'position: fixed; bottom: 1.25rem; right: 1.25rem; width: 44px; height: 44px; border-radius: 50% !important; z-index: 1050; background: #fff; color: #374151;',
+    ])
 </body>
 </html>
 

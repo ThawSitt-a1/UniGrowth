@@ -154,6 +154,10 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    @include('partials.theme-toggle', [
+        'btnClasses' => 'btn d-inline-flex align-items-center justify-content-center border-0 shadow-lg',
+        'style' => 'position: fixed; bottom: 1.25rem; right: 1.25rem; width: 44px; height: 44px; border-radius: 50% !important; z-index: 1050; background: #fff; color: #374151;',
+    ])
 </body>
 </html>
 

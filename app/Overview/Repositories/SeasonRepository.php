@@ -40,21 +40,6 @@ final class SeasonRepository implements SeasonRepositoryInterface
             ->get();
     }
 
-    public function getOrCreateCurrentSeason(): Season
-    {
-        $season = $this->getCurrentActiveSeason();
-
-        if ($season !== null) {
-            return $season;
-        }
-
-        return $this->create([
-            'name' => 'Season ' . now()->format('Y-m-d'),
-            'started_at' => now(),
-            'is_active' => true,
-        ]);
-    }
-
     /**
      * Update the highest_score for a season.
      * The highest_score equals the total combined marks of all active questions.

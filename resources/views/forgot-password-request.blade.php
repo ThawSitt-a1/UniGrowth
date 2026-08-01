@@ -150,10 +150,19 @@
                 padding-right: 1rem !important;
             }
         }
-        @media (max-width: 575.98px) {
+@media (max-width: 575.98px) {
             .form-card {
                 padding: 1.25rem !important;
             }
+        }
+        @media (max-width: 400px) {
+            body { overflow-x: hidden; }
+            .banner-section { padding: 2rem 1rem !important; }
+            .banner-section h1 { font-size: 1.8rem !important; }
+            .banner-section p { font-size: 0.9rem !important; }
+            .input-field { font-size: 0.85rem !important; padding: 8px 10px !important; }
+            .btn-gradient { font-size: 0.85rem !important; padding: 10px 16px !important; }
+            .form-card { padding: 1rem !important; }
         }
     </style>
 </head>
@@ -281,6 +290,11 @@
 
         </div>
     </div>
+
+    @include('partials.theme-toggle', [
+        'btnClasses' => 'btn d-inline-flex align-items-center justify-content-center border-0 shadow-lg',
+        'style' => 'position: fixed; bottom: 1.25rem; right: 1.25rem; width: 44px; height: 44px; border-radius: 50% !important; z-index: 1050; background: #fff; color: #374151;',
+    ])
 </body>
 </html>
 

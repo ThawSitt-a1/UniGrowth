@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 
 final class SeasonScoreRepository implements SeasonScoreRepositoryInterface
 {
-    public function upsertScore(int $userId, int $seasonId, float $score, int $questionsAnswered): void
+public function upsertScore(int $userId, int $seasonId, float $score, int $questionsAnswered): void
     {
         $record = SeasonScore::query()->firstOrNew([
             'user_id' => $userId,
@@ -25,6 +25,7 @@ final class SeasonScoreRepository implements SeasonScoreRepositoryInterface
             ->where('season_id', $seasonId)
             ->count();
         $record->total_questions_answered = $record->total_questions_answered + $questionsAnswered;
+        $record->total_attempts = $record->total_attempts + 1;
         $record->last_active_at = now();
         $record->save();
     }

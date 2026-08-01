@@ -147,10 +147,20 @@
                 padding-right: 1rem !important;
             }
         }
-        @media (max-width: 575.98px) {
+@media (max-width: 575.98px) {
             .form-card {
                 padding: 1.25rem !important;
             }
+        }
+        @media (max-width: 400px) {
+            body { overflow-x: hidden; }
+            .banner-section { padding: 2rem 1rem !important; }
+            .banner-section h1 { font-size: 1.8rem !important; white-space: normal !important; }
+            .banner-section p { font-size: 0.9rem !important; }
+            .tech-badge { font-size: 0.65rem !important; padding: 2px 8px !important; }
+            .input-group { flex-wrap: nowrap; }
+            .input-field { font-size: 0.85rem !important; padding: 8px 10px !important; }
+            .btn-gradient { font-size: 0.85rem !important; padding: 10px 16px !important; }
         }
     </style>
 </head>
@@ -177,7 +187,7 @@
                     </div>
 
                     <!-- Main heading -->
-                    <h1 class="display-4 fw-bold text-white mb-3" style="line-height: 1.2; white-space: nowrap;">
+<h1 class="display-4 fw-bold text-white mb-3" style="line-height: 1.2;">
                        UniGrowth
                     </h1>
                     <p class="text-white-50 fs-5 mb-4" style="color: rgba(199,210,254,0.8) !important;">
@@ -350,10 +360,22 @@
                                     @enderror
                                 </div>
 
-                                <!-- Remember Me -->
+<!-- Remember Me -->
                                 <div class="form-check">
                                     <input type="checkbox" name="remember" id="remember" class="form-check-input">
                                     <label class="form-check-label small text-secondary" for="remember">Remember me</label>
+                                </div>
+
+                                <!-- Terms of Service Agreement -->
+                                <div class="form-check">
+                                    <input type="checkbox" name="agreed_to_terms" id="agreed_to_terms" class="form-check-input @error('agreed_to_terms') is-invalid @enderror" value="1" {{ old('agreed_to_terms') ? 'checked' : '' }}>
+                                    <label class="form-check-label small text-secondary" for="agreed_to_terms">
+                                        I agree to the <a href="{{ route('terms-of-service') }}" target="_blank" class="text-decoration-none fw-semibold" style="color: #6366f1;">Terms of Service</a>
+                                        and <a href="{{ route('privacy-policy') }}" target="_blank" class="text-decoration-none fw-semibold" style="color: #6366f1;">Privacy Policy</a>
+                                    </label>
+                                    @error('agreed_to_terms')
+                                        <p class="text-danger small mt-1 mb-0">{{ $message }}</p>
+                                    @enderror
                                 </div>
 
                                 <!-- Submit -->
@@ -381,5 +403,10 @@
 
         </div>
     </div>
+
+    @include('partials.theme-toggle', [
+        'btnClasses' => 'btn d-inline-flex align-items-center justify-content-center border-0 shadow-lg',
+        'style' => 'position: fixed; bottom: 1.25rem; right: 1.25rem; width: 44px; height: 44px; border-radius: 50% !important; z-index: 1050; background: #fff; color: #374151;',
+    ])
 </body>
 </html>

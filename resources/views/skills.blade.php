@@ -42,9 +42,20 @@
         .recommend-card .match-pill { background: #dcfce7; color: #166534; }
         .recommend-card .cold-pill { background: #fef3c7; color: #92400e; }
         .section-title { font-size: 1rem; font-weight: 700; color: #0f172a; }
-        @media (max-width: 767.98px) {
+@media (max-width: 767.98px) {
             .hero-card { padding: 1.2rem !important; }
             .skill-card { padding: 1rem !important; }
+            .panel-card { padding: 1rem !important; }
+        }
+        @media (max-width: 400px) {
+            body { overflow-x: hidden; }
+            .search-input { font-size: 0.8rem !important; padding: 8px 10px 8px 36px !important; }
+            .chip-link { font-size: 0.7rem !important; padding: 4px 8px !important; }
+            .skill-card { padding: 0.75rem !important; }
+            .skill-card h5 { font-size: 0.95rem !important; }
+            .skill-card .small { font-size: 0.75rem !important; }
+            .recommend-card { padding: 0.75rem !important; }
+            .section-title { font-size: 0.85rem !important; }
         }
     </style>
 </head>
@@ -61,6 +72,10 @@
                 <li class="nav-item"><a href="{{ route('core-assets.index') }}" class="nav-link nav-link-custom"><i class="bi bi-bullseye"></i>Goals</a></li>
             </ul>
             <div class="d-flex align-items-center gap-3">
+                @include('partials.theme-toggle', [
+                    'btnClasses' => 'btn btn-sm text-white border-0',
+                    'style' => 'background: rgba(255,255,255,0.1); border-radius: 8px;',
+                ])
                 <a href="{{ route('profile.show') }}" class="avatar-link">
                     @php $user = auth()->user(); @endphp
                     @if (!empty($user->avatar_path))
@@ -98,7 +113,7 @@
                 <h2 class="fw-bold mt-3 mb-2" style="color: #111827;">Discover skill tracks and follow what fits you best</h2>
                 <p class="text-muted mb-3" style="max-width: 680px;">Browse the platform’s skills, enroll in the ones that matter, and explore personalized recommendations curated from your current learning interests.</p>
                 <div class="d-flex flex-wrap gap-2 mb-2">
-                    <span class="pill"><i class="bi bi-bookmark-check"></i> {{ count($availableSkills['skills'] ?? []) }} skills available</span>
+                    <span class="pill"><i class="bi bi-bookmark-check"></i> <span id="skillCountPill">{{ count($availableSkills['skills'] ?? []) }}</span> skills available</span>
                     <span class="pill"><i class="bi bi-stars"></i> {{ count($recommendations) }} recommendations</span>
                 </div>
             </div>
@@ -106,7 +121,7 @@
                 <div class="row g-3">
                     <div class="col-6">
                         <div class="panel-card p-3 h-100 text-center">
-                            <div class="fs-3 fw-bold text-primary">{{ count($availableSkills['skills'] ?? []) }}</div>
+                            <div class="fs-3 fw-bold text-primary" id="skillCountStat">{{ count($availableSkills['skills'] ?? []) }}</div>
                             <div class="muted-label">Skill tracks</div>
                         </div>
                     </div>
@@ -135,27 +150,25 @@
                     </div>
                 </div>
 
-                <form method="GET" action="{{ route('core-assets.skills') }}" class="d-flex flex-wrap gap-2 align-items-center mb-3">
+                <div class="d-flex flex-wrap gap-2 align-items-center mb-3">
                     <div class="search-shell flex-grow-1">
                         <i class="bi bi-search search-icon"></i>
-                        <input type="text" name="tag" class="search-input" placeholder="Search tags, e.g. php, design, data..." value="{{ $selectedTag ?? '' }}">
+                        <input type="text" id="tagSearchInput" class="search-input" autocomplete="off" placeholder="Search tags, e.g. php, design, data..." value="{{ $selectedTag ?? '' }}">
                     </div>
-                    <input type="hidden" name="sort" value="{{ $sortBy ?? 'newest' }}">
-                    <button type="submit" class="btn btn-gradient"><i class="bi bi-funnel me-1"></i>Filter</button>
-                    <a href="{{ route('core-assets.skills', ['sort' => $sortBy ?? 'newest']) }}" class="btn btn-outline-soft">Reset</a>
-                </form>
+                    <button type="button" id="resetTagSearch" class="btn btn-outline-soft"><i class="bi bi-arrow-counterclockwise me-1"></i>Reset</button>
+                </div>
 
                 <div id="tagChips" class="d-flex flex-wrap gap-2 mb-3">
                     <a href="{{ route('core-assets.skills', ['sort' => $sortBy ?? 'newest']) }}" class="chip-link {{ empty($selectedTag) ? 'active' : '' }}">All skills</a>
                     @foreach ($availableSkills['all_tags'] ?? [] as $tag)
-                        <a href="{{ route('core-assets.skills', ['tag' => $tag, 'sort' => $sortBy ?? 'newest']) }}" class="chip-link {{ ($selectedTag ?? '') === $tag ? 'active' : '' }}">{{ $tag }}</a>
+                        <a href="{{ route('core-assets.skills', ['tag' => $tag, 'sort' => $sortBy ?? 'newest']) }}" class="chip-link {{ ($selectedTag ?? '') === $tag ? 'active' : '' }}" data-tag="{{ $tag }}">{{ $tag }}</a>
                     @endforeach
                 </div>
 
                 @if (!empty($availableSkills['skills']))
-                    <div class="row g-3">
+                    <div class="row g-3" id="skillsGrid">
                         @foreach ($availableSkills['skills'] as $skill)
-                            <div class="col-12 col-md-6">
+                            <div class="col-12 col-md-6 skill-col" data-search="{{ Str::lower($skill['title'] . ' ' . $skill['description'] . ' ' . implode(' ', $skill['tags'] ?? [])) }}">
                                 <div class="skill-card {{ $skill['is_enrolled'] ? 'enrolled' : '' }} d-flex flex-column">
                                     <a href="{{ route('core-assets.skills.detail', $skill['slug'] ?? $skill['id']) }}" class="text-decoration-none">
                                         <div class="d-flex justify-content-between align-items-start gap-2">
@@ -189,6 +202,10 @@
                             </div>
                         @endforeach
                     </div>
+                    <div id="noSkillsFound" class="text-center py-4 text-muted d-none">
+                        <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                        <p class="mb-0">No skills found for this selection.</p>
+                    </div>
                 @else
                     <div class="text-center py-4 text-muted">
                         <i class="bi bi-inbox fs-2 d-block mb-2"></i>
@@ -198,8 +215,8 @@
             </div>
         </div>
 
-        <div class="col-xl-4">
-            <div class="panel-card p-4">
+<div class="col-xl-4">
+            <div class="panel-card p-4 p-xl-4 p-lg-3">
                 <div class="section-title mb-3"><i class="bi bi-stars me-2" style="color: #7c3aed;"></i>Recommended for you</div>
                 <p class="text-muted small mb-3">Based on your enrolled skills and common tags, these are the next best options.</p>
 
@@ -246,5 +263,66 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+@include('partials.footer')
+
+<script>
+(function () {
+    const searchInput = document.getElementById('tagSearchInput');
+    const tagChips = document.querySelectorAll('#tagChips .chip-link[data-tag]');
+    const skillCols = document.querySelectorAll('#skillsGrid .skill-col');
+    const noSkillsFound = document.getElementById('noSkillsFound');
+    const skillCountPill = document.getElementById('skillCountPill');
+    const skillCountStat = document.getElementById('skillCountStat');
+    const grid = document.getElementById('skillsGrid');
+
+    function applyFilter() {
+        const query = (searchInput ? searchInput.value.trim() : '').toLowerCase();
+
+        // Filter tag chips: only show related tags when a query is typed;
+        // when the search box is empty, no skill tags are shown at all.
+        tagChips.forEach(function (chip) {
+            const tag = (chip.getAttribute('data-tag') || '').toLowerCase();
+            chip.style.display = (query && tag.indexOf(query) !== -1) ? '' : 'none';
+        });
+
+        // Filter skill cards by title / description / tags
+        let visibleCount = 0;
+        skillCols.forEach(function (col) {
+            const haystack = (col.getAttribute('data-search') || '').toLowerCase();
+            const visible = !query || haystack.indexOf(query) !== -1;
+            col.style.display = visible ? '' : 'none';
+            if (visible) visibleCount++;
+        });
+
+        // Toggle empty state & live-update counts
+        if (noSkillsFound) noSkillsFound.classList.toggle('d-none', visibleCount > 0);
+        if (grid) grid.classList.toggle('d-none', visibleCount === 0);
+        if (skillCountPill) skillCountPill.textContent = visibleCount;
+        if (skillCountStat) skillCountStat.textContent = visibleCount;
+    }
+
+    if (searchInput) {
+        searchInput.addEventListener('input', applyFilter);
+
+        // Prevent Enter key from submitting/reloading the page
+        searchInput.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') e.preventDefault();
+        });
+    }
+
+    // Reset button: clear the search and restore all tags + skills
+    const resetBtn = document.getElementById('resetTagSearch');
+    if (resetBtn && searchInput) {
+        resetBtn.addEventListener('click', function () {
+            searchInput.value = '';
+            applyFilter();
+            searchInput.focus();
+        });
+    }
+
+    // Apply once on load so `?tag=` deep-links also narrow the chips
+    applyFilter();
+})();
+</script>
 </body>
 </html>

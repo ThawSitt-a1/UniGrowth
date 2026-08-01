@@ -29,11 +29,11 @@ interface StudentOverviewRepositoryInterface
 
     public function countEnrolledSkills(int $userId): int;
 
-    public function countTotalQuestionsAnswered(int $userId): int;
+public function countTotalQuestionsAnswered(int $userId, ?int $seasonId = null): int;
 
-    public function countTotalAttempts(int $userId): int;
+    public function countTotalAttempts(int $userId, ?int $seasonId = null): int;
 
-    public function sumTotalScore(int $userId): float;
+    public function sumTotalScore(int $userId, ?int $seasonId = null): float;
 
-    public function averageScorePerAttempt(int $userId): float;
+    public function averageScorePerAttempt(int $userId, ?int $seasonId = null): float;
 }

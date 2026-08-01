@@ -1,12 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Core :: Test Recommendations</title>
     <style>
         body { font-family:monospace; padding:2rem; max-width:800px; margin:auto; background:#f5f5f5; }
         h2 { color:#333; }
         .note { font-size:0.85rem; color:#888; }
-        .box { background:#fff; padding:1rem; border:1px solid #ccc; margin-bottom:1rem; border-radius:4px; }
+        .box { background:#fff; padding:1rem; border:1px solid #ccc; margin-bottom:1rem; border-radius:4px; overflow-x:auto; }
         .msg-success { background:#d4edda; border:1px solid #c3e6cb; color:#155724; padding:0.5rem; margin-bottom:1rem; border-radius:4px; }
         .msg-error   { background:#f8d7da; border:1px solid #f5c6cb; color:#721c24; padding:0.5rem; margin-bottom:1rem; border-radius:4px; }
         table { width:100%; border-collapse:collapse; }
@@ -26,10 +28,20 @@
         .badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:0.75rem; font-weight:bold; }
         .badge-score { background:#28a745; color:#fff; }
         .badge-cold  { background:#ffc107; color:#333; }
-        .stats { display:flex; gap:1rem; margin-bottom:0.5rem; }
-        .stat-item { background:#e9ecef; padding:0.5rem 1rem; border-radius:4px; text-align:center; flex:1; }
+        .stats { display:flex; gap:1rem; margin-bottom:0.5rem; flex-wrap:wrap; }
+        .stat-item { background:#e9ecef; padding:0.5rem 1rem; border-radius:4px; text-align:center; flex:1; min-width:120px; }
         .stat-value { font-size:1.5rem; font-weight:bold; color:#333; }
         .stat-label { font-size:0.75rem; color:#666; }
+        @media (max-width: 600px) {
+            body { padding:1rem; }
+            table { font-size:0.75rem; }
+            td, th { padding:0.3rem; }
+            .stats { flex-direction:column; }
+            .stat-item { min-width:auto; }
+            .stat-value { font-size:1.2rem; }
+            .box { padding:0.75rem; }
+            pre { font-size:0.6rem !important; }
+        }
     </style>
 </head>
 <body>
@@ -145,6 +157,7 @@
     <div class="box">
         <h3>🔍 Raw API Response</h3>
         <pre style="font-size:0.75rem; background:#eee; padding:0.5rem; overflow-x:auto;">{{ json_encode($rawApiResponse, JSON_PRETTY_PRINT) }}</pre>
-    </div>
+</div>
+    @include('partials.footer')
 </body>
 </html>

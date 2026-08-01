@@ -37,7 +37,8 @@ class UserFactory extends Factory
             'remember_token' => Str::random(10),
             'academic_year' => fake()->randomElement(['1st Year', '2nd Year', '3rd Year', '4th Year', 'Graduate']),
             'major' => fake()->randomElement(['Computer Science', 'Business Administration', 'Engineering', 'Mathematics', 'Biology']),
-            'university_name' => fake()->company() . ' University',
+'university_name' => fake()->company() . ' University',
+            'agreed_to_terms' => true,
         ];
     }
 

@@ -26,7 +26,7 @@ class RegisterRequest extends FormRequest
         ]);
     }
 
-    public function rules(): array
+public function rules(): array
     {
         return [
             'username' => ['required', 'string',
@@ -43,6 +43,8 @@ class RegisterRequest extends FormRequest
             'academic_year' => ['required', 'string', 'max:50'],
             'major' => ['required', 'string', 'max:100'],
             'university_name' => ['required', 'string', 'max:150'],
+            // Terms of Service agreement
+            'agreed_to_terms' => ['required', 'accepted'],
         ];
     }
 
@@ -74,8 +76,12 @@ class RegisterRequest extends FormRequest
             'academic_year.max'      => 'Academic year cannot exceed 50 characters.',
             'major.required'         => 'Please enter your major/field of study.',
             'major.max'              => 'Major cannot exceed 100 characters.',
-            'university_name.required' => 'Please enter your university name.',
+'university_name.required' => 'Please enter your university name.',
             'university_name.max'    => 'University name cannot exceed 150 characters.',
+
+            // Terms of Service messages
+            'agreed_to_terms.required' => 'You must agree to the Terms of Service and Privacy Policy.',
+            'agreed_to_terms.accepted' => 'You must agree to the Terms of Service and Privacy Policy.',
         ];
     }
 }

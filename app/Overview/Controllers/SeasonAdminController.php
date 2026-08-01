@@ -16,25 +16,29 @@ final class SeasonAdminController
     }
 
     /**
-     * End the current season (snapshot scores, reset, create new).
+     * End the current season (snapshot scores, reset platform scores).
+     *
+     * Note: No new season is created automatically. The admin can start a
+     * new season at any time via POST /api/admin/seasons.
      *
      * POST /api/admin/seasons/end
      */
     public function endCurrentSeason(): JsonResponse
     {
         try {
-            $newSeason = $this->seasonService->endCurrentSeason();
+            $endedSeason = $this->seasonService->endCurrentSeason();
         } catch (\RuntimeException $e) {
             return response()->json(['error' => $e->getMessage()], 400);
         }
 
         return response()->json([
-            'message' => 'Season ended successfully. New season created.',
+            'message' => 'Season ended successfully. No new season was created — start one whenever you are ready.',
             'data' => [
-                'season_id' => $newSeason->id,
-                'name' => $newSeason->name,
-                'started_at' => $newSeason->started_at?->toISOString(),
-                'ends_at' => $newSeason->ends_at?->toISOString(),
+                'season_id' => $endedSeason->id,
+                'name' => $endedSeason->name,
+                'started_at' => $endedSeason->started_at?->toISOString(),
+                'ended_at' => $endedSeason->ends_at?->toISOString(),
+                'is_active' => $endedSeason->is_active,
             ],
         ]);
     }
@@ -56,6 +60,9 @@ final class SeasonAdminController
                 $request->input('name'),
                 $request->input('ends_at'),
             );
+        } catch (\RuntimeException $e) {
+            // e.g. an active season already exists — admin must end it first
+            return response()->json(['error' => $e->getMessage()], 400);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }

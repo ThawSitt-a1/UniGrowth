@@ -44,7 +44,7 @@ final class Season extends Model
 
     public function scopeHistory(Builder $query): Builder
     {
-        return $query->where('is_active', false)->orderBy('ended_at', 'desc');
+        return $query->where('is_active', false)->orderBy('ends_at', 'desc');
     }
 }
 

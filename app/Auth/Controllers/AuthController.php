@@ -59,13 +59,14 @@ class AuthController
         return redirect()->intended('/dashboard');
     }
 
-    public function register(RegisterRequest $request): JsonResponse|RedirectResponse
+public function register(RegisterRequest $request): JsonResponse|RedirectResponse
     {
         $dto = new AuthCredentialsDTO(
             email: $request->string('email')->toString(),
             password: $request->string('password')->toString(),
             username: $request->string('username')->toString(),
             remember: $request->boolean('remember'),
+            agreedToTerms: $request->boolean('agreed_to_terms'),
         );
 
         $user = $this->registerUserUseCase->execute($dto);

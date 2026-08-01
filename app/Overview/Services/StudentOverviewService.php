@@ -6,7 +6,6 @@ namespace App\Overview\Services;
 
 use App\Auth\Models\User;
 use App\Overview\DTO\StudentOverviewDTO;
-use App\Overview\DTO\SeasonInfoDTO;
 use App\Overview\Repositories\StudentOverviewRepositoryInterface;
 use App\Overview\Repositories\SeasonRepositoryInterface;
 use App\Overview\Repositories\SeasonScoreRepositoryInterface;
@@ -17,6 +16,7 @@ final class StudentOverviewService
         private readonly StudentOverviewRepositoryInterface $studentOverviewRepo,
         private readonly SeasonRepositoryInterface $seasonRepo,
         private readonly SeasonScoreRepositoryInterface $seasonScoreRepo,
+        private readonly SeasonService $seasonService,
     ) {
     }
 
@@ -27,19 +27,9 @@ final class StudentOverviewService
     {
         $user = User::query()->findOrFail($studentId);
 
-        // Season info
+        // Season info (refreshes highest_score = total marks of active quizzes)
         $currentSeason = $this->seasonRepo->getCurrentActiveSeason();
-        $seasonInfo = new SeasonInfoDTO(
-            seasonId: $currentSeason?->id,
-            seasonName: $currentSeason?->name,
-            startedAt: $currentSeason?->started_at?->toISOString(),
-            endsAt: $currentSeason?->ends_at?->toISOString(),
-            isActive: $currentSeason?->is_active ?? false,
-            daysRemaining: $currentSeason?->ends_at
-                ? (int) max(0, now()->diffInDays($currentSeason->ends_at, false))
-                : 0,
-            highestScore: (float) ($currentSeason?->highest_score ?? 0),
-        );
+        $seasonInfo = $this->seasonService->getCurrentSeasonInfo();
 
         // Goals
         $activeGoals = $this->studentOverviewRepo->fetchActiveGoals($studentId)
@@ -68,12 +58,13 @@ final class StudentOverviewService
             ])
             ->toArray();
 
-        // Quiz statistics
+// Quiz statistics (season-scoped: reset to 0 when season ends, rebuild when new one starts)
+        $seasonId = $currentSeason?->id;
         $quizStats = [
-            'total_questions_answered' => $this->studentOverviewRepo->countTotalQuestionsAnswered($studentId),
-            'total_attempts' => $this->studentOverviewRepo->countTotalAttempts($studentId),
-            'total_score' => $this->studentOverviewRepo->sumTotalScore($studentId),
-            'average_score_per_attempt' => round($this->studentOverviewRepo->averageScorePerAttempt($studentId), 2),
+            'total_questions_answered' => $this->studentOverviewRepo->countTotalQuestionsAnswered($studentId, $seasonId),
+            'total_attempts' => $this->studentOverviewRepo->countTotalAttempts($studentId, $seasonId),
+            'total_score' => $this->studentOverviewRepo->sumTotalScore($studentId, $seasonId),
+            'average_score_per_attempt' => round($this->studentOverviewRepo->averageScorePerAttempt($studentId, $seasonId), 2),
         ];
 
         // Season score and rank

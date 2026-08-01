@@ -46,7 +46,19 @@
         .locked-overlay { position: relative; }
         .locked-overlay::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 40%, rgba(255,255,255,0.95)); pointer-events: none; border-radius: 16px; }
         .progress-indicator { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, #6366f1, #7c3aed); z-index: 1050; transition: width 0.1s; }
-        @media (max-width: 991.98px) { .sidebar-toc { position: static; max-height: none; margin-bottom: 1.5rem; } }
+@media (max-width: 991.98px) { .sidebar-toc { position: static; max-height: none; margin-bottom: 1.5rem; } }
+        @media (max-width: 400px) {
+            body { overflow-x: hidden; }
+            .detail-header { padding: 1rem !important; }
+            .detail-header h1 { font-size: 1.5rem !important; }
+            .detail-header .fs-5 { font-size: 0.95rem !important; }
+            .detail-card { padding: 1rem !important; }
+            .reading-content { font-size: 0.95rem !important; }
+            .reading-content h2 { font-size: 1.2rem !important; }
+            .reading-content h3 { font-size: 1rem !important; }
+            .tag-badge { font-size: 0.6rem !important; padding: 3px 8px !important; }
+            .btn-gradient { font-size: 0.85rem !important; padding: 8px 16px !important; }
+        }
         .section-anchor { opacity: 0; margin-left: 0.5rem; font-size: 0.85em; color: #6366f1; text-decoration: none; transition: opacity 0.2s; }
         h2:hover .section-anchor, h3:hover .section-anchor { opacity: 1; }
     </style>
@@ -65,6 +77,10 @@
                     <li class="nav-item"><a href="{{ route('assessment.test.index') }}" class="nav-link nav-link-custom"><i class="bi bi-pencil-square"></i>Quiz</a></li>
                 </ul>
                 <div class="d-flex align-items-center gap-3">
+                    @include('partials.theme-toggle', [
+                        'btnClasses' => 'btn btn-sm text-white border-0',
+                        'style' => 'background: rgba(255,255,255,0.1); border-radius: 8px;',
+                    ])
                     <a href="{{ route('profile.show') }}" class="avatar-link">
                         @php $user = auth()->user(); @endphp
                         @if (!empty($user->avatar_path))
@@ -310,7 +326,7 @@
         @endif
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Reading progress indicator
         window.addEventListener('scroll', function() {
@@ -359,6 +375,7 @@
         .badge-difficulty.easy { background: #d1fae5; color: #065f46; }
         .badge-difficulty.medium { background: #fef3c7; color: #b45309; }
         .badge-difficulty.hard { background: #fee2e2; color: #991b1b; }
-    </style>
+</style>
+@include('partials.footer')
 </body>
 </html>

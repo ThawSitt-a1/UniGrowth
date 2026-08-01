@@ -409,7 +409,7 @@
             font-size: 4rem;
         }
 
-        @media (max-width: 767.98px) {
+@media (max-width: 767.98px) {
             .score-circle {
                 width: 110px;
                 height: 110px;
@@ -423,6 +423,18 @@
             .option-item {
                 padding: 10px 14px;
             }
+        }
+        @media (max-width: 400px) {
+            body { overflow-x: hidden; }
+            .question-card { padding: 0.75rem !important; }
+            .question-card h6 { font-size: 0.95rem !important; }
+            .option-item { padding: 0.5rem !important; }
+            .option-item span { font-size: 0.8rem !important; }
+            .btn-primary-custom { font-size: 0.85rem !important; padding: 8px 16px !important; }
+            .stat-card { padding: 0.5rem !important; }
+            .stat-card .fs-4 { font-size: 1rem !important; }
+            .stat-card small { font-size: 0.65rem !important; }
+            .card-header-gradient { padding: 0.75rem 1rem !important; }
         }
     </style>
 </head>
@@ -468,6 +480,10 @@ NAVIGATION — Matches dashboard's gradient navbar
             </ul>
 
             <div class="d-flex align-items-center gap-3">
+                @include('partials.theme-toggle', [
+                    'btnClasses' => 'btn btn-sm text-white border-0',
+                    'style' => 'background: rgba(255,255,255,0.1); border-radius: 8px;',
+                ])
                 <a href="{{ route('profile.show') }}" class="avatar-link">
                     @php $user = auth()->user(); @endphp
                     @if (!empty($user->avatar_path))
@@ -1029,6 +1045,7 @@ SCRIPTS
 })();
 </script>
 
+@include('partials.footer')
 </body>
 </html>
 

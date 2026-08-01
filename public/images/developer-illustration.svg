@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 400" fill="none">
+  <defs>
+    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4F46E5" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="#7C3AED" stop-opacity="0.05"/>
+    </linearGradient>
+    <linearGradient id="code-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4F46E5"/>
+      <stop offset="100%" stop-color="#7C3AED"/>
+    </linearGradient>
+  </defs>
+  <rect width="500" height="400" rx="20" fill="url(#bg-grad)"/>
+  <!-- Code brackets decoration -->
+  <text x="60" y="80" font-family="monospace" font-size="24" fill="#4F46E5" opacity="0.3"></></text>
+  <text x="380" y="350" font-family="monospace" font-size="20" fill="#7C3AED" opacity="0.2">{ }</text>
+  <!-- Developer silhouette -->
+  <circle cx="250" cy="150" r="50" fill="#4F46E5" opacity="0.15"/>
+  <circle cx="250" cy="140" r="25" fill="#4F46E5" opacity="0.2"/>
+  <rect x="220" y="175" width="60" height="40" rx="10" fill="#4F46E5" opacity="0.15"/>
+  <!-- Laptop -->
+  <rect x="175" y="220" width="150" height="90" rx="8" fill="#1F2937" opacity="0.1"/>
+  <rect x="185" y="230" width="130" height="60" rx="4" fill="#1F2937" opacity="0.15"/>
+  <rect x="195" y="240" width="110" height="4" rx="2" fill="#4F46E5" opacity="0.3"/>
+  <rect x="195" y="250" width="80" height="4" rx="2" fill="#7C3AED" opacity="0.2"/>
+  <rect x="195" y="260" width="95" height="4" rx="2" fill="#4F46E5" opacity="0.3"/>
+  <rect x="195" y="270" width="60" height="4" rx="2" fill="#7C3AED" opacity="0.2"/>
+  <!-- Floating elements -->
+  <circle cx="100" cy="100" r="6" fill="#4F46E5" opacity="0.2"/>
+  <circle cx="400" cy="200" r="4" fill="#7C3AED" opacity="0.2"/>
+  <circle cx="120" cy="300" r="5" fill="#4F46E5" opacity="0.15"/>
+  <circle cx="380" cy="120" r="3" fill="#7C3AED" opacity="0.15"/>
+  <!-- Shield icon -->
+  <path d="M250 50 L280 65 L280 100 C280 130 250 145 250 145 C250 145 220 130 220 100 L220 65 Z" fill="#4F46E5" opacity="0.1" stroke="#4F46E5" stroke-width="2" stroke-opacity="0.3"/>
+  <path d="M245 95 L250 100 L260 85" stroke="#4F46E5" stroke-width="2.5" stroke-opacity="0.4" fill="none"/>
+</svg>

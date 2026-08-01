@@ -296,11 +296,11 @@ final class AdminConsoleController
     public function endSeason(): RedirectResponse
     {
         try {
-            $newSeason = $this->adminService->endCurrentSeason();
+            $endedSeason = $this->adminService->endCurrentSeason();
 
             return redirect()
                 ->back()
-                ->with('success', "Current season ended. New season '{$newSeason['name']}' started.");
+                ->with('success', "Season '{$endedSeason['name']}' ended. Start a new season whenever you're ready.");
         } catch (\Exception $e) {
             return redirect()
                 ->back()

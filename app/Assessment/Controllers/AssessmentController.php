@@ -55,6 +55,9 @@ final class AssessmentController
             return response()->json(['error' => 'Skill not found.'], 404);
         } catch (\InvalidArgumentException $e) {
             return response()->json(['error' => $e->getMessage()], 422);
+        } catch (\RuntimeException $e) {
+            // e.g. the season was ended between quiz start and submission
+            return response()->json(['error' => $e->getMessage()], 422);
         }
 
         return response()->json([
