@@ -25,7 +25,18 @@ final class UpdateAccountUseCase
         ])->save();
     }
 
-    public function deactivateAccount(int $userId): bool
+/**
+     * Permanently delete the user's account and all associated data.
+     *
+     * Hard delete (immediate purge) — ensures compliance with the "Right to
+     * Erasure". Related records are removed via foreign-key cascade; the
+     * only exception is bug_reports, which use onDelete('set null') and
+     * therefore keep their report content but detach from the user.
+     *
+     * @param  string|null  $feedbackReason  Optional dropdown reason for leaving.
+     * @param  string|null  $feedback        Optional free-text feedback.
+     */
+    public function deactivateAccount(int $userId, ?string $feedbackReason = null, ?string $feedback = null): bool
     {
         $user = $this->userModel->newQuery()->find($userId);
 
@@ -33,10 +44,10 @@ final class UpdateAccountUseCase
             return false;
         }
 
-        return $user->forceFill([
-            'account_status' => 'suspended',
-            'suspended_until' => now()->addYears(100), // Effectively permanent
-        ])->save();
+        // Hard-delete the user. Cascade rules purge goals, habits, attempts,
+        // student_skills, season_scores, social accounts, etc. Bug reports are
+        // detached (user_id set to null) rather than deleted.
+        return (bool) $user->delete();
     }
 }
 

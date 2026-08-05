@@ -54,37 +54,40 @@
                                     </td>
                                     <td class="text-end">
                                         <div class="actions-cell justify-content-end">
-                                            @if(($report['status'] ?? 'pending') !== 'resolved')
-                                                <form method="POST" action="{{ route('admin.bug-reports.status', $report['id']) }}"
-                                                      class="d-inline" onsubmit="return confirm('Mark this bug report as resolved?')">
-                                                    @csrf
-                                                    <input type="hidden" name="status" value="resolved">
-                                                    <button type="submit" class="btn-admin-action complete">
-                                                        <i class="bi bi-check2"></i>Resolve
-                                                    </button>
-                                                </form>
-                                            @endif
+                                           <a href="{{ route('admin.bug-reports.show', $report['id']) }}" class="btn-admin-action view">
+                                               <i class="bi bi-journal-text"></i>View
+                                           </a>
 
-                                            @if(($report['status'] ?? 'pending') !== 'in_progress')
-                                                <form method="POST" action="{{ route('admin.bug-reports.status', $report['id']) }}" class="d-inline">
-                                                    @csrf
-                                                    <input type="hidden" name="status" value="in_progress">
-                                                    <button type="submit" class="btn-admin-action edit">
-                                                        <i class="bi bi-play-fill"></i>In Progress
-                                                    </button>
-                                                </form>
-                                            @endif
+                                           @if(($report['status'] ?? 'pending') !== 'resolved')
+                                               <form method="POST" action="{{ route('admin.bug-reports.status', $report['id']) }}"
+class="d-inline">
+                                                   @csrf
+                                                   <input type="hidden" name="status" value="resolved">
+                                                   <button type="submit" class="btn-admin-action complete">
+                                                       <i class="bi bi-check2"></i>Resolve
+                                                   </button>
+                                               </form>
+                                           @endif
 
-                                            @if(($report['status'] ?? 'pending') !== 'reviewed')
-                                                <form method="POST" action="{{ route('admin.bug-reports.status', $report['id']) }}" class="d-inline">
-                                                    @csrf
-                                                    <input type="hidden" name="status" value="reviewed">
-                                                    <button type="submit" class="btn-admin-action view">
-                                                        <i class="bi bi-eye"></i>Reviewed
-                                                    </button>
-                                                </form>
-                                            @endif
-                                        </div>
+@if(($report['status'] ?? 'pending') !== 'reviewed')
+                                               <form method="POST" action="{{ route('admin.bug-reports.status', $report['id']) }}" class="d-inline">
+                                                   @csrf
+                                                   <input type="hidden" name="status" value="reviewed">
+                                                   <button type="submit" class="btn-admin-action view">
+                                                       <i class="bi bi-eye"></i>Reviewed
+                                                   </button>
+                                               </form>
+                                           @endif
+
+                                           @if(($report['status'] ?? 'pending') === 'resolved')
+                                               <form method="POST" action="{{ route('admin.bug-reports.delete', $report['id']) }}" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this resolved bug report?');">
+                                                   @csrf
+                                                   <button type="submit" class="btn-admin-action delete">
+                                                       <i class="bi bi-trash"></i>Delete
+                                                   </button>
+                                               </form>
+                                           @endif
+                                       </div>
                                     </td>
                                 </tr>
                             @endforeach

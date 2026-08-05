@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $skill->title }} — UniGrowth</title>
+    <title>{{ $skill->title }} — {{ $platformName ?? 'UniGrowth' }}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
@@ -43,10 +43,17 @@
         .reading-content li { margin-bottom: 0.4rem; }
         .reading-content blockquote { border-left: 4px solid #6366f1; padding-left: 1rem; margin: 1.5rem 0; color: #475569; font-style: italic; }
         .detail-card { background: #fff; border-radius: 16px; border: 1px solid rgba(0,0,0,0.04); box-shadow: 0 2px 12px rgba(0,0,0,0.04); }
+        .suspended-banner { background: #fef3c7; border: 1px solid #fcd34d; border-radius: 16px; padding: 2rem; margin-bottom: 1.5rem; }
+        .suspended-banner h2 { color: #92400e; }
+        .suspended-banner p { color: #92400e; }
+        .suspended-banner { background: #fffbeb; border: 1px solid #facc15; border-radius: 20px; }
+        .suspended-banner .banner-body { padding: 2rem; }
+        .suspended-banner h2 { color: #92400e; }
+        .suspended-banner p { color: #92400e; }
+        .suspended-banner .badge-warning { background: #fef3c7; color: #713f12; }
         .locked-overlay { position: relative; }
         .locked-overlay::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 40%, rgba(255,255,255,0.95)); pointer-events: none; border-radius: 16px; }
-        .progress-indicator { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, #6366f1, #7c3aed); z-index: 1050; transition: width 0.1s; }
-@media (max-width: 991.98px) { .sidebar-toc { position: static; max-height: none; margin-bottom: 1.5rem; } }
+        .progress-indicator { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, #6366f1, #7c3aed); z-index: 1050; transition: width 0.1s; }@media (max-width: 991.98px) { .sidebar-toc { position: static; max-height: none; margin-bottom: 1.5rem; } }
         @media (max-width: 400px) {
             body { overflow-x: hidden; }
             .detail-header { padding: 1rem !important; }
@@ -68,7 +75,7 @@
 
     <nav class="navbar navbar-expand-lg sticky-top" style="background: linear-gradient(135deg, #1e1b4b, #3730a3, #581c87);">
         <div class="container">
-            <a class="navbar-brand fw-bold text-white" href="{{ route('dashboard') }}"><i class="bi bi-mortarboard-fill me-2"></i>UniGrowth</a>
+            <a class="navbar-brand fw-bold text-white" href="{{ route('dashboard') }}"><i class="bi bi-mortarboard-fill me-2"></i>{{ $platformName ?? 'UniGrowth' }}</a>
             <button class="navbar-toggler border-0 p-1" type="button" data-bs-toggle="collapse" data-bs-target="#nav" style="color: rgba(255,255,255,0.7);"><i class="bi bi-list fs-4"></i></button>
             <div class="collapse navbar-collapse" id="nav">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0 gap-1">
@@ -127,7 +134,9 @@
                     </div>
                 </div>
                 <div class="col-lg-4 text-lg-end">
-                    @if($isEnrolled)
+                    @if(!empty($isSuspended))
+                        <span class="badge bg-warning text-dark mb-2 px-3 py-2"><i class="bi bi-slash-circle me-1"></i>Suspended</span>
+                    @elseif($isEnrolled)
                         <span class="badge bg-success mb-2 px-3 py-2"><i class="bi bi-check-circle me-1"></i>Enrolled</span>
                     @else
                         <form action="{{ route('core-assets.action') }}" method="POST">
@@ -143,7 +152,20 @@
             </div>
         </div>
 
-        @if($isEnrolled)
+        @if(!empty($isSuspended))
+            <div class="suspended-banner detail-card mb-4">
+                <div class="banner-body text-center">
+                    <span class="badge badge-warning mb-3"><i class="bi bi-slash-circle me-1"></i>Suspended</span>
+                    <h2 class="fw-bold mt-3 mb-3">This skill is suspended</h2>
+                    <p class="fs-5 mb-4" style="max-width: 680px; margin: 0 auto; line-height: 1.7;">
+                        {{ $suspensionReason }}
+                    </p>
+                    <p class="small mb-0">
+                        The learning content for this skill is temporarily disabled and cannot be accessed until it is restored by an administrator.
+                    </p>
+                </div>
+            </div>
+        @elseif($isEnrolled)
             <!-- ===== STAGE 2: Post-Enrollment View (Full Content) ===== -->
             <div class="row g-4">
                 <!-- Sidebar TOC -->

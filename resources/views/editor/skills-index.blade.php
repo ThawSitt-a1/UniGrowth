@@ -39,8 +39,10 @@
                                 <td class="px-4 d-none d-sm-table-cell">
                                     @if($skill->locked_by_admin)
                                         <span class="badge-status locked"><i class="bi bi-lock me-1"></i>Locked</span>
-                                    @else
+                                    @elseif($skill->is_active)
                                         <span class="badge-status active"><i class="bi bi-unlock me-1"></i>Active</span>
+                                    @else
+                                        <span class="badge-status suspended"><i class="bi bi-slash-circle me-1"></i>Suspended</span>
                                     @endif
                                 </td>
                                 <td class="px-4 d-none d-sm-table-cell">
@@ -54,7 +56,7 @@
                                         <a href="{{ route('editor.skills.edit', $skill->id) }}" class="btn-editor-action edit">
                                             <i class="bi bi-pencil"></i>Edit
                                         </a>
-                                        <form method="POST" action="{{ route('editor.skills.delete', $skill->id) }}" class="m-0" onsubmit="return confirm('Delete skill "{{ $skill->title }}"? This will also delete all associated questions and options.')">
+                                        <form method="POST" action="{{ route('editor.skills.delete', $skill->id) }}" class="m-0">
                                             @csrf
                                             <button type="submit" class="btn-editor-action delete" {{ $skill->locked_by_admin ? 'disabled' : '' }}>
                                                 <i class="bi bi-trash"></i>Delete

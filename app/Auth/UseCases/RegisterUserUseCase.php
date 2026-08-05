@@ -3,6 +3,7 @@
 namespace App\Auth\UseCases;
 
 use App\Auth\DTOs\AuthCredentialsDTO;
+use App\Admin\Services\SystemSettingsServiceInterface;
 use App\Auth\Repositories\UserRepositoryInterface;
 use App\Auth\Models\User;
 use App\Services\AuthSessionService;
@@ -14,12 +15,17 @@ final class RegisterUserUseCase
         private readonly UserRepositoryInterface $userRepository,
         private readonly AuthSessionService $authSessionService,
         private readonly User $userModel,
+        private readonly SystemSettingsServiceInterface $settingsService,
     ) {
     }
 
     public function execute(AuthCredentialsDTO $credentials): array
     {
-$userData = [
+        if (! $this->settingsService->isRegistrationAllowed()) {
+            throw new \RuntimeException('User registration is currently disabled.');
+        }
+
+        $userData = [
             'username'        => $credentials->username,
             'email'           => $credentials->email,
             'password'        => $credentials->password,

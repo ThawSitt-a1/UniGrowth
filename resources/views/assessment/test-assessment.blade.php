@@ -409,7 +409,7 @@
             font-size: 4rem;
         }
 
-@media (max-width: 767.98px) {
+        @media (max-width: 767.98px) {
             .score-circle {
                 width: 110px;
                 height: 110px;
@@ -472,7 +472,7 @@ NAVIGATION — Matches dashboard's gradient navbar
                         <i class="bi bi-pencil-square"></i>Quiz
                     </a>
                 </li>
-<li class="nav-item">
+                <li class="nav-item">
                     <a href="{{ route('core-assets.index') }}#goals" class="nav-link nav-link-custom">
                         <i class="bi bi-bullseye"></i>Goals
                     </a>
@@ -633,8 +633,7 @@ MAIN CONTENT
 
                             {{-- Questions --}}
                             @foreach ($quiz['questions'] as $qIndex => $question)
-                                <div class="question-card animate-fade-up stagger-{{ min($qIndex + 1, 5) }}"
-                                     id="question-{{ $question['id'] }}">
+                                <div class="question-card animate-fade-up stagger-{{ min($qIndex + 1, 5) }}">
                                     <div class="d-flex align-items-start justify-content-between mb-3">
                                         <h6 class="fw-bold mb-0" style="color: var(--gray-800);">
                                             <span style="color: var(--indigo);">Q{{ $qIndex + 1 }}.</span>
@@ -950,7 +949,7 @@ MAIN CONTENT
                 </div>
             @endif
 
-</div>{{-- END right column --}}
+        </div>{{-- END right column --}}
     </div>{{-- END row --}}
 </div>
 
@@ -1048,4 +1047,3 @@ SCRIPTS
 @include('partials.footer')
 </body>
 </html>
-

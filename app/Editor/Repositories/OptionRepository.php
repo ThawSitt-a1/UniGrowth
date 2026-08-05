@@ -11,6 +11,10 @@ final class OptionRepository implements OptionRepositoryInterface
 {
     public function save(QuestionOptionDTO $data): bool
     {
+        if ($data->isCorrect) {
+            $this->unsetCorrectOptionsForQuestion($data->questionId, $data->optionId);
+        }
+
         if ($data->optionId) {
             $option = Option::query()->findOrFail($data->optionId);
             if ($option->locked_by_admin) {
@@ -32,6 +36,19 @@ final class OptionRepository implements OptionRepositoryInterface
             'locked_by_admin' => false,
         ]);
         return true;
+    }
+
+    public function unsetCorrectOptionsForQuestion(int $questionId, ?int $exceptOptionId = null): void
+    {
+        $query = Option::query()
+            ->where('question_id', $questionId)
+            ->where('is_correct', true);
+
+        if ($exceptOptionId !== null) {
+            $query->where('id', '!=', $exceptOptionId);
+        }
+
+        $query->update(['is_correct' => false]);
     }
 
     public function deleteByOwner(int $id, int $editorId): bool

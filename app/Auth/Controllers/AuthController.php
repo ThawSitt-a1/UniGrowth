@@ -69,14 +69,26 @@ public function register(RegisterRequest $request): JsonResponse|RedirectRespons
             agreedToTerms: $request->boolean('agreed_to_terms'),
         );
 
+    try {
         $user = $this->registerUserUseCase->execute($dto);
-
+    } catch (\RuntimeException $e) {
         if ($request->expectsJson()) {
             return response()->json([
-               'message' => 'User registered successfully. Please verify your email.',
-               'user' => $user,
-            ], 201); // 201 Created
+                'message' => $e->getMessage(),
+            ], 403);
         }
+
+        return redirect()->back()
+            ->withInput($request->except('password'))
+            ->with('error', $e->getMessage());
+    }
+
+    if ($request->expectsJson()) {
+        return response()->json([
+           'message' => 'User registered successfully. Please verify your email.',
+           'user' => $user,
+        ], 201); // 201 Created
+    }
 
         // Web flow: redirect to login page with verification message (no auto-login)
         return redirect()->route('login')

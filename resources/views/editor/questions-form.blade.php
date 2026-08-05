@@ -44,8 +44,8 @@
                             <option value="multiple_choice" {{ old('question_type', $question->question_type ?? 'multiple_choice') == 'multiple_choice' ? 'selected' : '' }}>Multiple Choice</option>
                             <option value="true_false" {{ old('question_type', $question->question_type ?? 'multiple_choice') == 'true_false' ? 'selected' : '' }}>True / False</option>
                         </select>
-                        <div class="form-text small text-muted">
-                            <i class="bi bi-info-circle"></i> True/False is worth fewer marks
+                        <div class="form-text small text-muted" id="questionTypeNote">
+                            <i class="bi bi-info-circle"></i> True/False is worth fewer marks.
                         </div>
                         @error('question_type') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
@@ -128,102 +128,121 @@
         </div>
     </div>
 
-    <!-- Options Management Section -->
-    @if($question)
+<!-- Inline Options Section -->
+    @php
+        $isTrueFalse = $question && $question->question_type === 'true_false';
+        $maxOptions = $isTrueFalse ? 2 : 5;
+        $optionLabels = ['A', 'B', 'C', 'D', 'E'];
+        $existingOptions = $question ? $question->options->keyBy('id') : collect();
+    @endphp
     <div class="content-card mt-4">
         <div class="card-header-custom">
-            <h5><i class="bi bi-list-check me-2"></i>Options for Question #{{ $question->id }}</h5>
+            <h5><i class="bi bi-list-check me-2"></i>Options / Answers</h5>
+            <span class="badge bg-secondary" id="option-count-badge">{{ $question ? $existingOptions->count() : 0 }} / <span id="max-options-display">{{ $maxOptions }}</span></span>
         </div>
         <div class="card-body-custom">
-            @if($question->options->count() > 0)
-                <div class="table-responsive mb-3">
-                    <table class="table table-editor">
-                        <thead>
-                            <tr>
-                                <th class="px-4">ID</th>
-                                <th class="px-4">Option Text</th>
-                                <th class="px-4 d-none d-sm-table-cell">Correct</th>
-                                <th class="px-4 d-none d-sm-table-cell">Locked</th>
-                                <th class="px-4">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($question->options as $option)
-                                <tr>
-                                    <td class="px-4 text-secondary font-monospace">{{ $option->id }}</td>
-                                    <td class="px-4 fw-medium">{{ $option->option_text }}</td>
-                                    <td class="px-4 d-none d-sm-table-cell">
-                                        @if($option->is_correct)
-                                            <span class="badge-status active"><i class="bi bi-check-circle me-1"></i>Correct</span>
-                                        @else
-                                            <span class="badge-status inactive">Incorrect</span>
-                                        @endif
-                                    </td>
-                                    <td class="px-4 d-none d-sm-table-cell text-center">
-                                        @if($option->locked_by_admin)
-                                            <span class="text-danger"><i class="bi bi-lock-fill"></i></span>
-                                        @else
-                                            <span class="text-success"><i class="bi bi-unlock-fill"></i></span>
-                                        @endif
-                                    </td>
-                                    <td class="px-4">
-                                        <div class="actions-cell">
-                                            <button type="button" class="btn-editor-action edit" onclick="editOption({{ $option->id }}, '{{ addslashes($option->option_text) }}', {{ $option->is_correct ? 'true' : 'false' }})">
-                                                <i class="bi bi-pencil"></i>
-                                            </button>
-                                            <form method="POST" action="{{ route('editor.options.delete', $option->id) }}" class="m-0" onsubmit="return confirm('Delete this option?')">
-                                                @csrf
-                                                <button type="submit" class="btn-editor-action delete" {{ $option->locked_by_admin ? 'disabled' : '' }}>
-                                                    <i class="bi bi-trash"></i>
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            @else
-                <div class="empty-state">
-                    <i class="bi bi-inbox"></i>
-                    <p>No options for this question yet. Add at least one correct option.</p>
-                </div>
-            @endif
-
-            <!-- Add/Edit Option Form -->
-            <div class="mt-3 pt-3 border-top">
-                <h6 class="fw-bold mb-3" id="optionFormTitle" style="color: #1a1a2e;">
-                    <i class="bi bi-plus-circle me-1"></i>Add New Option
-                </h6>
-                <form method="POST" action="{{ route('editor.options.save') }}" class="row g-2 align-items-end">
-                    @csrf
-                    <input type="hidden" name="option_id" id="option_id" value="">
-                    <input type="hidden" name="question_id" value="{{ $question->id }}">
-                    <div class="col-12 col-md-6">
-                        <label class="form-label-editor" for="option_text">Option Text <span class="text-danger">*</span></label>
-                        <input type="text" id="option_text" name="option_text" class="form-control form-control-editor" placeholder="Enter option text..." required maxlength="500">
-                    </div>
-                    <div class="col-6 col-md-3">
-                        <label class="form-label-editor" for="is_correct">Correct Answer</label>
-                        <select id="is_correct" name="is_correct" class="form-select form-control-editor">
-                            <option value="0">No</option>
-                            <option value="1">Yes</option>
-                        </select>
-                    </div>
-                    <div class="col-6 col-md-3 d-flex gap-2">
-                        <button type="submit" class="btn btn-sm btn-primary w-100">
-                            <i class="bi bi-check-lg me-1"></i>Save Option
-                        </button>
-                        <button type="button" class="btn btn-sm btn-secondary" id="cancelEditOption" style="display:none;" onclick="cancelEditOption()">
-                            <i class="bi bi-x-lg"></i>
-                        </button>
-                    </div>
-                </form>
+            <div class="alert alert-info py-2 mb-4" role="alert" style="font-size: 0.9rem;">
+                <i class="bi bi-info-circle me-1"></i>
+                <strong id="option-type-label">
+                    @if($question && $question->question_type === 'true_false')
+                        True/False question:
+                    @elseif(!$question)
+                        Multiple Choice:
+                    @else
+                        Multiple Choice:
+                    @endif
+                </strong>
+                <span id="option-instruction-text">
+                    @if($question && $question->question_type === 'true_false')
+                        Provide exactly two options (True and False). Mark the single correct answer.
+                    @else
+                        Provide exactly {{ $maxOptions }} options. Mark the single correct answer.
+                    @endif
+                </span>
+                The correct answer determines which option gives the student the marks.
             </div>
+
+            <div id="options-container">
+                @for($i = 0; $i < 5; $i++)
+                    @php
+                        $label = $optionLabels[$i] ?? chr(65 + $i);
+                        $oldOptions = old('options', []);
+                        $oldOpt = $oldOptions[$i] ?? null;
+                        $optId = null;
+                        $optText = '';
+                        $isCorrect = false;
+
+                        if ($oldOpt) {
+                            $optText = $oldOpt['option_text'] ?? '';
+                            $isCorrect = !empty($oldOpt['is_correct']);
+                            $optId = $oldOpt['option_id'] ?? null;
+                        } elseif ($existingOptions->isNotEmpty()) {
+                            $opt = $existingOptions->values()[$i] ?? null;
+                            if ($opt) {
+                                $optText = $opt->option_text;
+                                $isCorrect = $opt->is_correct;
+                                $optId = $opt->id;
+                            }
+                        } elseif (!$question && $isTrueFalse && $i < 2) {
+                            // Pre-fill for true/false on create
+                            $optText = $i === 0 ? 'True' : 'False';
+                        }
+                    @endphp
+                    <div class="option-row mb-3 p-3 border rounded" style="background: #f9fafb; {{ $isTrueFalse && $i >= 2 ? 'display: none;' : '' }}" id="option-row-{{ $i }}">
+                        <div class="row g-2 align-items-center">
+                            <input type="hidden" name="options[{{ $i }}][option_id]" value="{{ $optId }}">
+                            <div class="col-12 col-md-1 text-center mb-2 mb-md-0">
+                                <span class="d-inline-flex align-items-center justify-content-center rounded-circle fw-bold" style="width: 32px; height: 32px; background: #eef2ff; color: #4f46e5; font-size: 0.85rem;">
+                                    {{ $label }}
+                                </span>
+                            </div>
+                            <div class="col-12 col-md-8">
+                                <input type="text" name="options[{{ $i }}][option_text]"
+                                       class="form-control form-control-editor option-text-input"
+                                       placeholder="Enter option {{ $label }} text..."
+                                       value="{{ $optText }}"
+                                       maxlength="500" required>
+                            </div>
+                            <div class="col-8 col-md-2">
+                                <div class="form-check form-check-inline mb-0">
+                                    <input class="form-check-input correct-radio" type="radio"
+                                           name="correct_option"
+                                           id="correct_{{ $i }}"
+                                           value="{{ $i }}"
+                                           {{ $isCorrect ? 'checked' : '' }}>
+                                    <label class="form-check-label small" for="correct_{{ $i }}">
+                                        <span class="text-success fw-medium">Correct</span>
+                                    </label>
+                                    <input type="hidden" name="options[{{ $i }}][is_correct]" value="{{ $isCorrect ? '1' : '0' }}">
+                                </div>
+                            </div>
+                            @if($optId && $question)
+                            <div class="col-4 col-md-1 text-end">
+                                @php
+                                    $opt = $existingOptions->get($optId);
+                                @endphp
+                                @if($opt && !$opt->locked_by_admin)
+                                <button type="button" class="btn btn-sm btn-outline-danger remove-option"
+                                        data-option-id="{{ $optId }}"
+                                        data-question-id="{{ $question->id }}"
+                                        style="font-size: 0.75rem;">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                                @endif
+                            </div>
+                            @endif
+                        </div>
+                    </div>
+                @endfor
+            </div>
+
+            @error('options')
+                <div class="alert alert-danger py-2 mt-2">
+                    <i class="bi bi-exclamation-triangle me-1"></i>{{ $message }}
+                </div>
+            @enderror
         </div>
     </div>
-    @endif
 @endsection
 
 @push('scripts')
@@ -243,27 +262,118 @@
         marksInput.value = marks;
     }
 
+    function updateTypeNote() {
+        const note = document.getElementById('questionTypeNote');
+        if (!note || !typeSelect) return;
+
+        if (typeSelect.value === 'true_false') {
+            note.innerHTML = '<i class="bi bi-info-circle"></i> True/False questions are worth fewer marks. Options will be pre-filled.';
+        } else {
+            note.innerHTML = '<i class="bi bi-info-circle"></i> Multiple choice questions can have up to 5 options; mark one answer as correct.';
+        }
+    }
+
+    function updateOptionsVisibility() {
+        if (!typeSelect) return;
+        const isTrueFalse = typeSelect.value === 'true_false';
+
+        // Update all option rows
+        const tfPrefill = ['True', 'False'];
+        for (let i = 0; i < 5; i++) {
+            const row = document.getElementById('option-row-' + i);
+            if (!row) continue;
+            const input = row.querySelector('.option-text-input');
+
+            if (isTrueFalse && i >= 2) {
+                row.style.display = 'none';
+                if (input) input.removeAttribute('required');
+            } else {
+                row.style.display = '';
+                if (input) input.setAttribute('required', 'required');
+
+                // On create page (no question), pre-fill True/False
+                @if(!$question)
+                if (isTrueFalse && i < 2 && input && !input.value) {
+                    input.value = tfPrefill[i];
+                }
+                @endif
+            }
+        }
+
+        // Update the info box
+        const typeLabel = document.getElementById('option-type-label');
+        const instructionText = document.getElementById('option-instruction-text');
+        const maxDisplay = document.getElementById('max-options-display');
+        const badge = document.getElementById('option-count-badge');
+
+        if (typeLabel) {
+            typeLabel.textContent = isTrueFalse ? 'True/False question:' : 'Multiple Choice:';
+        }
+        if (instructionText) {
+            instructionText.textContent = isTrueFalse
+                ? 'Provide exactly two options (True and False). Mark the single correct answer.'
+                : 'Provide exactly 5 options. Mark the single correct answer.';
+        }
+        if (maxDisplay) {
+            maxDisplay.textContent = isTrueFalse ? '2' : '5';
+        }
+        if (badge) {
+            const visibleCount = document.querySelectorAll('#options-container .option-row:not([style*="display: none"])').length;
+            const filled = document.querySelectorAll('#options-container .option-row:not([style*="display: none"]) .option-text-input').length;
+            badge.textContent = filled + ' / ' + (isTrueFalse ? '2' : '5');
+        }
+    }
+
     if (typeSelect && difficultySelect) {
-        typeSelect.addEventListener('change', updateMarks);
+        typeSelect.addEventListener('change', function () {
+            updateMarks();
+            updateTypeNote();
+            updateOptionsVisibility();
+        });
         difficultySelect.addEventListener('change', updateMarks);
-        // Calculate on page load
         updateMarks();
+        updateTypeNote();
+        updateOptionsVisibility();
     }
 
-    function editOption(id, text, isCorrect) {
-        document.getElementById('option_id').value = id;
-        document.getElementById('option_text').value = text;
-        document.getElementById('is_correct').value = isCorrect ? '1' : '0';
-        document.getElementById('optionFormTitle').innerHTML = '<i class="bi bi-pencil me-1"></i>Edit Option';
-        document.getElementById('cancelEditOption').style.display = 'inline-block';
-    }
+    // ===== Sync hidden is_correct fields with radio buttons =====
+    document.querySelectorAll('.correct-radio').forEach(radio => {
+        radio.addEventListener('change', function() {
+            // Reset all hidden is_correct fields to 0
+            document.querySelectorAll('input[name^="options"][name$="[is_correct]"]').forEach(hidden => {
+                hidden.value = '0';
+            });
+            // Set the selected one to 1
+            const index = this.value;
+            const hiddenInput = document.querySelector(`input[name="options[${index}][is_correct]"]`);
+            if (hiddenInput) {
+                hiddenInput.value = '1';
+            }
+        });
+    });
 
-    function cancelEditOption() {
-        document.getElementById('option_id').value = '';
-        document.getElementById('option_text').value = '';
-        document.getElementById('is_correct').value = '0';
-        document.getElementById('optionFormTitle').innerHTML = '<i class="bi bi-plus-circle me-1"></i>Add New Option';
-        document.getElementById('cancelEditOption').style.display = 'none';
-    }
+    // ===== Delete option via form submission =====
+    document.querySelectorAll('.remove-option').forEach(btn => {
+        btn.addEventListener('click', function() {
+            if (confirm('Delete this option? This cannot be undone.')) {
+                const optionId = this.dataset.optionId;
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '{{ url('editor/options') }}/' + optionId + '/delete';
+                const csrf = document.createElement('input');
+                csrf.type = 'hidden';
+                csrf.name = '_token';
+                csrf.value = '{{ csrf_token() }}';
+                form.appendChild(csrf);
+                const method = document.createElement('input');
+                method.type = 'hidden';
+                method.name = '_method';
+                method.value = 'DELETE';
+                form.appendChild(method);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    });
 </script>
 @endpush

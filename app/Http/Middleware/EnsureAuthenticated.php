@@ -56,13 +56,33 @@ class EnsureAuthenticated
         }
 
         // 4. Account status check
-        if (($user->account_status ?? '') !== 'allowed') {
+        $accountStatus = (string) ($user->account_status ?? 'allowed');
+
+        if ($accountStatus === 'suspended') {
+            // Auto-restore if the suspension period has expired
+            $suspendedUntil = $user->suspended_until;
+            if ($suspendedUntil !== null && now()->greaterThan($suspendedUntil)) {
+                $user->update([
+                    'account_status' => 'allowed',
+                    'suspended_until' => null,
+                ]);
+                $accountStatus = 'allowed';
+            }
+        }
+
+        if ($accountStatus !== 'allowed') {
             $this->performLogout($request);
-            $contactMessage = 'You are banned due to violation of our policy. Contact ourcompany@gmail.com';
+
+            if ($accountStatus === 'suspended') {
+                $contactMessage = 'Your account has been suspended due to a policy violation. Contact ourcompany@gmail.com';
+            } else {
+                $contactMessage = 'You are banned due to violation of our policy. Contact ourcompany@gmail.com';
+            }
+
             if ($request->expectsJson()) {
                 return response()->json([
                     'error' => $contactMessage,
-                    'account_status' => $user->account_status,
+                    'account_status' => $accountStatus,
                 ], 403);
             }
             abort(403, $contactMessage);

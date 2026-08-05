@@ -14,12 +14,14 @@ final class Question extends Model
     protected $table = 'questions';
 
     protected $fillable = [
+        'editor_id',
         'skill_id',
         'question_text',
         'question_type',
         'difficulty',
         'marks',
         'is_active',
+        'locked_by_admin',
     ];
 
     protected $casts = [

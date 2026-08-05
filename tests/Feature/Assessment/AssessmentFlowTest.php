@@ -354,7 +354,7 @@ class AssessmentFlowTest extends TestCase
             ]);
     }
 
-    /** @test */
+/** @test */
     public function it_can_fetch_leaderboard(): void
     {
         $response = $this->actingAs($this->user)
@@ -367,6 +367,83 @@ class AssessmentFlowTest extends TestCase
                 ],
                 'meta' => ['total'],
             ]);
+    }
+
+    /** @test */
+    public function it_excludes_users_hiding_from_leaderboards(): void
+    {
+        // Give the authenticated user a high score so they appear on the board.
+        $this->user->update(['platform_score' => 100]);
+
+// Create a user who opted out of leaderboards (via "Make my profile private"),
+        // with a higher score.
+        $hiddenUser = User::factory()->create([
+            'platform_score' => 200,
+            'preferences' => ['make_profile_private' => true],
+        ]);
+
+        // Create a normal user with a lower score.
+        $visibleUser = User::factory()->create([
+            'platform_score' => 50,
+        ]);
+
+        $response = $this->actingAs($this->user)
+            ->getJson('/api/leaderboard');
+
+        $response->assertStatus(200)
+            ->assertJsonMissing([
+                'data' => [
+                    ['user_id' => $hiddenUser->id],
+                ],
+            ]);
+
+        $userIds = collect($response->json('data'))->pluck('user_id');
+        $this->assertNotContains($hiddenUser->id, $userIds->all());
+        $this->assertContains($visibleUser->id, $userIds->all());
+        $this->assertContains($this->user->id, $userIds->all());
+    }
+
+    /** @test */
+    public function it_excludes_hidden_users_from_season_leaderboard(): void
+    {
+        $season = \App\Overview\Models\Season::query()->get()->first();
+
+// A user who opted out of leaderboards (via "Make my profile private").
+        $hiddenUser = User::factory()->create([
+            'preferences' => ['make_profile_private' => true],
+        ]);
+
+        // A visible user.
+        $visibleUser = User::factory()->create();
+
+        \App\Overview\Models\SeasonScore::query()->create([
+            'user_id' => $hiddenUser->id,
+            'season_id' => $season->id,
+            'total_score' => 200,
+            'skill_count' => 1,
+            'total_questions_answered' => 10,
+            'total_attempts' => 1,
+            'last_active_at' => now(),
+        ]);
+
+        \App\Overview\Models\SeasonScore::query()->create([
+            'user_id' => $visibleUser->id,
+            'season_id' => $season->id,
+            'total_score' => 100,
+            'skill_count' => 1,
+            'total_questions_answered' => 10,
+            'total_attempts' => 1,
+            'last_active_at' => now(),
+        ]);
+
+        $response = $this->actingAs($this->user)
+            ->getJson("/api/seasons/{$season->id}/leaderboard");
+
+        $response->assertStatus(200);
+
+        $userIds = collect($response->json('data'))->pluck('user_id');
+        $this->assertNotContains($hiddenUser->id, $userIds->all());
+        $this->assertContains($visibleUser->id, $userIds->all());
     }
 
     /** @test */

@@ -25,7 +25,7 @@ final class ManageProfileUseCase
 
 public function updateProfile(int $userId, array $data): bool
     {
-        $allowedFields = ['username', 'academic_year', 'major', 'university_name'];
+        $allowedFields = ['username', 'academic_year', 'major', 'university_name', 'description'];
         $filteredData = array_intersect_key($data, array_flip($allowedFields));
         $filteredData = array_filter($filteredData, fn ($value) => $value !== null);
 

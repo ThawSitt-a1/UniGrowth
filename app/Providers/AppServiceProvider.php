@@ -97,6 +97,10 @@ class AppServiceProvider extends ServiceProvider
             \App\Admin\Repositories\SettingsRepositoryInterface::class,
             \App\Admin\Repositories\SettingsRepository::class
         );
+        $this->app->bind(
+            \App\Admin\Services\SystemSettingsServiceInterface::class,
+            \App\Admin\Services\SystemSettingsService::class
+        );
 
         // Editor Console bindings
         $this->app->bind(
@@ -126,8 +130,17 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-    public function boot(): void
+public function boot(): void
     {
         Event::listen(NotificationEventInterface::class, HandleNotification::class);
+
+        // Gracefully handle missing system_settings table (e.g., during tests or first deploy)
+        try {
+            $platformName = $this->app->make(\App\Admin\Services\SystemSettingsServiceInterface::class)->getPlatformName();
+        } catch (\Exception $e) {
+            $platformName = 'UniGrowth';
+        }
+
+        view()->share('platformName', $platformName);
     }
 }

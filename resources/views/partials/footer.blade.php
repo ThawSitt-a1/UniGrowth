@@ -5,7 +5,7 @@
             <div class="col-lg-4 col-md-6">
                 <div class="d-flex align-items-center gap-2 mb-3">
                     <i class="bi bi-mortarboard-fill fs-4" style="color: #a5b4fc;"></i>
-                    <span class="fw-bold fs-5 text-white">UniGrowth</span>
+                    <span class="fw-bold fs-5 text-white">{{ $platformName ?? 'UniGrowth' }}</span>
                 </div>
                 <p class="small mb-3" style="color: rgba(199,210,254,0.7); line-height: 1.7;">
                     UniGrowth is the all-in-one platform for university students to set goals, develop new skills, and track personal growth throughout their academic journey.

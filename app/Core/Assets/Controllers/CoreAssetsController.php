@@ -73,24 +73,34 @@ final class CoreAssetsController
 
         $skill = $skillQuery->firstOrFail();
 
-        $isEnrolled = Enrollment::query()
-            ->where('user_id', $userId)
-            ->where('skill_id', $skill->id)
-            ->exists();
+        $isSuspended = !$skill->is_active;
+        $suspensionReason = $skill->admin_comment ?: 'This skill has been suspended by our moderators and is currently unavailable.';
 
-        $questions = Question::query()
-            ->where('skill_id', $skill->id)
-            ->with('options')
-            ->get();
+        $isEnrolled = false;
+        $questions = collect();
+        $contentBlocks = [];
+        $headings = [];
 
-        // Parse content blocks for enhanced rendering
-        $contentBlocks = !empty($skill->content)
-            ? ContentBlockParser::parse($skill->content)
-            : [];
+        if (! $isSuspended) {
+            $isEnrolled = Enrollment::query()
+                ->where('user_id', $userId)
+                ->where('skill_id', $skill->id)
+                ->exists();
 
-        $headings = !empty($skill->content)
-            ? ContentBlockParser::extractHeadings($skill->content)
-            : [];
+            $questions = Question::query()
+                ->where('skill_id', $skill->id)
+                ->with('options')
+                ->get();
+
+            // Parse content blocks for enhanced rendering
+            $contentBlocks = !empty($skill->content)
+                ? ContentBlockParser::parse($skill->content)
+                : [];
+
+            $headings = !empty($skill->content)
+                ? ContentBlockParser::extractHeadings($skill->content)
+                : [];
+        }
 
         return view('skill-detail', [
             'skill' => $skill,
@@ -98,28 +108,36 @@ final class CoreAssetsController
             'questions' => $questions,
             'contentBlocks' => $contentBlocks,
             'headings' => $headings,
+            'isSuspended' => $isSuspended,
+            'suspensionReason' => $suspensionReason,
         ]);
     }
 
-    public function handleAssetAction(AssetActionRequest $request): RedirectResponse
+public function handleAssetAction(AssetActionRequest $request): RedirectResponse
     {
         $dto = new AssetActionDTO(
             type: (string) $request->input('type'),
             action: (string) $request->input('action'),
-            payload: (array) $request->input('payload',[]),
+            payload: (array) $request->input('payload', []),
         );
+
+        // Determine redirect target:
+        // 1. If a custom `redirect` URL is provided in the request (e.g. from skill detail pages), use it.
+        // 2. Otherwise, fall back to the core-assets index with the appropriate fragment anchor.
+        $customRedirect = $request->input('redirect');
+        $fragment = $dto->type === 'habit' ? '#pane-habits' : '#pane-goals';
+        $fallbackRoute = $customRedirect
+            ? redirect()->to($customRedirect)
+            : redirect()->route('core-assets.index')->withFragment($fragment);
 
         try {
             $this->manageUserAssetsUseCase->execute($dto);
         } catch (\InvalidArgumentException $e) {
-            return redirect()->route('core-assets.index')
-                ->with('error', $e->getMessage());
+            return $fallbackRoute->with('error', $e->getMessage());
         } catch (\RuntimeException $e) {
-            return redirect()->route('core-assets.index')
-                ->with('error', $e->getMessage());
+            return $fallbackRoute->with('error', $e->getMessage());
         }
 
-        return redirect()->route('core-assets.index')
-            ->with('success', 'Action completed successfully.');
+        return $fallbackRoute->with('success', 'Action completed successfully.');
     }
 }

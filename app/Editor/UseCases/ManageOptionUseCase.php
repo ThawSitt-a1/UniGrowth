@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Editor\UseCases;
 
+use App\Assessment\Models\Option;
+use App\Assessment\Models\Question;
 use App\Editor\DTOs\QuestionOptionDTO;
 use App\Editor\Repositories\OptionRepositoryInterface;
 use App\Editor\Repositories\QuestionRepositoryInterface;
@@ -30,6 +32,14 @@ final class ManageOptionUseCase
             if (!$this->optionRepository->verifyOwnership($data->optionId, $data->editorId)) {
                 throw new \RuntimeException('You do not own this option.');
             }
+        }
+
+        $question = Question::query()->findOrFail($data->questionId);
+        $existingOptionsCount = Option::query()->where('question_id', $data->questionId)->count();
+        $maxOptions = $question->question_type === 'true_false' ? 2 : 5;
+
+        if (!$data->optionId && $existingOptionsCount >= $maxOptions) {
+            throw new \RuntimeException(sprintf('You can only add up to %d options for a %s question.', $maxOptions, str_replace('_', ' ', $question->question_type)));
         }
 
         $saved = $this->optionRepository->save($data);

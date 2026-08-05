@@ -59,17 +59,19 @@ public function upsertScore(int $userId, int $seasonId, float $score, int $quest
         return $rank + 1;
     }
 
-    public function getLeaderboard(int $seasonId, int $limit = 10): Collection
+public function getLeaderboard(int $seasonId, int $limit = 10): Collection
     {
         return SeasonScore::query()
             ->where('season_id', $seasonId)
             ->with('user:id,username,platform_score,avatar_path,academic_year,major,university_name,preferences')
             ->orderBy('total_score', 'desc')
-            ->limit($limit)
-            ->get();
+            ->limit(50)
+            ->get()
+            ->take($limit)
+            ->values();
     }
 
-    public function getTotalParticipants(int $seasonId): int
+public function getTotalParticipants(int $seasonId): int
     {
         return SeasonScore::query()
             ->where('season_id', $seasonId)

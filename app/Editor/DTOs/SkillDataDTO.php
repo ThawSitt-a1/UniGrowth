@@ -16,6 +16,7 @@ final class SkillDataDTO
         public readonly ?string $content = '',
         public readonly ?string $resourceLink = '',
         public readonly ?array $resourceLinks = [],
+        public readonly ?bool $isActive = null,
     ) {
     }
 }

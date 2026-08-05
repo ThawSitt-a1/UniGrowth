@@ -109,8 +109,7 @@
                 Deactivating your account will suspend your profile and you will not be able to log in.
                 Contact an administrator to reactivate your account.
             </p>
-            <form action="{{ route('profile.account.update') }}" method="POST"
-                  onsubmit="return confirm('Are you sure you want to deactivate your account? This action cannot be undone without contacting support.')">
+            <form action="{{ route('profile.account.update') }}" method="POST">
                 @csrf
                 @method('PUT')
                 <input type="hidden" name="action" value="deactivate">

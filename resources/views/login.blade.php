@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UniGrowth — Sign In</title>
+    <title>{{ $platformName ?? 'UniGrowth' }} — Sign In</title>
     <!-- Bootstrap 5 CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
@@ -213,7 +213,7 @@
                     </div>
 
                     <!-- Footer -->
-                    <p class="small" style="color: rgba(165,180,252,0.4);">&copy; {{ date('Y') }} UniGrowth. All rights reserved.</p>
+                    <p class="small" style="color: rgba(165,180,252,0.4);">&copy; {{ date('Y') }} {{ $platformName ?? 'UniGrowth' }}. All rights reserved.</p>
                 </div>
             </div>
 
@@ -225,7 +225,7 @@
                         <!-- Header -->
                         <div class="text-center mb-4">
                             <h2 class="fw-bold mb-1" style="color: #1f2937; font-size: 1.5rem;">Sign In</h2>
-                            <p class="text-muted small mt-2">Access your UniGrowth account</p>
+                            <p class="text-muted small mt-2">Access your {{ $platformName ?? 'UniGrowth' }} account</p>
                         </div>
 
                         <!-- Status Messages -->
@@ -233,6 +233,12 @@
                             <div class="alert alert-success d-flex align-items-center gap-2 py-3 px-4 mb-4 rounded-3 small" role="alert">
                                 <i class="bi bi-check-circle-fill flex-shrink-0"></i>
                                 <span>{{ session('status') }}</span>
+                            </div>
+                        @endif
+                        @if (session('error'))
+                            <div class="alert alert-danger d-flex align-items-center gap-2 py-3 px-4 mb-4 rounded-3 small" role="alert">
+                                <i class="bi bi-exclamation-triangle-fill flex-shrink-0"></i>
+                                <span>{{ session('error') }}</span>
                             </div>
                         @endif
 
@@ -263,7 +269,7 @@
                                             <i class="bi bi-envelope text-muted"></i>
                                         </span>
                                         <input type="email" name="email" id="email" value="{{ old('email') }}"
-                                            placeholder="you@university.edu"
+                                            placeholder="you@example.com"
                                             required autofocus
                                             class="form-control input-field @error('email') input-error @enderror" style="border-radius: 0 10px 10px 0;">
                                     </div>

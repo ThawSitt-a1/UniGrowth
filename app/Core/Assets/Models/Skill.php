@@ -30,6 +30,7 @@ final class Skill extends Model
     protected $casts = [
         'tags' => 'array',
         'resource_links' => 'array',
+        'is_active' => 'boolean',
     ];
 
     public function enrollments(): HasMany

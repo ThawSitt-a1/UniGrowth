@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UniGrowth — Set New Password</title>
+    <title>{{ $platformName ?? 'UniGrowth' }} — Set New Password</title>
     <!-- Bootstrap 5 CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
@@ -209,7 +209,7 @@
                     </div>
 
                     <!-- Footer -->
-                    <p class="small" style="color: rgba(165,180,252,0.4);">&copy; {{ date('Y') }} UniGrowth. All rights reserved.</p>
+                    <p class="small" style="color: rgba(165,180,252,0.4);">&copy; {{ date('Y') }} {{ $platformName ?? 'UniGrowth' }}. All rights reserved.</p>
                 </div>
             </div>
 

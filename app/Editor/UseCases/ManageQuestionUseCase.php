@@ -32,6 +32,18 @@ final class ManageQuestionUseCase
             }
         }
 
+        // Validate options count based on question type
+        if (!empty($data->options)) {
+            $expectedCount = $data->questionType === 'true_false' ? 2 : 5;
+            if (count($data->options) !== $expectedCount) {
+                throw new \RuntimeException(sprintf(
+                    'A %s question must have exactly %d options.',
+                    str_replace('_', ' ', $data->questionType),
+                    $expectedCount
+                ));
+            }
+        }
+
         $saved = $this->questionRepository->save($data);
         if (!$saved) {
             throw new \RuntimeException('Failed to save question.');

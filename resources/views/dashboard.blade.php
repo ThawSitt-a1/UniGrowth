@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UniGrowth — Student Development Platform</title>
+    <title>{{ $platformName ?? 'UniGrowth' }} — Student Development Platform</title>
     <!-- Bootstrap 5 CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
@@ -397,7 +397,6 @@
 </head>
 <body>
 
-@if ($isAuthenticated)
     {{--
     ============================================================
     AUTHENTICATED VIEW — Dashboard
@@ -407,7 +406,7 @@
     <nav class="navbar navbar-expand-lg sticky-top" style="background: linear-gradient(135deg, #1e1b4b, #3730a3, #581c87);">
         <div class="container">
             <a class="navbar-brand fw-bold text-white" href="/dashboard">
-                <i class="bi bi-mortarboard-fill me-2"></i>UniGrowth
+                <i class="bi bi-mortarboard-fill me-2"></i>{{ $platformName ?? 'UniGrowth' }}
             </a>
             <button class="navbar-toggler border-0 p-1" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu" style="color: rgba(255,255,255,0.7);">
                 <i class="bi bi-list fs-4"></i>
@@ -681,7 +680,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($leaderboard as $entry)
+@foreach ($leaderboard as $entry)
                                 <tr class="{{ $entry['rank'] <= 3 ? 'table-warning' : '' }}">
                                     <td class="px-4">
                                         @if ($entry['rank'] === 1)
@@ -695,31 +694,58 @@
                                         @endif
                                     </td>
                                     <td class="px-4">
-                                        <div class="d-flex align-items-center gap-3">
-                                            @if ($entry['is_public'] && !empty($entry['avatar_path']))
-                                                <img src="{{ asset('storage/' . $entry['avatar_path']) }}" alt="avatar"
-                                                     class="rounded-circle object-fit-cover border" style="width: 36px; height: 36px;">
-                                            @else
-                                                <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white" style="width: 36px; height: 36px; background: linear-gradient(135deg, #6366f1, #7c3aed); font-size: 0.85rem;">
-                                                    {{ strtoupper(substr($entry['username'], 0, 1)) }}
+                                        @if ($entry['is_hidden_leaderboards'])
+                                            {{-- User opted to hide from leaderboards --}}
+                                            <div class="d-flex align-items-center gap-3">
+                                                <div class="rounded-circle d-flex align-items-center justify-content-center text-muted border" style="width: 36px; height: 36px; background: #f1f5f9;">
+                                                    <i class="bi bi-eye-slash"></i>
                                                 </div>
-                                            @endif
-                                            <div>
-                                                <p class="fw-semibold mb-0" style="color: #1f2937;">{{ $entry['username'] }}</p>
-                                                @if ($entry['is_public'] && !empty($entry['university_name']))
-                                                    <small class="text-muted">{{ $entry['university_name'] }}</small>
-                                                @elseif (!$entry['is_public'])
-                                                    <small class="text-muted fst-italic">Private profile</small>
-                                                @endif
+                                                <div>
+                                                    <p class="mb-0 fst-italic text-muted small">This user decided to hide their presence.</p>
+                                                </div>
                                             </div>
-                                        </div>
+                                        @else
+                                            <div class="d-flex align-items-center gap-3">
+                                                @if (!empty($entry['avatar_path']))
+                                                    <img src="{{ asset('storage/' . $entry['avatar_path']) }}" alt="avatar"
+                                                         class="rounded-circle object-fit-cover border" style="width: 36px; height: 36px;">
+                                                @else
+                                                    <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white" style="width: 36px; height: 36px; background: linear-gradient(135deg, #6366f1, #7c3aed); font-size: 0.85rem;">
+                                                        {{ strtoupper(substr($entry['username'], 0, 1)) }}
+                                                    </div>
+                                                @endif
+                                                <div>
+                                                    @if ($entry['is_profile_viewable'])
+                                                        <a href="{{ route('profile.public', $entry['user_id']) }}" class="fw-semibold mb-0 text-decoration-none" style="color: #1f2937;">
+                                                            {{ $entry['username'] }}
+                                                        </a>
+                                                    @else
+                                                        <p class="fw-semibold mb-0" style="color: #1f2937;">
+                                                            {{ $entry['username'] }}
+                                                            @if ($entry['is_profile_private'])
+                                                                <i class="bi bi-lock-fill ms-1" style="color: #94a3b8; font-size: 0.8rem;" title="Private profile"></i>
+                                                            @endif
+                                                        </p>
+                                                    @endif
+                                                    @if (!empty($entry['university_name']))
+                                                        <small class="text-muted">{{ $entry['university_name'] }}</small>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        @endif
                                     </td>
                                     <td class="px-4 text-end">
-                                        <span class="fw-bold fs-5 {{ $entry['rank'] === 1 ? 'text-warning' : ($entry['rank'] === 2 ? 'text-secondary' : ($entry['rank'] === 3 ? 'text-danger' : 'text-dark')) }}">
-                                            {{ number_format($entry['season_score'], 1) }}
-                                        </span>
+                                        @if ($entry['is_hidden_leaderboards'])
+                                            <span class="text-muted fst-italic small">Hidden</span>
+                                        @else
+                                            <span class="fw-bold fs-5 {{ $entry['rank'] === 1 ? 'text-warning' : ($entry['rank'] === 2 ? 'text-secondary' : ($entry['rank'] === 3 ? 'text-danger' : 'text-dark')) }}">
+                                                {{ number_format($entry['season_score'], 1) }}
+                                            </span>
+                                        @endif
                                     </td>
-                                    <td class="px-4 text-end text-muted">{{ $entry['skill_count'] }}</td>
+                                    <td class="px-4 text-end text-muted">
+                                        @if ($entry['is_hidden_leaderboards']) &mdash; @else {{ $entry['skill_count'] }} @endif
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -826,7 +852,7 @@
                     </div>
                 </div>
             @else
-                <div class="text-center py-5 text-muted bg-dots rounded-3">
+<div class="text-center py-5 text-muted bg-dots rounded-3">
                     <i class="bi bi-pause-circle fs-1 d-block mb-3"></i>
                     <p class="fw-semibold mb-1">No active season running.</p>
                     <p class="small mb-0">Performance analytics will be available once an administrator starts a new season.</p>
@@ -834,497 +860,65 @@
             @endif
         </div>
 
-        <!-- Overview Grid: Goals + Quiz Stats | Enrolled Skills + Quick Links -->
-        <div class="row g-4 mb-4">
-            <div class="col-md-6">
-                <!-- Goals -->
-                <div class="form-card p-4 mb-4">
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <h5 class="fw-bold mb-0" style="color: #1f2937;">
-                            <i class="bi bi-bullseye me-2" style="color: #059669;"></i>My Goals
-                        </h5>
-                        <a href="{{ route('core-assets.index') }}#goals" class="small text-decoration-none" style="color: #6366f1;">
-                            Manage <i class="bi bi-arrow-right ms-1"></i>
-                        </a>
-                    </div>
-                    @if (!empty($activeGoalsList))
-                        <ul class="list-unstyled mb-0">
-                            @foreach ($activeGoalsList as $goal)
-                                <li class="d-flex align-items-start gap-3 py-2 border-bottom border-light">
-                                    <div class="rounded-circle d-flex align-items-center justify-content-center shrink-0" style="width: 36px; height: 36px; background: #eef2ff; color: #4f46e5; font-size: 0.8rem;">
-                                        <i class="bi bi-pin-angle-fill"></i>
-                                    </div>
-                                    <div class="grow min-width-0">
-                                        <p class="fw-semibold mb-0" style="color: #1f2937; font-size: 0.9rem;">{{ $goal['text'] ?? 'Goal' }}</p>
-                                        <small class="text-muted">{{ !empty($goal['created_at']) ? \Carbon\Carbon::parse($goal['created_at'])->diffForHumans() : 'Recently added' }}</small>
-                                    </div>
-                                </li>
-                            @endforeach
-                        </ul>
-                    @else
-                        <div class="text-center py-4 text-muted bg-dots rounded-3">
-                            <i class="bi bi-bullseye fs-2 d-block mb-2"></i>
-                            <p class="small mb-0">No active goals. <a href="{{ route('core-assets.index') }}#goals" class="text-decoration-none" style="color: #6366f1;">Create one</a>.</p>
-                        </div>
-                    @endif
-
-                    <details class="mt-3">
-                        <summary class="text-sm fw-semibold text-muted cursor-pointer" style="font-size: 0.85rem;">
-                            Completed Goals ({{ count($completedGoalsList) }})
-                        </summary>
-                        <div class="mt-2">
-                            @if (!empty($completedGoalsList))
-                                @foreach ($completedGoalsList as $goal)
-                                    <div class="d-flex align-items-start gap-3 py-2 border-bottom border-light">
-                                        <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 36px; height: 36px; background: #ecfdf5; color: #059669; font-size: 0.8rem;">
-                                            <i class="bi bi-check2-circle"></i>
-                                        </div>
-                                        <div class="flex-grow-1 min-width-0">
-                                            <p class="fw-semibold mb-0 text-decoration-line-through text-muted" style="font-size: 0.9rem;">{{ $goal['text'] ?? 'Goal' }}</p>
-                                            <small class="text-muted">Completed {{ !empty($goal['completed_at']) ? \Carbon\Carbon::parse($goal['completed_at'])->diffForHumans() : 'recently' }}</small>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            @else
-                                <p class="text-muted small mb-0">No completed goals yet.</p>
-                            @endif
-                        </div>
-                    </details>
-                </div>
-
-                <!-- Habits Summary -->
-                <div class="form-card p-4 mb-4">
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <h5 class="fw-bold mb-0" style="color: #1f2937;">
-                            <i class="bi bi-calendar2-check me-2" style="color: #7c3aed;"></i>My Habits
-                        </h5>
-                        <a href="{{ route('core-assets.index') }}#pane-habits" class="small text-decoration-none" style="color: #6366f1;">
-                            Manage <i class="bi bi-arrow-right ms-1"></i>
-                        </a>
-                    </div>
-                    <div class="row g-3">
-                        <div class="col-4">
-                            <div class="bg-light rounded-3 p-3 text-center">
-                                <p class="fs-3 fw-bold mb-0" style="color: #7c3aed;">{{ $habitSummary['total'] }}</p>
-                                <p class="small text-muted mb-0">Habits</p>
-                            </div>
-                        </div>
-                        <div class="col-4">
-                            <div class="bg-light rounded-3 p-3 text-center">
-                                <p class="fs-3 fw-bold mb-0" style="color: #059669;">{{ $habitSummary['completed_today'] }}</p>
-                                <p class="small text-muted mb-0">Done Today</p>
-                            </div>
-                        </div>
-                        <div class="col-4">
-                            <div class="bg-light rounded-3 p-3 text-center">
-                                <p class="fs-3 fw-bold mb-0" style="color: #d97706;">{{ $habitSummary['best_streak'] }}</p>
-                                <p class="small text-muted mb-0">Best Streak</p>
-                            </div>
-                        </div>
-                    </div>
-                    @if ($habitSummary['total'] === 0)
-                        <div class="text-center py-3 mt-3 text-muted bg-dots rounded-3">
-                            <i class="bi bi-calendar2-check fs-4 d-block mb-1"></i>
-                            <p class="small mb-0">No habits yet. <a href="{{ route('core-assets.index') }}#pane-habits" class="text-decoration-none" style="color: #6366f1;">Create one</a>.</p>
-                        </div>
-                    @endif
-                </div>
-
-                <!-- Quiz Stats -->
-                <div class="form-card p-4">
-                    <div class="d-flex align-items-center gap-2 mb-3">
-                        <i class="bi bi-pencil-square fs-4" style="color: #6366f1;"></i>
-                        <h5 class="fw-bold mb-0" style="color: #1f2937;">Quiz Statistics</h5>
-                    </div>
-                    <div class="row g-3">
-                        <div class="col-6">
-                            <div class="bg-light rounded-3 p-3 text-center">
-                                <p class="fs-3 fw-bold mb-0" style="color: #6366f1;">{{ (int) ($quizStats['total_questions_answered'] ?? 0) }}</p>
-                                <p class="small text-muted mb-0">Questions Answered</p>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="bg-light rounded-3 p-3 text-center">
-                                <p class="fs-3 fw-bold mb-0" style="color: #7c3aed;">{{ (int) ($quizStats['total_attempts'] ?? 0) }}</p>
-                                <p class="small text-muted mb-0">Quiz Attempts</p>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="bg-light rounded-3 p-3 text-center">
-                                <p class="fs-3 fw-bold mb-0" style="color: #0891b2;">{{ number_format((float) ($quizStats['total_score'] ?? 0), 1) }}</p>
-                                <p class="small text-muted mb-0">Total Score</p>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="bg-light rounded-3 p-3 text-center">
-                                <p class="fs-3 fw-bold mb-0" style="color: #059669;">{{ number_format((float) ($quizStats['average_score_per_attempt'] ?? 0), 1) }}%</p>
-                                <p class="small text-muted mb-0">Avg Score/Attempt</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-6">
-                <!-- Enrolled Skills -->
-                <div class="form-card p-4 mb-4">
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <h5 class="fw-bold mb-0" style="color: #1f2937;">
-                            <i class="bi bi-bookmark-check me-2" style="color: #7c3aed;"></i>Enrolled Skills
-                            <span class="badge rounded-pill ms-1" style="background: #eef2ff; color: #4f46e5; font-size: 0.7rem;">{{ count($enrolledSkillsList) }}</span>
-                        </h5>
-                        <a href="{{ route('core-assets.skills') }}" class="small text-decoration-none" style="color: #6366f1;">
-                            Browse <i class="bi bi-arrow-right ms-1"></i>
-                        </a>
-                    </div>
-                    @if (!empty($enrolledSkillsList))
-                        @foreach ($enrolledSkillsList as $skill)
-                            <div class="d-flex align-items-center justify-content-between py-2 border-bottom border-light">
-                                <div class="flex-grow-1 min-width-0 me-2">
-                                    <p class="fw-semibold mb-0 text-truncate" style="color: #1f2937; font-size: 0.9rem;">
-                                        <i class="bi bi-book me-1" style="color: #7c3aed;"></i>{{ $skill['skill_title'] ?? 'Skill' }}
-                                    </p>
-                                    <small class="text-muted">Enrolled {{ !empty($skill['enrolled_at']) ? \Carbon\Carbon::parse($skill['enrolled_at'])->diffForHumans() : 'recently' }}</small>
-                                </div>
-                                <a href="{{ route('assessment.test.index') }}?skill_id={{ $skill['skill_id'] ?? '' }}" class="btn btn-sm flex-shrink-0" style="background: #6366f1; color: #fff; border-radius: 8px; font-size: 0.75rem;">
-                                    <i class="bi bi-pencil-square me-1"></i>Quiz
-                                </a>
-                            </div>
-                        @endforeach
-                    @else
-                        <div class="text-center py-4 text-muted bg-dots rounded-3">
-                            <i class="bi bi-book fs-2 d-block mb-2"></i>
-                            <p class="small mb-0">Not enrolled in any skills yet. <a href="{{ route('core-assets.skills') }}" class="text-decoration-none" style="color: #6366f1;">Browse skills</a>.</p>
-                        </div>
-                    @endif
-                </div>
-
-</div>
-            </div>
-</div>
-
-    @include('partials.footer')
-
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const stats = @json($quizStats);
-        const seasonInfo = @json($seasonInfo);
-        const maxMarks = seasonInfo.highest_score || 0;
-
-        const barCtx = document.getElementById('quizPerformanceChart');
-        if (barCtx) {
-            new Chart(barCtx, {
-                type: 'bar',
-                data: {
-                    labels: ['Questions Answered', 'Quiz Attempts', 'Total Score', 'Avg Score/Attempt'],
-                    datasets: [{
-                        label: 'Performance Metrics',
-                        data: [
-                            stats.total_questions_answered || 0,
-                            stats.total_attempts || 0,
-                            stats.total_score || 0,
-                            stats.average_score_per_attempt || 0
-                        ],
-                        backgroundColor: [
-                            'rgba(99, 102, 241, 0.7)',
-                            'rgba(124, 58, 237, 0.7)',
-                            'rgba(8, 145, 178, 0.7)',
-                            'rgba(5, 150, 105, 0.7)'
-                        ],
-                        borderColor: [
-                            'rgba(99, 102, 241, 1)',
-                            'rgba(124, 58, 237, 1)',
-                            'rgba(8, 145, 178, 1)',
-                            'rgba(5, 150, 105, 1)'
-                        ],
-                        borderWidth: 1,
-                        borderRadius: 6
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const label = context.dataset.label || '';
-                                    const val = context.parsed.y;
-                                    if (context.dataIndex === 3) return label + ': ' + val.toFixed(1) + '%';
-                                    if (context.dataIndex === 2) return label + ': ' + val.toFixed(1) + ' of ' + maxMarks.toFixed(1) + ' max marks';
-                                    return label + ': ' + val.toFixed(1);
-                                }
+        <!-- Chart.js scripts -->
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                @if (!empty($seasonInfo['is_active']) && !empty($quizStats))
+                    // Quiz Performance Chart (Line)
+                    const perfCtx = document.getElementById('quizPerformanceChart');
+                    if (perfCtx) {
+                        const perfLabels = @json(array_column($quizStats, 'quiz_date'));
+                        const perfScores = @json(array_column($quizStats, 'score'));
+                        new Chart(perfCtx, {
+                            type: 'line',
+                            data: {
+                                labels: perfLabels,
+                                datasets: [{
+                                    label: 'Quiz Score',
+                                    data: perfScores,
+                                    borderColor: '#6366f1',
+                                    backgroundColor: 'rgba(99,102,241,0.1)',
+                                    fill: true,
+                                    tension: 0.3,
+                                    pointBackgroundColor: '#6366f1',
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: { legend: { display: false } },
+                                scales: { y: { beginAtZero: true } }
                             }
-                        }
-                    },
-                    scales: {
-                        y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
-                        x: { grid: { display: false } }
+                        });
                     }
-                }
-            });
-        }
 
-        const doughnutCtx = document.getElementById('scoreDistributionChart');
-        if (doughnutCtx) {
-            const totalScore = stats.total_score || 0;
-            const maxPossible = maxMarks > 0 ? maxMarks : Math.max(totalScore * 2, 100);
-            const remaining = Math.max(0, maxPossible - totalScore);
-
-            new Chart(doughnutCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Your Score', 'Remaining Potential'],
-                    datasets: [{
-                        data: [totalScore, remaining],
-                        backgroundColor: ['rgba(99, 102, 241, 0.8)', 'rgba(229, 231, 235, 0.6)'],
-                        borderColor: ['rgba(99, 102, 241, 1)', 'rgba(229, 231, 235, 1)'],
-                        borderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    cutout: '65%',
-                    plugins: {
-                        legend: { position: 'bottom', labels: { boxWidth: 12, padding: 12, font: { size: 11 } } },
-                        tooltip: { callbacks: { label: function(context) { return context.label + ': ' + context.parsed.toFixed(1); } } }
+                    // Score Distribution Chart (Doughnut)
+                    const distCtx = document.getElementById('scoreDistributionChart');
+                    if (distCtx) {
+                        const scoreValues = @json(array_column($quizStats, 'score'));
+                        const passed = scoreValues.filter(s => s >= 50).length;
+                        const failed = scoreValues.filter(s => s < 50).length;
+                        new Chart(distCtx, {
+                            type: 'doughnut',
+                            data: {
+                                labels: ['Passed (>=50%)', 'Failed (<50%)'],
+                                datasets: [{
+                                    data: [passed, failed],
+                                    backgroundColor: ['#059669', '#ef4444'],
+                                    borderWidth: 0,
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: { legend: { position: 'bottom' } }
+                            }
+                        });
                     }
-                }
+                @endif
             });
-        }
-    });
-    </script>
-
-@else
-    {{--
-    ============================================================
-    GUEST / UNAUTHENTICATED VIEW — Landing Page with SVG Illustration
-    ============================================================
-    --}}
-
-    <!-- Hero Section with SVG Illustration -->
-    <div class="position-relative overflow-hidden" style="background: linear-gradient(135deg, #1e1b4b, #3730a3, #581c87); min-height: 90vh;">
-        <div class="glow-1"></div>
-        <div class="glow-2"></div>
-        <div class="glow-3"></div>
-        <div class="bg-grid position-absolute top-0 start-0 w-100 h-100"></div>
-
-        <div class="container position-relative" style="z-index: 10;">
-            <!-- Top Navigation -->
-            <nav class="navbar navbar-dark p-0 pt-3">
-                <div class="container-fluid px-0">
-                    <span class="navbar-brand fw-bold fs-4">
-                        <i class="bi bi-mortarboard-fill me-2"></i>UniGrowth
-                    </span>
-                    <div class="d-flex gap-2">
-                        <a href="/login" class="btn btn-outline-light-custom btn-sm">Sign In</a>
-                        <a href="/register" class="btn btn-primary-custom btn-sm">Get Started</a>
-                    </div>
-                </div>
-            </nav>
-
-            <!-- Hero Content: Text Left, SVG Illustration Right -->
-            <div class="row align-items-center" style="min-height: 80vh;">
-                <div class="col-lg-6 text-white py-5">
-                    <div class="mb-4">
-                        <span class="badge-eco">
-                            <i class="bi bi-mortarboard-fill" style="font-size: 0.8rem;"></i>
-                            Student Development Platform
-                        </span>
-                    </div>
-                    <h1 class="display-3 fw-bold mb-3 hero-title" style="line-height: 1.1;">
-                        Grow Your Skills.<br>
-                        <span style="background: linear-gradient(90deg, #a5b4fc, #c4b5fd); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Track Your Journey.</span>
-                    </h1>
-                    <p class="fs-5 mb-4" style="color: rgba(199,210,254,0.8); max-width: 540px;">
-                        UniGrowth is the all-in-one platform for university students to set goals,
-                        develop new skills, and track personal growth throughout their academic journey.
-                    </p>
-                    <div class="d-flex flex-wrap gap-3 mb-5">
-                        <span class="tech-badge"><i class="bi bi-bootstrap-fill"></i> Bootstrap 5</span>
-                        <span class="tech-badge"><i class="bi bi-filetype-php"></i> PHP / Laravel</span>
-                        <span class="tech-badge"><i class="bi bi-code-slash"></i> Blade Engine</span>
-                    </div>
-                    <div class="d-flex flex-wrap gap-3">
-                        <a href="/register" class="btn btn-primary-custom">
-                            <i class="bi bi-person-plus me-2"></i>Create Free Account
-                        </a>
-                        <a href="/login" class="btn btn-outline-light-custom">
-                            <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
-                        </a>
-                    </div>
-                </div>
-                <div class="col-lg-6 d-none d-lg-flex justify-content-center align-items-center">
-                    <div class="hero-illustration">
-                        {!! file_get_contents(public_path('images/developer-illustration.svg')) !!}
-                        <!-- Floating badges over illustration -->
-                        <div class="floating-badge">
-                            <i class="bi bi-star-fill" style="color: #fbbf24;"></i> Top 10%
-                        </div>
-                        <div class="floating-badge">
-                            <i class="bi bi-graph-up-arrow" style="color: #34d399;"></i> +45% Growth
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        </script>
     </div>
-
-    <!-- Features Section with Image-Text pattern -->
-    <div class="container py-5 my-4">
-        <div class="text-center mb-5">
-            <h2 class="fw-bold" style="color: #1f2937;">Everything you need to grow</h2>
-            <p class="text-muted">A complete ecosystem for student development</p>
-        </div>
-        <div class="row g-4">
-            <div class="col-md-4">
-                <div class="feature-card">
-                    <div class="feature-icon" style="background: #eef2ff; color: #6366f1;">
-                        <i class="bi bi-bullseye"></i>
-                    </div>
-                    <h5 class="fw-bold" style="color: #1f2937;">Set Goals</h5>
-                    <p class="text-muted small mb-0">Define academic and personal goals, track progress, and celebrate achievements throughout your university journey.</p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="feature-card">
-                    <div class="feature-icon" style="background: #faf5ff; color: #7c3aed;">
-                        <i class="bi bi-graph-up-arrow"></i>
-                    </div>
-                    <h5 class="fw-bold" style="color: #1f2937;">Develop Skills</h5>
-                    <p class="text-muted small mb-0">Enroll in skill tracks, take quizzes, and build competencies that matter for your career and personal development.</p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="feature-card">
-                    <div class="feature-icon" style="background: #ecfdf5; color: #059669;">
-                        <i class="bi bi-trophy"></i>
-                    </div>
-                    <h5 class="fw-bold" style="color: #1f2937;">Track Growth</h5>
-                    <p class="text-muted small mb-0">Monitor your progress with detailed analytics, seasonal leaderboards, and personalized insights.</p>
-                </div>
-            </div>
-        </div>
-
-<!-- ===== Image-Text Alternating Sections ===== -->
-
-        <!-- Section 1: Image Left, Text Right -->
-        <div class="row g-0 align-items-center mt-5 overflow-hidden rounded-4" style="background: #f8fafc; border: 1px solid rgba(0,0,0,0.04);">
-            <div class="col-md-5 p-0">
-                <div style="background: linear-gradient(135deg, #eef2ff, #faf5ff); padding: 3rem 2rem; min-height: 300px; display: flex; align-items: center; justify-content: center;">
-                    <div style="max-width: 240px; opacity: 0.8;">
-                        {!! file_get_contents(public_path('images/developer-illustration.svg')) !!}
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-7 p-4 p-md-5">
-                <span class="badge bg-light text-primary fw-semibold mb-2 px-3 py-2">Why UniGrowth?</span>
-                <h3 class="fw-bold mb-3" style="color: #1f2937; font-size: 1.6rem;">Built for university students, by developers</h3>
-                <p class="text-muted mb-3">Track your skill development journey with personalized recommendations, leaderboards, and detailed analytics — all in one platform designed for academic growth.</p>
-                <div class="row g-3">
-                    <div class="col-6">
-                        <div class="d-flex align-items-start gap-2">
-                            <i class="bi bi-check-circle-fill mt-1" style="color: #059669;"></i>
-                            <div><span class="fw-semibold d-block" style="color: #1f2937;">Goal Setting</span><small class="text-muted">Define and track goals</small></div>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="d-flex align-items-start gap-2">
-                            <i class="bi bi-check-circle-fill mt-1" style="color: #059669;"></i>
-                            <div><span class="fw-semibold d-block" style="color: #1f2937;">Skill Quizzes</span><small class="text-muted">Test your knowledge</small></div>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="d-flex align-items-start gap-2">
-                            <i class="bi bi-check-circle-fill mt-1" style="color: #059669;"></i>
-                            <div><span class="fw-semibold d-block" style="color: #1f2937;">Leaderboards</span><small class="text-muted">Compete with peers</small></div>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="d-flex align-items-start gap-2">
-                            <i class="bi bi-check-circle-fill mt-1" style="color: #059669;"></i>
-                            <div><span class="fw-semibold d-block" style="color: #1f2937;">Analytics</span><small class="text-muted">Track your progress</small></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Section 2: Image Right, Text Left (alternating) -->
-        <div class="row g-0 align-items-center mt-4 overflow-hidden rounded-4" style="background: #f8fafc; border: 1px solid rgba(0,0,0,0.04);">
-            <div class="col-md-7 p-4 p-md-5 order-2 order-md-1">
-                <span class="badge bg-light text-success fw-semibold mb-2 px-3 py-2">Personalized Learning</span>
-                <h3 class="fw-bold mb-3" style="color: #1f2937; font-size: 1.6rem;">Smart recommendations tailored to you</h3>
-                <p class="text-muted mb-3">Our recommendation engine analyzes your enrolled skills, interests, and performance to suggest the most relevant skills and learning paths — helping you discover new areas to grow.</p>
-                <div class="d-flex flex-wrap gap-2 mt-3">
-                    <span class="badge" style="background: #eef2ff; color: #4f46e5; font-size: 0.8rem; padding: 6px 14px;">
-                        <i class="bi bi-stars me-1"></i>Jaccard Similarity
-                    </span>
-                    <span class="badge" style="background: #faf5ff; color: #7c3aed; font-size: 0.8rem; padding: 6px 14px;">
-                        <i class="bi bi-tag me-1"></i>Tag Intersection
-                    </span>
-                    <span class="badge" style="background: #ecfdf5; color: #059669; font-size: 0.8rem; padding: 6px 14px;">
-                        <i class="bi bi-graph-up me-1"></i>Performance Based
-                    </span>
-                </div>
-            </div>
-            <div class="col-md-5 p-0 order-1 order-md-2">
-                <div style="background: linear-gradient(135deg, #faf5ff, #f3e8ff); padding: 3rem 2rem; min-height: 300px; display: flex; align-items: center; justify-content: center;">
-                    <div style="max-width: 240px; opacity: 0.8;">
-                        {!! file_get_contents(public_path('images/developer-illustration.svg')) !!}
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Section 3: Image Left, Text Right -->
-        <div class="row g-0 align-items-center mt-4 overflow-hidden rounded-4" style="background: #f8fafc; border: 1px solid rgba(0,0,0,0.04);">
-            <div class="col-md-5 p-0">
-                <div style="background: linear-gradient(135deg, #ecfdf5, #d1fae5); padding: 3rem 2rem; min-height: 300px; display: flex; align-items: center; justify-content: center;">
-                    <div style="max-width: 240px; opacity: 0.8;">
-                        {!! file_get_contents(public_path('images/developer-illustration.svg')) !!}
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-7 p-4 p-md-5">
-                <span class="badge bg-light text-success fw-semibold mb-2 px-3 py-2" style="color: #059669 !important;">Track & Compete</span>
-                <h3 class="fw-bold mb-3" style="color: #1f2937; font-size: 1.6rem;">Seasonal competitions and leaderboards</h3>
-                <p class="text-muted mb-3">Participate in seasonal competitions where you can earn scores, climb the leaderboard, and compare your progress with peers. Each season brings fresh opportunities to showcase your skills.</p>
-                <div class="d-flex align-items-center gap-4 mt-3">
-                    <div class="text-center">
-                        <div class="fw-bold fs-4" style="color: #6366f1;">🏆</div>
-                        <small class="text-muted">Top Rankings</small>
-                    </div>
-                    <div class="text-center">
-                        <div class="fw-bold fs-4" style="color: #059669;">📊</div>
-                        <small class="text-muted">Score Tracking</small>
-                    </div>
-                    <div class="text-center">
-                        <div class="fw-bold fs-4" style="color: #7c3aed;">🎯</div>
-                        <small class="text-muted">Skill Mastery</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- CTA Section with Background Image Feel -->
-    <div class="cta-section py-5">
-        <div class="container text-center py-4 position-relative">
-            <h2 class="fw-bold text-white mb-2">Ready to start your journey?</h2>
-            <p class="text-white-50 mb-4" style="color: rgba(199,210,254,0.7) !important;">Join students who are already growing with UniGrowth.</p>
-            <a href="/register" class="btn btn-primary-custom btn-lg px-5">
-                <i class="bi bi-rocket-takeoff me-2"></i>Get Started Free
-            </a>
-        </div>
-    </div>
-
-<!-- Footer -->
-    @include('partials.footer', ['hideQuickLinks' => true])
-@endif
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+

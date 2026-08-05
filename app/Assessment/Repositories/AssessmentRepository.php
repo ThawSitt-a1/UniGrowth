@@ -16,10 +16,11 @@ use Illuminate\Support\Facades\DB;
 final class AssessmentRepository implements AssessmentRepositoryInterface
 {
     /**
-     * Fetch up to 5 randomized active questions for a skill that the user has NOT answered before.
+     * Fetch randomized active questions for a skill that the user has NOT answered before.
+     * Returns up to 5 questions, but allows as few as 1 question to be available.
      *
      * @return Collection<int, Question>
-     * @throws \RuntimeException if fewer than 5 unseen questions are available.
+     * @throws \RuntimeException if no unseen questions are available.
      */
     public function fetchUnseenActiveQuestionsForSkill(int $userId, int $skillId): Collection
     {
@@ -38,9 +39,9 @@ final class AssessmentRepository implements AssessmentRepositoryInterface
 
         $questions = $query->inRandomOrder()->take(5)->with('options')->get();
 
-        if ($questions->count() < 5) {
+        if ($questions->count() < 1) {
             throw new \RuntimeException(
-                'Not enough unseen questions available for this skill. A minimum of 5 questions is required to generate a quiz.'
+                'No unseen questions available for this skill. All questions may have been answered already.'
             );
         }
 
@@ -113,15 +114,33 @@ public function upsertStudentSkillProficiency(int $userId, int $skillId, float $
         ]);
     }
 
-    /**
+/**
      * @return Collection<int, User>
      */
     public function fetchLeaderboardData(): Collection
     {
         return User::query()
             ->orderBy('platform_score', 'desc')
-            ->limit(10)
-            ->get(['id', 'username', 'platform_score']);
+            ->limit(50)
+->get(['id', 'username', 'platform_score', 'preferences'])
+            ->filter(fn (User $user) => !$this->isHiddenFromLeaderboards($user))
+->take(10)
+            ->values();
+    }
+
+    /**
+     * Determine whether a user should be excluded from public leaderboards.
+     *
+     * A user is hidden if they have enabled "Make my profile private"
+     * (`make_profile_private`), or if they previously toggled the legacy
+     * "Hide from leaderboards" preference (`privacy_hide_leaderboards`).
+     */
+    private function isHiddenFromLeaderboards(User $user): bool
+    {
+        $preferences = $user->preferences ?? [];
+
+        return (bool) ($preferences['make_profile_private'] ?? false)
+            || (bool) ($preferences['privacy_hide_leaderboards'] ?? false);
     }
 
     /**

@@ -16,7 +16,7 @@ final class SkillRepository implements SkillRepositoryInterface
             if ($skill->locked_by_admin) {
                 return false;
             }
-            $skill->update([
+            $updateData = [
                 'title' => $data->title,
                 'slug' => $data->slug,
                 'description' => $data->description,
@@ -24,7 +24,13 @@ final class SkillRepository implements SkillRepositoryInterface
                 'content' => $data->content ?? '',
                 'resource_link' => $data->resourceLink ?? '',
                 'resource_links' => $data->resourceLinks ?? [],
-            ]);
+            ];
+
+            if ($data->isActive !== null) {
+                $updateData['is_active'] = $data->isActive;
+            }
+
+            $skill->update($updateData);
             return true;
         }
 
@@ -37,7 +43,7 @@ final class SkillRepository implements SkillRepositoryInterface
             'content' => $data->content ?? '',
             'resource_link' => $data->resourceLink ?? '',
             'resource_links' => $data->resourceLinks ?? [],
-            'is_active' => true,
+            'is_active' => $data->isActive ?? true,
             'locked_by_admin' => false,
         ]);
         return true;

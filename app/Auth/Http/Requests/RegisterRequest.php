@@ -33,7 +33,8 @@ public function rules(): array
                           'max:50' , 'unique:users,username',
                           'regex:/^[a-zA-Z0-9._-]+$/'],
             'email' => ['required', 'string', 'email',
-                        'max:254', 'unique:users,email'],
+                        'max:254', 'unique:users,email',
+                        'regex:/^(?!.*admin)/i'],
             'password' => ['required','string',
                             Password::min(12)
                             ->uncompromised(),],  // Have I been pwned check],
@@ -61,6 +62,7 @@ public function rules(): array
             'email.email'       => 'Please enter a valid email format.',
             'email.max'         => 'The email address is too long.',
             'email.unique'      => 'This email is already registered.',
+            'email.regex'       => 'The email address cannot contain the word "admin".',
 
             // Password messages
             'password.required' => 'A password is required.',

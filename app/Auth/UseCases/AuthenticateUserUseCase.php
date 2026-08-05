@@ -38,6 +38,23 @@ final class AuthenticateUserUseCase
             throw new \RuntimeException('Email not verified.');
         }
 
+        // Prevent login if the account has been banned or suspended.
+        if ($user->account_status === 'banned') {
+            throw new \RuntimeException('Your account has been banned.');
+        }
+
+        if ($user->account_status === 'suspended') {
+            $suspendedUntil = $user->suspended_until;
+            if ($suspendedUntil !== null && now()->greaterThan($suspendedUntil)) {
+                $user->update([
+                    'account_status' => 'allowed',
+                    'suspended_until' => null,
+                ]);
+            } else {
+                throw new \RuntimeException('Your account has been suspended.');
+            }
+        }
+
         // Create the authenticated session via AuthSessionService
         $this->authSessionService->login($user, $credentials->remember);
 

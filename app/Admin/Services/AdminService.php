@@ -124,7 +124,7 @@ final class AdminService
     }
 
     /**
-     * Update a user's account status (ban/suspend/restore).
+     * Update a user's account status (ban/restore).
      */
     public function updateAccountStatus(UserStatusDTO $dto): void
     {
@@ -227,12 +227,126 @@ final class AdminService
     }
 
     /**
+     * Get a single bug report for detail viewing.
+     */
+    public function getBugReport(int $reportId): array
+    {
+        $report = BugReport::query()
+            ->with('user:id,username,email')
+            ->findOrFail($reportId);
+
+        $data = $report->toArray();
+        $data['screenshot_url'] = $report->screenshot_path
+            ? route('admin.bug-reports.screenshot', ['id' => $reportId])
+            : null;
+        $data['screenshot_path'] = $report->screenshot_path;
+
+        return $data;
+    }
+
+    /**
+     * Get a screenshot path from a bug report.
+     */
+    public function getBugReportScreenshotPath(int $reportId): string
+    {
+        $report = BugReport::query()->findOrFail($reportId);
+
+        if ($report->screenshot_path === null) {
+            abort(404, 'Screenshot not available.');
+        }
+
+        return $report->screenshot_path;
+    }
+
+/**
      * Update a bug report's status.
      */
     public function updateBugReportStatus(int $reportId, string $status): void
     {
         $report = BugReport::query()->findOrFail($reportId);
         $report->update(['status' => $status]);
+    }
+
+    /**
+     * Delete a resolved bug report.
+     *
+     * Only reports with status 'resolved' can be deleted.
+     */
+    public function deleteBugReport(int $reportId): void
+    {
+        $report = BugReport::query()->findOrFail($reportId);
+
+        if ($report->status !== 'resolved') {
+            throw new \InvalidArgumentException('Only resolved bug reports can be deleted.');
+        }
+
+        $report->delete();
+    }
+
+/*
+    |--------------------------------------------------------------------------
+    | User Management — Delete
+    |--------------------------------------------------------------------------
+    */
+
+    /**
+     * Delete a user account (soft-delete safe).
+     * Guards against deleting admin accounts and self-deletion.
+     */
+    public function deleteUser(int $userId): void
+    {
+        $user = User::query()->findOrFail($userId);
+
+        // Guard: never allow deleting an admin account
+        if ($user->role === User::ROLE_ADMIN) {
+            throw new \InvalidArgumentException('Admin accounts cannot be deleted.');
+        }
+
+        // Guard: prevent self-deletion
+        if ((int) request()->user()->getAuthIdentifier() === $userId) {
+            throw new \InvalidArgumentException('You cannot delete your own account.');
+        }
+
+        $user->delete();
+    }
+
+    /**
+     * Bulk delete users whose email is not verified.
+     * Returns the count of deleted users.
+     * Guards against admin accounts and self-deletion.
+     */
+    public function deleteUnverifiedUsers(): int
+    {
+        $adminId = (int) request()->user()->getAuthIdentifier();
+
+        $query = User::query()
+            ->whereNull('email_verified_at')
+            ->where('role', '!=', User::ROLE_ADMIN)
+            ->where('id', '!=', $adminId);
+
+        $count = $query->count();
+
+        if ($count === 0) {
+            throw new \RuntimeException('No unverified users found to delete.');
+        }
+
+        $query->delete();
+
+        return $count;
+    }
+
+    /**
+     * Get count of unverified (non-admin) users for display purposes.
+     */
+    public function getUnverifiedUsersCount(): int
+    {
+        $adminId = (int) request()->user()->getAuthIdentifier();
+
+        return User::query()
+            ->whereNull('email_verified_at')
+            ->where('role', '!=', User::ROLE_ADMIN)
+            ->where('id', '!=', $adminId)
+            ->count();
     }
 
     /*

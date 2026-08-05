@@ -173,12 +173,17 @@ daysRemaining: $season?->ends_at
         ]);
     }
 
-    /**
+/**
      * Get season leaderboard with privacy-aware display.
      *
-     * If the user has `privacy_show_profile` enabled (public), the entry includes:
-     *   - university_name, major, avatar_path, social_links
-     * Otherwise (private), only username and score are shown.
+     * Each entry includes flags describing the user's privacy state:
+     *   - `is_hidden_leaderboards`: user enabled "Hide from leaderboards".
+     *     They still occupy their rank slot, but their identity and score are
+     *     masked — the view shows a "This user decided to hide their presence"
+     *     placeholder message.
+     *   - `is_profile_private`: user enabled "Make my profile private".
+     *     Their profile is not viewable from other users.
+     *   - `is_profile_viewable`: profile can be viewed (both toggles off).
      *
      * @return array<int, array<string, mixed>>
      */
@@ -191,7 +196,9 @@ daysRemaining: $season?->ends_at
         foreach ($entries as $entry) {
             $user = $entry->user;
             $preferences = $user?->preferences ?? [];
-            $isPublic = (bool) ($preferences['privacy_show_profile'] ?? false);
+
+            $isHiddenLeaderboards = (bool) ($preferences['privacy_hide_leaderboards'] ?? false);
+            $isProfilePrivate = (bool) ($preferences['make_profile_private'] ?? false);
 
             $base = [
                 'rank' => $rank++,
@@ -200,21 +207,15 @@ daysRemaining: $season?->ends_at
                 'season_score' => $entry->total_score,
                 'skill_count' => $entry->skill_count,
                 'last_active_at' => $entry->last_active_at?->toISOString(),
-                'is_public' => $isPublic,
+                'is_hidden_leaderboards' => $isHiddenLeaderboards,
+                'is_profile_private' => $isProfilePrivate,
+                'is_profile_viewable' => !$isProfilePrivate && !$isHiddenLeaderboards,
             ];
 
-            if ($isPublic && $user) {
-                // Load social accounts if not already loaded
-                if (!$user->relationLoaded('socialAccounts')) {
-                    $user->load('socialAccounts');
-                }
+            if (!$isHiddenLeaderboards && !$isProfilePrivate && $user) {
                 $base['avatar_path'] = $user->avatar_path;
                 $base['university_name'] = $user->university_name;
                 $base['major'] = $user->major;
-                $base['social_links'] = $user->socialAccounts->map(fn($a) => [
-                    'platform' => $a->platform,
-                    'url' => $a->url,
-                ])->toArray();
             }
 
             $leaderboard[] = $base;
@@ -223,7 +224,7 @@ daysRemaining: $season?->ends_at
         return $leaderboard;
     }
 
-    /**
+/**
      * Get season history.
      *
      * @return array<int, array<string, mixed>>
@@ -240,4 +241,5 @@ daysRemaining: $season?->ends_at
             'total_participants' => $s->snapshots()->distinct('user_id')->count('user_id'),
         ])->toArray();
     }
+
 }

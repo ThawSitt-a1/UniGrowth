@@ -40,10 +40,13 @@ final class ListAvailableSkillsUseCase
                 'id' => $skill->id,
                 'title' => $skill->title,
                 'description' => $skill->description,
+                'slug' => $skill->slug,
                 'tags' => $skill->tags ?? [],
                 'resource_link' => $skill->resource_link,
                 'is_enrolled' => in_array($skill->id, $enrolledSkillIds, true),
                 'enrollments_count' => $skill->enrollments_count ?? $skill->enrollments()->count(),
+                'is_active' => $skill->is_active,
+                'admin_comment' => $skill->admin_comment,
                 'created_at' => $skill->created_at?->toISOString(),
             ];
         })->values()->toArray();

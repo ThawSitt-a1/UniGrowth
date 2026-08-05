@@ -46,6 +46,53 @@ class ProfileWebController
         return view('profile.index', ['profile' => $profile->toArray()]);
     }
 
+/**
+     * Show another user's public profile.
+     *
+     * A profile is viewable only when the target user has disabled BOTH
+     * "Make my profile private" and "Hide from leaderboards". Otherwise the
+     * view renders a "profile is private" notice.
+     */
+public function showPublic(Request $request, int $user): View|RedirectResponse
+    {
+        $target = \App\Auth\Models\User::query()->with('socialAccounts')->find($user);
+
+        if ($target === null) {
+            return redirect()->route('dashboard')->with('error', 'User not found.');
+        }
+
+        $preferences = $target->preferences ?? [];
+        $isPrivate = (bool) ($preferences['make_profile_private'] ?? false);
+
+        // Cannot view if the profile is private.
+        if ($isPrivate) {
+            return view('profile.public', [
+                'profile' => null,
+                'isPrivate' => true,
+                'username' => $target->username,
+            ]);
+        }
+
+        return view('profile.public', [
+            'profile' => [
+                'id' => $target->id,
+                'username' => $target->username,
+                'avatar_path' => $target->avatar_path,
+                'platform_score' => $target->platform_score,
+                'academic_year' => $target->academic_year,
+                'major' => $target->major,
+                'university_name' => $target->university_name,
+                'description' => $target->description,
+                'social_links' => $target->socialAccounts->map(fn ($a) => [
+                    'platform' => $a->platform,
+                    'url' => $a->url,
+                ])->toArray(),
+            ],
+            'isPrivate' => false,
+            'username' => $target->username,
+        ]);
+    }
+
     /**
      * Show the edit profile form.
      */
@@ -190,9 +237,9 @@ class ProfileWebController
         $action = $request->string('action')->toString();
         $userId = $request->user()->id;
 
-        return match ($action) {
+return match ($action) {
             'change_password' => $this->handleChangePassword($request, $userId),
-            'deactivate' => $this->handleDeactivate($userId),
+            'deactivate' => $this->handleDeactivate($request, $userId),
             default => redirect()->route('profile.security')
                 ->with('error', 'Invalid action.'),
         };
@@ -209,16 +256,20 @@ class ProfileWebController
             ->with('success', 'Password changed successfully.');
     }
 
-    private function handleDeactivate(int $userId): RedirectResponse
+private function handleDeactivate(UpdateAccountRequest $request, int $userId): RedirectResponse
     {
-        $this->updateAccountUseCase->deactivateAccount($userId);
+        $this->updateAccountUseCase->deactivateAccount(
+            $userId,
+            $request->string('feedback_reason')->toString(),
+            $request->string('feedback')->toString(),
+        );
 
         auth()->guard('web')->logout();
         request()->session()->invalidate();
         request()->session()->regenerateToken();
 
         return redirect()->route('login')
-            ->with('status', 'Your account has been deactivated. Contact support to reactivate.');
+            ->with('status', 'Your account has been permanently deleted. We\'re sorry to see you go.');
     }
 }
 

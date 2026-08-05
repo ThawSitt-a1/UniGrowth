@@ -145,7 +145,7 @@
                                         <div class="fw-medium" style="color: #1a1a2e;">{{ Str::limit($item['question_text'] ?? 'N/A', 50) }}</div>
                                         <div class="small text-muted mt-1">
                                             <span class="badge-difficulty {{ $item['difficulty'] ?? 'medium' }}">{{ $item['difficulty'] ?? 'medium' }}</span>
-                                            <span class="ms-2">{{ $item['skill'] ?? '—' }}</span>
+                                            <span class="ms-2">{{ $item['skill']['title'] ?? '—' }}</span>
                                         </div>
                                     </div>
                                     <small class="text-muted">{{ isset($item['created_at']) ? \Carbon\Carbon::parse($item['created_at'])->format('M j') : '' }}</small>
@@ -187,7 +187,7 @@
                             <tr>
                                 <td class="px-4 text-secondary font-monospace">{{ $item['id'] }}</td>
                                 <td class="px-4 fw-medium">{{ Str::limit($item['question_text'] ?? 'N/A', 60) }}</td>
-                                <td class="px-4 d-none d-md-table-cell">{{ $item['skill'] ?? '—' }}</td>
+                                <td class="px-4 d-none d-md-table-cell">{{ $item['skill']['title'] ?? '—' }}</td>
                                 <td class="px-4 d-none d-sm-table-cell">
                                     <span class="badge-difficulty {{ $item['difficulty'] ?? 'medium' }}">{{ $item['difficulty'] ?? 'medium' }}</span>
                                 </td>
@@ -201,7 +201,7 @@
                                 <td class="px-4">
                                     <div class="actions-cell">
                                         <a href="{{ route('editor.questions.edit', $item['id']) }}" class="btn-editor-action edit"><i class="bi bi-pencil"></i>Edit</a>
-                                        <form method="POST" action="{{ route('editor.questions.delete', $item['id']) }}" class="m-0" onsubmit="return confirm('Delete this question?')">
+                                        <form method="POST" action="{{ route('editor.questions.delete', $item['id']) }}" class="m-0">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn-editor-action delete"><i class="bi bi-trash"></i>Delete</button>
@@ -214,8 +214,20 @@
                 </table>
             </div>
         </div>
-        @if(method_exists($content, 'links'))
-            <div class="mt-3">{{ $content->links() }}</div>
+        @if(($content['last_page'] ?? 1) > 1)
+            <nav class="mt-3" aria-label="Pagination">
+                <ul class="pagination pagination-sm mb-0">
+                    @foreach($content['links'] ?? [] as $link)
+                        <li class="page-item {{ $link['active'] ? 'active' : '' }} {{ empty($link['url']) ? 'disabled' : '' }}">
+                            @if(!empty($link['url']))
+                                <a class="page-link" href="{{ $link['url'] }}">{!! $link['label'] !!}</a>
+                            @else
+                                <span class="page-link">{!! $link['label'] !!}</span>
+                            @endif
+                        </li>
+                    @endforeach
+                </ul>
+            </nav>
         @endif
     @else
         <div class="content-card p-5 text-center">

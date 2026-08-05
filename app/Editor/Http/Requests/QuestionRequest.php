@@ -22,6 +22,48 @@ final class QuestionRequest extends FormRequest
             'difficulty' => ['required', 'string', 'in:easy,medium,hard'],
             'question_type' => ['required', 'string', 'in:multiple_choice,true_false'],
             'marks' => ['required', 'numeric', 'min:0', 'max:100'],
+            'options' => ['nullable', 'array'],
+            'options.*.option_text' => ['required_with:options', 'string', 'max:500'],
+            'options.*.is_correct' => ['required_with:options', 'boolean'],
+            'options.*.option_id' => ['nullable', 'integer', 'exists:options,id'],
         ];
+    }
+
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator) {
+            $options = $this->input('options', []);
+            $questionType = $this->input('question_type', 'multiple_choice');
+            $questionId = $this->input('question_id');
+
+            if (empty($options)) {
+                $validator->errors()->add('options', 'Options are required.');
+                return;
+            }
+
+            // Count correct answers
+            $correctCount = 0;
+            foreach ($options as $opt) {
+                if (!empty($opt['is_correct'])) {
+                    $correctCount++;
+                }
+            }
+
+            if ($correctCount === 0) {
+                $validator->errors()->add('options', 'You must mark exactly one option as correct.');
+            } elseif ($correctCount > 1) {
+                $validator->errors()->add('options', 'You can only mark one option as correct.');
+            }
+
+            // Validate option count by type
+            $expectedCount = $questionType === 'true_false' ? 2 : 5;
+            if (count($options) !== $expectedCount) {
+                $validator->errors()->add('options', sprintf(
+                    'A %s question must have exactly %d options.',
+                    str_replace('_', ' ', $questionType),
+                    $expectedCount
+                ));
+            }
+        });
     }
 }

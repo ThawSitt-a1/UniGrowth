@@ -44,6 +44,7 @@ final class TagRepository implements TagRepositoryInterface
 
         return Skill::query()
             ->whereNotIn('id', $enrolledSkillIds)
+            ->where('is_active', true)
             ->orderBy('created_at', 'desc')
             ->get();
     }

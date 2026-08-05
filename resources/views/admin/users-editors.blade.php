@@ -42,6 +42,28 @@
         </div>
     </div>
 
+<!-- Bulk Delete Unverified Users Card -->
+    <div class="content-card mb-4">
+        <div class="card-body-custom d-flex align-items-center justify-content-between flex-wrap gap-3">
+            <div>
+                <h6 class="fw-semibold mb-1" style="color: #1a1a2e;">
+                    <i class="bi bi-envelope-exclamation me-2 text-warning"></i>Unverified Users
+                </h6>
+                <p class="small text-muted mb-0">
+                    {{ $unverifiedUsersCount ?? 0 }} user(s) with unverified email.
+                    These users registered but never verified their email address.
+                </p>
+            </div>
+            @if(($unverifiedUsersCount ?? 0) > 0)
+                <button type="button" class="btn-admin-action delete" data-bs-toggle="modal" data-bs-target="#deleteUnverifiedModal">
+                    <i class="bi bi-trash3 me-1"></i>Delete All Unverified
+                </button>
+            @else
+                <span class="small text-muted fst-italic"><i class="bi bi-check-circle text-success me-1"></i>All users verified</span>
+            @endif
+        </div>
+    </div>
+
     <!-- Users & Editors Table -->
     <div class="content-card">
         <div class="card-header-custom">
@@ -132,28 +154,9 @@
                                                 </form>
                                             @endif
 
-                                            @if(($user['account_status'] ?? 'allowed') !== 'suspended')
-                                                <button type="button" class="btn-admin-action suspend"
-                                                        data-bs-toggle="modal"
-                                                        data-bs-target="#suspendModal"
-                                                        data-user-id="{{ $user['id'] }}"
-                                                        data-username="{{ $user['username'] }}">
-                                                    <i class="bi bi-pause-circle"></i>Suspend
-                                                </button>
-                                            @else
-                                                <form method="POST" action="{{ route('admin.users.status', $user['id']) }}" class="d-inline">
-                                                    @csrf
-                                                    <input type="hidden" name="status" value="allowed">
-                                                    <button type="submit" class="btn-admin-action restore">
-                                                        <i class="bi bi-arrow-counterclockwise"></i>Restore
-                                                    </button>
-                                                </form>
-                                            @endif
-
-                                            <!-- Role toggle -->
+<!-- Role toggle -->
                                             @if($user['role'] === 'editor')
-                                                <form method="POST" action="{{ route('admin.users.role', $user['id']) }}" class="d-inline"
-                                                      onsubmit="return confirm('Demote {{ $user['username'] }} to standard user?')">
+                                                <form method="POST" action="{{ route('admin.users.role', $user['id']) }}" class="d-inline">
                                                     @csrf
                                                     <input type="hidden" name="role" value="user">
                                                     <button type="submit" class="btn-admin-action demote">
@@ -161,8 +164,7 @@
                                                     </button>
                                                 </form>
                                             @else
-                                                <form method="POST" action="{{ route('admin.users.role', $user['id']) }}" class="d-inline"
-                                                      onsubmit="return confirm('Promote {{ $user['username'] }} to editor?')">
+                                                <form method="POST" action="{{ route('admin.users.role', $user['id']) }}" class="d-inline">
                                                     @csrf
                                                     <input type="hidden" name="role" value="editor">
                                                     <button type="submit" class="btn-admin-action promote">
@@ -170,6 +172,15 @@
                                                     </button>
                                                 </form>
                                             @endif
+
+                                            <!-- Delete -->
+                                            <button type="button" class="btn-admin-action delete"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#deleteUserModal"
+                                                    data-user-id="{{ $user['id'] }}"
+                                                    data-username="{{ $user['username'] }}">
+                                                <i class="bi bi-trash"></i>Delete
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>
@@ -181,7 +192,7 @@
         </div>
     </div>
 
-    <!-- Ban Modal -->
+<!-- Ban Modal -->
     <div class="modal fade modal-admin" id="banModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <form class="modal-content" method="POST" action="" id="banForm">
@@ -211,39 +222,68 @@
         </div>
     </div>
 
-    <!-- Suspend Modal -->
-    <div class="modal fade modal-admin" id="suspendModal" tabindex="-1">
+<!-- Delete User Confirmation Modal -->
+    <div class="modal fade modal-admin" id="deleteUserModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
-            <form class="modal-content" method="POST" action="" id="suspendForm">
+            <form class="modal-content" method="POST" action="" id="deleteUserForm">
                 @csrf
-                <input type="hidden" name="status" value="suspended">
                 <div class="modal-header">
-                    <h5 class="modal-title fw-semibold"><i class="bi bi-pause-circle me-2 text-warning"></i>Suspend User</h5>
+                    <h5 class="modal-title fw-semibold"><i class="bi bi-exclamation-triangle me-2 text-danger"></i>Delete User</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
+                    <div class="alert alert-danger d-flex align-items-center gap-2 mb-3" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill flex-shrink-0"></i>
+                        <span class="small">This action cannot be undone.</span>
+                    </div>
                     <p class="small text-muted mb-3">
-                        You are about to suspend <strong id="suspendUsername" class="text-dark"></strong>.
+                        You are about to permanently delete <strong id="deleteUsername" class="text-dark"></strong>.
+                        All associated data (enrollments, goals, habits, quiz attempts, scores, bug reports) will also be removed.
                     </p>
-                    <div class="mb-3">
-                        <label class="form-label-admin" for="suspendedUntil">Suspend Until</label>
-                        <input type="datetime-local" name="suspended_until" id="suspendedUntil" class="form-control form-control-admin">
-                        <div class="form-text small text-muted">Leave empty for indefinite suspension.</div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label-admin" for="suspendReason">Reason (optional)</label>
-                        <textarea name="reason" id="suspendReason" class="form-control form-control-admin" rows="2" placeholder="Why is this user being suspended?"></textarea>
-                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-sm btn-warning">
-                        <i class="bi bi-pause-circle me-1"></i>Suspend
+                    <button type="submit" class="btn btn-sm btn-danger">
+                        <i class="bi bi-trash me-1"></i>Delete Permanently
                     </button>
                 </div>
             </form>
         </div>
     </div>
+
+    <!-- Delete Unverified Users Confirmation Modal -->
+    <div class="modal fade modal-admin" id="deleteUnverifiedModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <form class="modal-content" method="POST" action="{{ route('admin.users.delete-unverified') }}">
+                @csrf
+                <div class="modal-header">
+                    <h5 class="modal-title fw-semibold"><i class="bi bi-envelope-exclamation me-2 text-warning"></i>Delete Unverified Users</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning d-flex align-items-center gap-2 mb-3" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill flex-shrink-0"></i>
+                        <span class="small">This action cannot be undone.</span>
+                    </div>
+                    <p class="small text-muted mb-3">
+                        You are about to permanently delete <strong>{{ $unverifiedUsersCount ?? 0 }}</strong> user(s) who have <strong>not verified their email</strong>.
+                        These users registered but never completed email verification.
+                    </p>
+                    <p class="small text-muted mb-0">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Admin accounts are excluded. Your own account is also excluded.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-sm btn-danger">
+                        <i class="bi bi-trash me-1"></i>Delete {{ $unverifiedUsersCount ?? 0 }} Unverified User(s)
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
 @endsection
 
 @push('scripts')
@@ -257,13 +297,13 @@
         document.getElementById('banForm').action = '{{ url('admin/users') }}/' + userId + '/status';
     });
 
-    // Suspend Modal — set the form action dynamically
-    document.getElementById('suspendModal')?.addEventListener('show.bs.modal', function (event) {
+    // Delete User Modal — set the form action dynamically
+    document.getElementById('deleteUserModal')?.addEventListener('show.bs.modal', function (event) {
         const button = event.relatedTarget;
         const userId = button.getAttribute('data-user-id');
         const username = button.getAttribute('data-username');
-        document.getElementById('suspendUsername').textContent = username;
-        document.getElementById('suspendForm').action = '{{ url('admin/users') }}/' + userId + '/status';
+        document.getElementById('deleteUsername').textContent = username;
+        document.getElementById('deleteUserForm').action = '{{ url('admin/users') }}/' + userId + '/delete';
     });
 </script>
 @endpush

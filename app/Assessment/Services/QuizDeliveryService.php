@@ -37,6 +37,10 @@ final class QuizDeliveryService
 
         $sanitizedQuestions = [];
         foreach ($questions as $question) {
+            // Skip questions with no options - they cannot be answered
+            if ($question->options->isEmpty()) {
+                continue;
+            }
             $sanitizedOptions = [];
             foreach ($question->options as $option) {
                 $sanitizedOptions[] = [

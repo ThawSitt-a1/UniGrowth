@@ -17,7 +17,7 @@ use App\Core\Recommendation\Controllers\RecommendationController;
 |
 */
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'auth.ensure', 'system.settings'])->group(function () {
     Route::get('/recommendations', [RecommendationController::class, 'getPersonalizedSuggestions'])
         ->name('api.recommendations');
 });
@@ -34,7 +34,7 @@ Route::middleware('auth')->group(function () {
 |
 */
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'auth.ensure', 'system.settings'])->group(function () {
     Route::get('/skills/{skill_id}/quiz', [AssessmentController::class, 'getQuiz'])
         ->name('api.skills.quiz')
         ->whereNumber('skill_id');
@@ -63,7 +63,7 @@ Route::middleware('auth')->group(function () {
 |
 */
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'auth.ensure', 'system.settings'])->group(function () {
     Route::get('/overview', [\App\Overview\Controllers\StudentOverviewController::class, 'getOverview'])
         ->name('api.overview');
 
@@ -88,7 +88,7 @@ Route::middleware('auth')->group(function () {
 |
 */
 
-Route::middleware('auth')->prefix('admin')->name('api.admin.')->group(function () {
+Route::middleware(['auth', 'auth.ensure', 'system.settings'])->prefix('admin')->name('api.admin.')->group(function () {
     Route::post('/seasons', [\App\Overview\Controllers\SeasonAdminController::class, 'createSeason'])
         ->name('seasons.create');
 

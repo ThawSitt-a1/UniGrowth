@@ -26,6 +26,7 @@ public function findByUserId(int $userId): ?array
             'academic_year' => $user->academic_year,
             'major' => $user->major,
             'university_name' => $user->university_name,
+            'description' => $user->description,
             'preferences' => $user->preferences,
             'social_links' => $user->relationLoaded('socialAccounts')
                 ? $user->socialAccounts->map(fn ($a) => [

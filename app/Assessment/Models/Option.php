@@ -15,6 +15,8 @@ final class Option extends Model
         'question_id',
         'option_text',
         'is_correct',
+        'editor_id',
+        'locked_by_admin',
     ];
 
     protected $casts = [

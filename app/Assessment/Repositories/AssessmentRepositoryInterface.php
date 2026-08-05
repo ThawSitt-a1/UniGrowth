@@ -11,11 +11,12 @@ use Illuminate\Support\Collection;
 interface AssessmentRepositoryInterface
 {
     /**
-     * Fetch up to 5 randomized active questions for a skill that the user has NOT answered before.
+     * Fetch randomized active questions for a skill that the user has NOT answered before.
+     * Returns up to 5 questions, but allows as few as 1 question to be available.
      *
      * @return Collection<int, \App\Assessment\Models\Question>
      *
-     * @throws \RuntimeException if fewer than 5 unseen questions are available for the skill.
+     * @throws \RuntimeException if no unseen questions are available for the skill.
      */
     public function fetchUnseenActiveQuestionsForSkill(int $userId, int $skillId): Collection;
 

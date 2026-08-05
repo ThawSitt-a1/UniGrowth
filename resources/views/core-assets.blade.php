@@ -75,10 +75,23 @@
                 @if (count($availableSkills['skills']) > 0)
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         @foreach ($availableSkills['skills'] as $skill)
-                            <div class="border rounded-lg p-5 bg-white shadow-sm hover:shadow-md transition-shadow {{ $skill['is_enrolled'] ? 'border-green-300 bg-green-50' : '' }}">
-                                <h3 class="text-lg font-bold text-gray-800 mb-2">{{ $skill['title'] }}</h3>
-                                <p class="text-sm text-gray-600 mb-3">{{ $skill['description'] }}</p>
-
+                            <div class="border rounded-lg p-5 bg-white shadow-sm hover:shadow-md transition-shadow {{ $skill['is_enrolled'] ? 'border-green-300 bg-green-50' : '' }} {{ $skill['is_active'] ? '' : 'border-yellow-300 bg-yellow-50' }}">
+                                <div class="flex flex-wrap items-start justify-between gap-3 mb-3">
+                                    <div>
+                                        <h3 class="text-lg font-bold text-gray-800 mb-2">{{ $skill['title'] }}</h3>
+                                        <p class="text-sm text-gray-600 mb-3">{{ $skill['description'] }}</p>
+                                    </div>
+                                    @if (!$skill['is_active'])
+                                        <span class="inline-flex items-center gap-2 rounded-full bg-yellow-100 text-yellow-800 text-xs font-semibold uppercase px-3 py-1">
+                                            <i class="bi bi-slash-circle"></i> Suspended
+                                        </span>
+                                    @elseif ($skill['is_enrolled'])
+                                        <span class="inline-block bg-green-100 text-green-800 text-sm px-4 py-2 rounded font-medium">
+                                            ✅ Enrolled
+                                        </span>
+                                    @endif
+                                </div>
+ 
                                 <!-- Tags -->
                                 @if (count($skill['tags']) > 0)
                                     <div class="flex flex-wrap gap-1 mb-3">
@@ -90,17 +103,26 @@
                                         @endforeach
                                     </div>
                                 @endif
-
+ 
+                                @if (!$skill['is_active'])
+                                    <p class="text-sm text-yellow-800 mb-3">{{ $skill['admin_comment'] ?? 'This skill has been temporarily suspended by administrators and is unavailable for enrollment.' }}</p>
+                                @endif
+ 
                                 <!-- Enrollment Count -->
                                 <p class="text-xs text-gray-500 mb-3">
                                     👥 {{ $skill['enrollments_count'] }} enrolled
                                 </p>
-
+ 
                                 <!-- Enroll / Enrolled Button -->
                                 @if ($skill['is_enrolled'])
                                     <span class="inline-block bg-green-100 text-green-800 text-sm px-4 py-2 rounded font-medium">
                                         ✅ Enrolled
                                     </span>
+                                @elseif (!$skill['is_active'])
+                                    <a href="{{ route('core-assets.skills.detail', $skill['slug'] ?? $skill['id']) }}"
+                                       class="inline-block bg-yellow-500 text-white px-4 py-2 rounded text-sm hover:bg-yellow-600 transition-colors">
+                                        View details
+                                    </a>
                                 @else
                                     <form action="{{ route('core-assets.action') }}" method="POST">
                                         @csrf
@@ -168,8 +190,7 @@
                                             </button>
                                         </form>
                                     @endif
-                                    <form action="{{ route('core-assets.action') }}" method="POST"
-                                          onsubmit="return confirm('Delete this goal?')">
+                                    <form action="{{ route('core-assets.action') }}" method="POST">
                                         @csrf
                                         <input type="hidden" name="type" value="goal">
                                         <input type="hidden" name="action" value="delete">

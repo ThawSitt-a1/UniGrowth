@@ -5,6 +5,19 @@ use Illuminate\Support\Facades\Auth;
 use App\Auth\Controllers\AuthController;
 use Illuminate\Http\Request;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\LandingController;
+
+/*
+|--------------------------------------------------------------------------
+| Landing Page (Unauthenticated Users)
+|--------------------------------------------------------------------------
+|
+| GET / — Public landing page for guests. Authenticated users are
+| redirected to /dashboard by the LandingController.
+|
+*/
+Route::get('/', LandingController::class)->name('home');
+
 /*
 |--------------------------------------------------------------------------
 | Password Reset Routes
@@ -61,6 +74,13 @@ Route::get('/register', function () {
 Route::post('/register', [AuthController::class, 'register'])
     ->middleware('throttle:5,1');
 
+Route::get('/maintenance', function () {
+    return view('maintenance', [
+        'platformName' => view()->shared('platformName') ?? 'UniGrowth',
+        'message' => 'The platform is temporarily unavailable while we perform system updates.',
+    ]);
+})->name('maintenance');
+
 /*
 |--------------------------------------------------------------------------
 | Email Verification Routes
@@ -88,7 +108,7 @@ Route::get('/email/verify/{id}/{hash}', function (Request $request, string $id, 
 Route::post('/email/verification-notification', function (Request $request) {
     $request->user()->sendEmailVerificationNotification();
     return back()->with('message', 'Verification link sent!');
-})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+})->middleware(['auth', 'auth.ensure', 'throttle:6,1'])->name('verification.send');
 
 /*
 |--------------------------------------------------------------------------
@@ -117,7 +137,9 @@ Route::get('/about-team', function () {
 | Dashboard & Utility Routes
 |--------------------------------------------------------------------------
 */
-Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'auth.ensure'])
+    ->name('dashboard');
 
 Route::post('/logout', function () {
     auth()->guard('web')->logout();
@@ -148,7 +170,7 @@ Route::post('/theme', [\App\Http\Controllers\ThemeController::class, 'toggle'])
 |
 */
 
-Route::middleware('auth')->prefix('core-assets')->name('core-assets.')->group(function () {
+Route::middleware(['auth', 'auth.ensure'])->prefix('core-assets')->name('core-assets.')->group(function () {
     Route::get('/', [\App\Core\Assets\Controllers\CoreAssetsController::class, 'index'])->name('index');
     Route::get('/skills', [\App\Core\Assets\Controllers\CoreAssetsController::class, 'skills'])->name('skills');
     Route::get('/skills/{identifier}', [\App\Core\Assets\Controllers\CoreAssetsController::class, 'skillDetail'])->name('skills.detail');
@@ -164,7 +186,7 @@ Route::middleware('auth')->prefix('core-assets')->name('core-assets.')->group(fu
 | Exercises ManageUserAssetsUseCase & GetUserActivityUseCase directly.
 |
 */
-Route::middleware('auth')->prefix('core/test')->name('core.test-assets.')->group(function () {
+Route::middleware(['auth', 'auth.ensure'])->prefix('core/test')->name('core.test-assets.')->group(function () {
     Route::get('/', [\App\Core\Http\Controllers\CoreTestAssetsController::class, 'index'])->name('index');
     Route::post('/goal/create', [\App\Core\Http\Controllers\CoreTestAssetsController::class, 'createGoal'])->name('goal.create');
     Route::post('/goal/complete', [\App\Core\Http\Controllers\CoreTestAssetsController::class, 'completeGoal'])->name('goal.complete');
@@ -182,7 +204,7 @@ Route::middleware('auth')->prefix('core/test')->name('core.test-assets.')->group
 | Exercises GenerateRecommendationsUseCase (Jaccard tag intersection).
 |
 */
-Route::middleware('auth')->prefix('core/test/recommendations')->name('core.test-recommendations.')->group(function () {
+Route::middleware(['auth', 'auth.ensure'])->prefix('core/test/recommendations')->name('core.test-recommendations.')->group(function () {
     Route::get('/', [\App\Core\Http\Controllers\CoreTestRecommendationsController::class, 'index'])->name('index');
 });
 
@@ -195,7 +217,7 @@ Route::middleware('auth')->prefix('core/test/recommendations')->name('core.test-
 | POST /overview/season/end — End current season (admin action)
 |
 */
-Route::middleware('auth')->prefix('overview')->name('overview.')->group(function () {
+Route::middleware(['auth', 'auth.ensure'])->prefix('overview')->name('overview.')->group(function () {
     Route::get('/', [\App\Overview\Controllers\StudentOverviewWebController::class, 'index'])->name('index');
     Route::post('/season/end', [\App\Overview\Controllers\StudentOverviewWebController::class, 'endSeason'])->name('season.end');
 });
@@ -209,7 +231,7 @@ Route::middleware('auth')->prefix('overview')->name('overview.')->group(function
 | Exercises QuizDeliveryService, EvaluateQuizUseCase, StudentDashboardService.
 |
 */
-Route::middleware('auth')->prefix('assessment/test')->name('assessment.test.')->group(function () {
+Route::middleware(['auth', 'auth.ensure'])->prefix('assessment/test')->name('assessment.test.')->group(function () {
     Route::get('/', [\App\Assessment\Controllers\TestAssessmentController::class, 'index'])->name('index');
     Route::post('/submit', [\App\Assessment\Controllers\TestAssessmentController::class, 'submit'])->name('submit');
 });
@@ -224,7 +246,7 @@ Route::middleware('auth')->prefix('assessment/test')->name('assessment.test.')->
 | Livewire is used for profile updates (picture, username, major, etc.).
 |
 */
-Route::middleware('auth')->prefix('profile')->name('profile.')->group(function () {
+Route::middleware(['auth', 'auth.ensure'])->prefix('profile')->name('profile.')->group(function () {
     Route::get('/', [\App\Profile\Controllers\ProfileWebController::class, 'show'])->name('show');
     Route::put('/', [\App\Profile\Controllers\ProfileWebController::class, 'update'])->name('update');
     Route::post('/avatar', [\App\Profile\Controllers\ProfileWebController::class, 'uploadAvatar'])->name('avatar.upload');
@@ -233,6 +255,8 @@ Route::middleware('auth')->prefix('profile')->name('profile.')->group(function (
     Route::get('/report', [\App\Profile\Controllers\ProfileWebController::class, 'downloadReport'])->name('report');
     Route::post('/bug-report', [\App\Profile\Controllers\ProfileWebController::class, 'submitBugReport'])->name('bug-report.submit');
     Route::put('/account', [\App\Profile\Controllers\ProfileWebController::class, 'updateAccount'])->name('account.update');
+    // Public profile route must be last so it doesn't capture static paths above.
+    Route::get('/{user}', [\App\Profile\Controllers\ProfileWebController::class, 'showPublic'])->name('public');
 });
 
 /*
@@ -244,17 +268,21 @@ Route::middleware('auth')->prefix('profile')->name('profile.')->group(function (
 | user management, content moderation, system settings, and bug reports.
 |
 */
-Route::middleware(['auth', \App\Http\Middleware\EnsureIsAdmin::class])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'auth.ensure', \App\Http\Middleware\EnsureIsAdmin::class])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [\App\Admin\Controllers\AdminConsoleController::class, 'dashboard'])->name('dashboard');
     Route::get('/users', [\App\Admin\Controllers\AdminConsoleController::class, 'users'])->name('users');
-    Route::post('/users/{id}/status', [\App\Admin\Controllers\AdminConsoleController::class, 'updateAccountStatus'])->name('users.status');
+Route::post('/users/{id}/status', [\App\Admin\Controllers\AdminConsoleController::class, 'updateAccountStatus'])->name('users.status');
     Route::post('/users/{id}/role', [\App\Admin\Controllers\AdminConsoleController::class, 'assignRole'])->name('users.role');
+Route::post('/users/{id}/delete', [\App\Admin\Controllers\AdminConsoleController::class, 'deleteUser'])->name('users.delete');
+    Route::post('/users/delete-unverified', [\App\Admin\Controllers\AdminConsoleController::class, 'deleteUnverifiedUsers'])->name('users.delete-unverified');
     Route::get('/content', [\App\Admin\Controllers\AdminConsoleController::class, 'content'])->name('content');
     Route::post('/content/action', [\App\Admin\Controllers\AdminConsoleController::class, 'contentAction'])->name('content.action');
     Route::post('/content/{skillId}/comment', [\App\Admin\Controllers\AdminConsoleController::class, 'addContentComment'])->name('content.comment');
     Route::get('/settings', [\App\Admin\Controllers\AdminConsoleController::class, 'settings'])->name('settings');
     Route::post('/settings/update', [\App\Admin\Controllers\AdminConsoleController::class, 'updateSettings'])->name('settings.update');
     Route::get('/bug-reports', [\App\Admin\Controllers\AdminConsoleController::class, 'bugReports'])->name('bug-reports');
+    Route::get('/bug-reports/{id}', [\App\Admin\Controllers\AdminConsoleController::class, 'showBugReport'])->name('bug-reports.show');
+    Route::get('/bug-reports/{id}/screenshot', [\App\Admin\Controllers\AdminConsoleController::class, 'showBugReportScreenshot'])->name('bug-reports.screenshot');
 
     // Editor Management
     Route::get('/editors', [\App\Admin\Controllers\AdminConsoleController::class, 'editors'])->name('editors');
@@ -263,8 +291,9 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureIsAdmin::class])->prefix('
     Route::post('/editors/{id}/delete', [\App\Admin\Controllers\AdminConsoleController::class, 'deleteEditor'])->name('editors.delete');
     Route::post('/editors/{id}/clear-remember', [\App\Admin\Controllers\AdminConsoleController::class, 'clearEditorRememberToken'])->name('editors.clear-remember');
 
-    // Bug Report Status
+// Bug Report Status & Delete
     Route::post('/bug-reports/{id}/status', [\App\Admin\Controllers\AdminConsoleController::class, 'updateBugReport'])->name('bug-reports.status');
+    Route::post('/bug-reports/{id}/delete', [\App\Admin\Controllers\AdminConsoleController::class, 'deleteBugReport'])->name('bug-reports.delete');
 
     // Season Management
     Route::post('/seasons/start', [\App\Admin\Controllers\AdminConsoleController::class, 'startSeason'])->name('seasons.start');
@@ -280,7 +309,7 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureIsAdmin::class])->prefix('
 | skills, questions, and options. Admins can also access these routes.
 |
 */
-Route::middleware(['auth', \App\Http\Middleware\EnsureIsEditor::class])->prefix('editor')->name('editor.')->group(function () {
+Route::middleware(['auth', 'auth.ensure', \App\Http\Middleware\EnsureIsEditor::class])->prefix('editor')->name('editor.')->group(function () {
     Route::get('/', [\App\Editor\Controllers\EditorConsoleController::class, 'dashboard'])->name('dashboard');
     Route::get('/skills', [\App\Editor\Controllers\EditorConsoleController::class, 'skillsIndex'])->name('skills.index');
     Route::get('/skills/create', [\App\Editor\Controllers\EditorConsoleController::class, 'editSkill'])->name('skills.create');

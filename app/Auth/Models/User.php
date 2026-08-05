@@ -36,10 +36,13 @@ protected $fillable = [
         'password',
         'role',
         'account_status',
+        'suspended_until',
         'platform_score',
         'academic_year',
         'major',
         'university_name',
+        'description',
+        'preferences',
         'agreed_to_terms',
         'email_verified_at',
         'remember_token',
@@ -59,6 +62,7 @@ protected function casts(): array
             'preferences' => 'array',
             'remember_token_expires_at' => 'datetime',
             'agreed_to_terms' => 'boolean',
+            'suspended_until' => 'datetime',
         ];
     }
 

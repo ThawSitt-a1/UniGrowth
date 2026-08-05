@@ -8,8 +8,7 @@ final class UserStatusDTO
 {
     public function __construct(
         public readonly int $targetUserId,
-        public readonly string $status,        // allowed, banned, suspended
-        public readonly ?string $suspendedUntil = null,
+        public readonly string $status,        // allowed, banned
         public readonly string $reason = '',
     ) {
     }
@@ -22,7 +21,6 @@ final class UserStatusDTO
         return [
             'target_user_id' => $this->targetUserId,
             'status' => $this->status,
-            'suspended_until' => $this->suspendedUntil,
             'reason' => $this->reason,
         ];
     }

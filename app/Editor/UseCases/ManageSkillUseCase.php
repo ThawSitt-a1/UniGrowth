@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Editor\UseCases;
 
+use App\Admin\Services\SystemSettingsServiceInterface;
 use App\Editor\DTOs\SkillDataDTO;
 use App\Editor\Repositories\SkillRepositoryInterface;
 
@@ -11,6 +12,7 @@ final class ManageSkillUseCase
 {
     public function __construct(
         private readonly SkillRepositoryInterface $skillRepository,
+        private readonly SystemSettingsServiceInterface $settingsService,
     ) {
     }
 
@@ -24,6 +26,21 @@ final class ManageSkillUseCase
                 throw new \RuntimeException('You do not own this skill.');
             }
         }
+
+        $isActive = ! $this->settingsService->isContentApprovalRequired();
+
+        $data = new SkillDataDTO(
+            skillId: $data->skillId,
+            editorId: $data->editorId,
+            title: $data->title,
+            slug: $data->slug,
+            description: $data->description,
+            tags: $data->tags,
+            content: $data->content,
+            resourceLink: $data->resourceLink,
+            resourceLinks: $data->resourceLinks,
+            isActive: $isActive,
+        );
 
         $saved = $this->skillRepository->save($data);
         if (!$saved) {

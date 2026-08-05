@@ -39,9 +39,9 @@ final class MetricsRepository implements MetricsRepositoryInterface
         }
         $activeUsers = $activeUsersQuery->count();
 
-        // Total banned/suspended users
+        // Total banned users
         $bannedQuery = User::query()
-            ->whereIn('account_status', ['banned', 'suspended']);
+            ->where('account_status', 'banned');
         if ($cutoff) {
             $bannedQuery->where('updated_at', '>=', $cutoff);
         }

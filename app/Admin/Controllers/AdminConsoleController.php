@@ -12,6 +12,7 @@ use App\Admin\Http\Requests\UpdateSystemSettingsRequest;
 use App\Admin\Services\AdminService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 final class AdminConsoleController
@@ -36,7 +37,8 @@ final class AdminConsoleController
             'users' => $this->adminService->getAllUsers($search),
             'search' => $search,
             'roleFilter' => $roleFilter,
-            'allUsersAndEditors' => $this->adminService->getAllUsersAndEditors($search, $roleFilter),
+'allUsersAndEditors' => $this->adminService->getAllUsersAndEditors($search, $roleFilter),
+            'unverifiedUsersCount' => $this->adminService->getUnverifiedUsersCount(),
             'editors' => $this->adminService->getAllEditors(),
             'allContent' => $this->adminService->getAllEditorContent(),
             'suspendedContent' => $this->adminService->getSuspendedContent(),
@@ -59,8 +61,7 @@ final class AdminConsoleController
     public function updateAccountStatus(Request $request, int $id): RedirectResponse
     {
         $request->validate([
-            'status' => ['required', 'string', 'in:allowed,banned,suspended'],
-            'suspended_until' => ['nullable', 'date', 'after:now'],
+            'status' => ['required', 'string', 'in:allowed,banned'],
             'reason' => ['nullable', 'string', 'max:1000'],
         ]);
 
@@ -68,7 +69,6 @@ final class AdminConsoleController
             $dto = new UserStatusDTO(
                 targetUserId: $id,
                 status: $request->input('status'),
-                suspendedUntil: $request->input('suspended_until'),
                 reason: $request->input('reason', ''),
             );
 
@@ -116,11 +116,11 @@ final class AdminConsoleController
     public function contentAction(ContentActionRequest $request): RedirectResponse
     {
         try {
-            $dto = new ContentActionDTO(
+$dto = new ContentActionDTO(
                 targetId: (int) $request->input('target_id'),
                 targetType: $request->input('target_type'),
                 action: $request->input('action'),
-                reason: $request->input('reason', ''),
+                reason: (string) ($request->input('reason') ?? ''),
             );
 
             $this->adminService->manageContent($dto);
@@ -182,7 +182,23 @@ final class AdminConsoleController
         return view('admin.bugs', $this->getSharedData(request()));
     }
 
-    public function updateBugReport(Request $request, int $id): RedirectResponse
+    public function showBugReport(Request $request, int $id): View
+    {
+        $report = $this->adminService->getBugReport($id);
+
+        return view('admin.bug-report', array_merge($this->getSharedData($request), [
+            'report' => $report,
+        ]));
+    }
+
+    public function showBugReportScreenshot(int $id)
+    {
+        $screenshotPath = $this->adminService->getBugReportScreenshotPath($id);
+
+        return Storage::disk('public')->response($screenshotPath);
+    }
+
+public function updateBugReport(Request $request, int $id): RedirectResponse
     {
         $request->validate([
             'status' => ['required', 'string', 'in:pending,reviewed,in_progress,resolved'],
@@ -198,6 +214,21 @@ final class AdminConsoleController
             return redirect()
                 ->back()
                 ->with('error', 'Failed to update bug report: ' . $e->getMessage());
+        }
+    }
+
+    public function deleteBugReport(Request $request, int $id): RedirectResponse
+    {
+        try {
+            $this->adminService->deleteBugReport($id);
+
+            return redirect()
+                ->back()
+                ->with('success', "Bug report #{$id} deleted successfully.");
+        } catch (\Exception $e) {
+            return redirect()
+                ->back()
+                ->with('error', 'Failed to delete bug report: ' . $e->getMessage());
         }
     }
 
@@ -255,7 +286,37 @@ final class AdminConsoleController
         }
     }
 
-    public function clearEditorRememberToken(int $id): RedirectResponse
+public function deleteUser(int $id): RedirectResponse
+    {
+        try {
+            $this->adminService->deleteUser($id);
+
+            return redirect()
+                ->back()
+                ->with('success', "User #{$id} deleted successfully.");
+        } catch (\Exception $e) {
+            return redirect()
+                ->back()
+                ->with('error', 'Failed to delete user: ' . $e->getMessage());
+        }
+    }
+
+    public function deleteUnverifiedUsers(): RedirectResponse
+    {
+        try {
+            $count = $this->adminService->deleteUnverifiedUsers();
+
+            return redirect()
+                ->back()
+                ->with('success', "{$count} unverified user(s) deleted successfully.");
+        } catch (\Exception $e) {
+            return redirect()
+                ->back()
+                ->with('error', 'Failed to delete unverified users: ' . $e->getMessage());
+        }
+    }
+
+public function clearEditorRememberToken(int $id): RedirectResponse
     {
         try {
             $this->adminService->clearEditorRememberToken($id);

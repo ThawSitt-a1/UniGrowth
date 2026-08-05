@@ -226,8 +226,8 @@ final class EditorConsoleController
         ]);
     }
 
-    /**
-     * Save question (create or update).
+/**
+     * Save question (create or update) with inline options.
      *
      * POST /editor/questions
      */
@@ -240,6 +240,21 @@ final class EditorConsoleController
             $difficulty = $request->input('difficulty');
             $marks = (float) $request->input('marks', $this->scoringService->calculateMarks($questionType, $difficulty));
 
+            // Process inline options - filter out empty options
+            $options = [];
+            $rawOptions = $request->input('options', []);
+            foreach ($rawOptions as $opt) {
+                $optionText = trim($opt['option_text'] ?? '');
+                if (empty($optionText)) {
+                    continue;
+                }
+                $options[] = [
+                    'option_text' => $optionText,
+                    'is_correct' => !empty($opt['is_correct']),
+                    'option_id' => !empty($opt['option_id']) ? (int) $opt['option_id'] : null,
+                ];
+            }
+
             $dto = new QuestionDataDTO(
                 questionId: $request->input('question_id'),
                 editorId: $editorId,
@@ -248,6 +263,7 @@ final class EditorConsoleController
                 difficulty: $difficulty,
                 questionType: $questionType,
                 marks: $marks,
+                options: $options,
             );
 
             $this->manageQuestionUseCase->execute($dto);

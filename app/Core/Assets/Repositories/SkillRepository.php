@@ -48,11 +48,13 @@ final class SkillRepository implements SkillRepositoryInterface
         }
 
         if ($sortBy === 'most_enrolled') {
-            // Sort by enrollment count descending
+            // Sort by active skills first, then enrollments count
             $query->withCount('enrollments')
+                  ->orderByDesc('is_active')
                   ->orderBy('enrollments_count', 'desc');
         } else {
-            $query->orderBy('created_at', 'desc');
+            $query->orderByDesc('is_active')
+                  ->orderBy('created_at', 'desc');
         }
 
         return $query->get();
@@ -63,8 +65,10 @@ final class SkillRepository implements SkillRepositoryInterface
      */
     public function getAllTags(): array
     {
-        // Fetch all distinct tags from the JSON column
-        $skills = Skill::query()->select('tags')->get();
+        // Fetch all distinct tags from active skills only.
+        $skills = Skill::query()
+            ->select('tags')
+            ->get();
 
         $allTags = [];
         foreach ($skills as $skill) {

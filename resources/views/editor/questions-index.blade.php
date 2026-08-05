@@ -37,8 +37,8 @@
                         @foreach($questions as $question)
                             <tr>
                                 <td class="px-4 text-secondary font-monospace">{{ $question->id }}</td>
-                                <td class="px-4 fw-medium" style="max-width: 250px;">
-                                    <span class="text-truncate d-inline-block" style="max-width: 100%;">{{ $question->question_text }}</span>
+                                <td class="px-4 fw-medium" style="max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{ $question->question_text }}">
+                                    {{ $question->question_text }}
                                 </td>
                                 <td class="px-4 d-none d-md-table-cell">{{ $question->skill->title ?? '—' }}</td>
                                 <td class="px-4 d-none d-sm-table-cell">
@@ -72,7 +72,7 @@
                                         <a href="{{ route('editor.questions.edit', $question->id) }}" class="btn-editor-action edit">
                                             <i class="bi bi-pencil"></i>
                                         </a>
-                                        <form method="POST" action="{{ route('editor.questions.delete', $question->id) }}" class="m-0" onsubmit="return confirm('Delete this question and all its options?')">
+                                        <form method="POST" action="{{ route('editor.questions.delete', $question->id) }}" class="m-0">
                                             @csrf
                                             <button type="submit" class="btn-editor-action delete" {{ $question->locked_by_admin ? 'disabled' : '' }}>
                                                 <i class="bi bi-trash"></i>

@@ -25,7 +25,11 @@
 }
 
 [data-bs-theme="dark"] body {
-    background-color: var(--bs-body-bg, #0f172a);
+    /* Use the `background` shorthand (not just `background-color`) so that
+       any light gradient declared in inline <style> blocks (e.g. the skills
+       page body gradient) is fully replaced instead of leaving the gradient
+       image visible behind the dark colour. */
+    background: var(--bs-body-bg, #0f172a) !important;
     color: var(--bs-body-color, #e2e8f0);
 }
 
@@ -545,7 +549,37 @@
     box-shadow: 0 18px 45px rgba(0, 0, 0, 0.35) !important;
 }
 [data-bs-theme="dark"] .hero-card {
+    /* Override the light gradient (linear-gradient(135deg, #f8fbff, #eef2ff))
+       declared in the skills page inline <style> block. */
     background: linear-gradient(135deg, #1e293b, #111827) !important;
+}
+
+/* Skills page — neutralise the light body gradient
+   (linear-gradient(180deg, #f8faff, #f3f6ff)) declared inline. The generic
+   body override above uses the `background` shorthand which already clears
+   it, but we add an explicit safety net for the two hex values used. */
+[data-bs-theme="dark"] [style*="background: linear-gradient(180deg, #f8faff"],
+[data-bs-theme="dark"] [style*="background: linear-gradient(180deg,#f8faff"] {
+    background: #0f172a !important;
+}
+
+/* Skills page — search icon colour */
+[data-bs-theme="dark"] .search-shell .search-icon {
+    color: #64748b !important;
+}
+
+/* Skills page — extra text colours used in inline styles */
+[data-bs-theme="dark"] [style*="color: #475569"] {
+    color: #cbd5e1 !important;
+}
+[data-bs-theme="dark"] [style*="color: #94a3b8"] {
+    color: #94a3b8 !important;
+}
+[data-bs-theme="dark"] [style*="color: #166534"] {
+    color: #6ee7b7 !important;
+}
+[data-bs-theme="dark"] [style*="color: #92400e"] {
+    color: #fcd34d !important;
 }
 [data-bs-theme="dark"] .pill {
     background-color: #312e81 !important;

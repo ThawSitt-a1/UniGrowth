@@ -196,13 +196,24 @@
                     <h5 class="modal-title fw-semibold" id="contentActionTitle">Confirm Action</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body">
+<div class="modal-body">
                     <p class="small text-muted mb-3" id="contentActionDescription">
                         Are you sure you want to perform this action?
                     </p>
                     <div class="mb-3">
-                        <label class="form-label-admin" for="contentActionReason">Reason (optional)</label>
+                        <label class="form-label-admin" for="contentActionReason">
+                            Reason
+                            <span id="reasonRequiredBadge" class="badge bg-danger ms-1" style="display: none; font-size: 0.6rem; vertical-align: middle;">Required</span>
+                        </label>
                         <textarea name="reason" id="contentActionReason" class="form-control form-control-admin" rows="2" placeholder="Explain your moderation decision..."></textarea>
+                        <div id="reasonHelpText" class="form-text small text-muted">
+                            <i class="bi bi-info-circle me-1"></i>
+                            <span id="reasonHelpMessage">Optional for non-suspension actions.</span>
+                        </div>
+                        <div id="reasonError" class="invalid-feedback" style="display: none;">
+                            <i class="bi bi-exclamation-circle me-1"></i>
+                            A reason is required when suspending content. Please explain why this content is being suspended.
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -277,6 +288,50 @@
         };
         submitBtn.className = 'btn btn-sm ' + (actionColors[action] || 'btn-primary');
         submitBtn.innerHTML = '<i class="bi bi-check-circle me-1"></i>' + actionLabel;
+
+        // Show/hide required badge and help text based on action
+        const reasonBadge = document.getElementById('reasonRequiredBadge');
+        const reasonHelp = document.getElementById('reasonHelpMessage');
+        const reasonError = document.getElementById('reasonError');
+        const reasonInput = document.getElementById('contentActionReason');
+
+        // Reset validation state
+        reasonInput.classList.remove('is-invalid');
+        reasonError.style.display = 'none';
+
+        if (action === 'SUSPEND') {
+            reasonBadge.style.display = 'inline';
+            reasonHelp.textContent = 'Required. Please explain why this content is being suspended.';
+            reasonInput.placeholder = 'Explain why this content is being suspended...';
+            reasonInput.setAttribute('required', 'required');
+        } else {
+            reasonBadge.style.display = 'none';
+            reasonHelp.textContent = 'Optional for non-suspension actions.';
+            reasonInput.placeholder = 'Explain your moderation decision...';
+            reasonInput.removeAttribute('required');
+        }
+    });
+
+    // Client-side validation for suspend action
+    document.getElementById('contentActionModal')?.querySelector('form')?.addEventListener('submit', function (event) {
+        const action = document.getElementById('contentAction').value;
+        const reasonInput = document.getElementById('contentActionReason');
+        const reasonError = document.getElementById('reasonError');
+
+        if (action === 'SUSPEND' && !reasonInput.value.trim()) {
+            event.preventDefault();
+            reasonInput.classList.add('is-invalid');
+            reasonError.style.display = 'block';
+            reasonInput.focus();
+        }
+    });
+
+    // Clear validation error on input
+    document.getElementById('contentActionReason')?.addEventListener('input', function () {
+        if (this.value.trim()) {
+            this.classList.remove('is-invalid');
+            document.getElementById('reasonError').style.display = 'none';
+        }
     });
 
     // Comment Modal

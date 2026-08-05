@@ -18,9 +18,7 @@ class ProfileUpdateManager extends Component
     public string $major = '';
     public string $academic_year = '';
     public string $university_name = '';
-    public string $facebook = '';
-    public string $tiktok = '';
-    public string $instagram = '';
+    public string $description = '';
 
     public bool $photo_preview_visible = false;
     public string $photo_preview_url = '';
@@ -33,9 +31,7 @@ class ProfileUpdateManager extends Component
             'major' => ['nullable', 'string', 'max:100'],
             'academic_year' => ['nullable', 'string', 'max:50'],
             'university_name' => ['nullable', 'string', 'max:150'],
-            'facebook' => ['nullable', 'string', 'max:255'],
-            'tiktok' => ['nullable', 'string', 'max:255'],
-            'instagram' => ['nullable', 'string', 'max:255'],
+            'description' => ['nullable', 'string', 'max:1000'],
         ];
     }
 
@@ -57,18 +53,7 @@ class ProfileUpdateManager extends Component
         $this->major = $user->major ?? '';
         $this->academic_year = $user->academic_year ?? '';
         $this->university_name = $user->university_name ?? '';
-
-        // Load social accounts as plain text handles
-        if ($user->relationLoaded('socialAccounts') && $user->socialAccounts->isNotEmpty()) {
-            foreach ($user->socialAccounts as $account) {
-                match ($account->platform) {
-                    'facebook' => $this->facebook = $account->url,
-                    'tiktok' => $this->tiktok = $account->url,
-                    'instagram' => $this->instagram = $account->url,
-                    default => null,
-                };
-            }
-        }
+        $this->description = $user->description ?? '';
     }
 
     public function updatedProfilePhoto(): void
@@ -100,20 +85,8 @@ class ProfileUpdateManager extends Component
             'major' => $this->major,
             'academic_year' => $this->academic_year,
             'university_name' => $this->university_name,
+            'description' => $this->description,
         ]);
-
-        // Update social accounts (stored as plain text handles)
-        $socialLinks = array_filter([
-            'facebook' => $this->facebook,
-            'tiktok' => $this->tiktok,
-            'instagram' => $this->instagram,
-        ]);
-
-        $managePrivacySocial = app(\App\Profile\UseCases\ManagePrivacyAndSocialUseCase::class);
-        $managePrivacySocial->execute($userId, 'public', collect($socialLinks)->map(fn ($url, $platform) => [
-            'platform' => $platform,
-            'url' => $url,
-        ])->values()->toArray());
 
         $this->dispatch('profile-updated', message: 'Profile updated successfully!');
     }

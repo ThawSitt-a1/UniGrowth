@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UniGrowth — Skills & Recommendations</title>
+    <title>{{ $platformName ?? 'UniGrowth' }} — Skills & Recommendations</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
@@ -28,6 +28,11 @@
         .skill-card { background: #fff; border-radius: 18px; border: 1px solid rgba(15, 23, 42, 0.06); padding: 1.25rem; transition: all 0.2s ease; height: 100%; }
         .skill-card:hover { transform: translateY(-3px); box-shadow: 0 16px 30px rgba(99, 102, 241, 0.12); border-color: rgba(99, 102, 241, 0.18); }
         .skill-card.enrolled { background: linear-gradient(135deg, #f0fdf4, #ecfdf5); border-color: #a7f3d0; }
+        .skill-card.suspended { background: #fffbeb; border-color: #f59e0b; }
+        .skill-card.suspended .card-note { color: #92400e; }
+        .skill-card.suspended .badge-suspended { background: #fde68a; color: #92400e; }
+        .skill-card.suspended .btn-suspended { background: #f59e0b; color: #fff; }
+        .skill-card.suspended .btn-suspended:hover { background: #d97706; }
         .tag-badge { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 0.7rem; font-weight: 600; background: #eef2ff; color: #4338ca; }
         .btn-gradient { background: linear-gradient(135deg, #6366f1, #7c3aed); color: #fff; border: none; border-radius: 10px; font-weight: 600; }
         .btn-gradient:hover { color: #fff; box-shadow: 0 8px 20px rgba(99, 102, 241, 0.22); }
@@ -62,7 +67,7 @@
 <body>
 <nav class="navbar navbar-expand-lg sticky-top" style="background: linear-gradient(135deg, #1e1b4b, #3730a3, #581c87);">
     <div class="container">
-        <a class="navbar-brand fw-bold text-white" href="{{ route('dashboard') }}"><i class="bi bi-mortarboard-fill me-2"></i>UniGrowth</a>
+        <a class="navbar-brand fw-bold text-white" href="{{ route('dashboard') }}"><i class="bi bi-mortarboard-fill me-2"></i>{{ $platformName ?? 'UniGrowth' }}</a>
         <button class="navbar-toggler border-0 p-1" type="button" data-bs-toggle="collapse" data-bs-target="#skillsNav" style="color: rgba(255,255,255,0.7);"><i class="bi bi-list fs-4"></i></button>
         <div class="collapse navbar-collapse" id="skillsNav">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0 gap-1">
@@ -113,7 +118,7 @@
                 <h2 class="fw-bold mt-3 mb-2" style="color: #111827;">Discover skill tracks and follow what fits you best</h2>
                 <p class="text-muted mb-3" style="max-width: 680px;">Browse the platform’s skills, enroll in the ones that matter, and explore personalized recommendations curated from your current learning interests.</p>
                 <div class="d-flex flex-wrap gap-2 mb-2">
-                    <span class="pill"><i class="bi bi-bookmark-check"></i> <span id="skillCountPill">{{ count($availableSkills['skills'] ?? []) }}</span> skills available</span>
+                    <span class="pill"><i class="bi bi-bookmark-check"></i> <span id="skillCountPill">{{ count($availableSkills['skills'] ?? []) }}</span> skill tracks</span>
                     <span class="pill"><i class="bi bi-stars"></i> {{ count($recommendations) }} recommendations</span>
                 </div>
             </div>
@@ -169,34 +174,45 @@
                     <div class="row g-3" id="skillsGrid">
                         @foreach ($availableSkills['skills'] as $skill)
                             <div class="col-12 col-md-6 skill-col" data-search="{{ Str::lower($skill['title'] . ' ' . $skill['description'] . ' ' . implode(' ', $skill['tags'] ?? [])) }}">
-                                <div class="skill-card {{ $skill['is_enrolled'] ? 'enrolled' : '' }} d-flex flex-column">
-                                    <a href="{{ route('core-assets.skills.detail', $skill['slug'] ?? $skill['id']) }}" class="text-decoration-none">
-                                        <div class="d-flex justify-content-between align-items-start gap-2">
-                                            <div>
-                                                <h5 class="fw-bold mb-2" style="color: #111827;">{{ $skill['title'] }}</h5>
-                                                <p class="small text-muted mb-3">{{ Str::limit($skill['description'], 100) }}</p>
-                                            </div>
-                                            @if ($skill['is_enrolled'])
-                                                <span class="badge rounded-pill bg-success-subtle text-success">Enrolled</span>
-                                            @endif
+                                <div class="skill-card {{ $skill['is_enrolled'] ? 'enrolled' : '' }} {{ $skill['is_active'] ? '' : 'suspended' }} d-flex flex-column">
+                                    <div class="d-flex justify-content-between align-items-start gap-2 mb-3">
+                                        <div>
+                                            <h5 class="fw-bold mb-2" style="color: #111827;">{{ $skill['title'] }}</h5>
+                                            <p class="small text-muted mb-3">{{ Str::limit($skill['description'], 100) }}</p>
                                         </div>
-                                        @if (!empty($skill['tags']))
-                                            <div class="d-flex flex-wrap gap-2 mb-3">
-                                                @foreach ($skill['tags'] as $skillTag)
-                                                    <span class="tag-badge">{{ $skillTag }}</span>
-                                                @endforeach
-                                            </div>
+                                        @if (!$skill['is_active'])
+                                            <span class="badge rounded-pill badge-suspended">Suspended</span>
+                                        @elseif ($skill['is_enrolled'])
+                                            <span class="badge rounded-pill bg-success-subtle text-success">Enrolled</span>
                                         @endif
-                                    </a>
+                                    </div>
+                                    @if (!empty($skill['tags']))
+                                        <div class="d-flex flex-wrap gap-2 mb-3">
+                                            @foreach ($skill['tags'] as $skillTag)
+                                                <span class="tag-badge">{{ $skillTag }}</span>
+                                            @endforeach
+                                        </div>
+                                    @endif
+                                    @if (!$skill['is_active'])
+                                        <div class="card-note mb-3 small fst-italic">
+                                            {{ $skill['admin_comment'] ?? 'This skill is currently suspended and cannot be accessed until it is restored.' }}
+                                        </div>
+                                    @endif
                                     <div class="d-flex align-items-center justify-content-between mt-auto pt-2 border-top">
                                         <a href="{{ route('core-assets.skills.detail', $skill['slug'] ?? $skill['id']) }}" class="muted-label text-decoration-none"><i class="bi bi-people me-1"></i>{{ $skill['enrollments_count'] }} enrolled</a>
-                                        <a href="{{ route('core-assets.skills.detail', $skill['slug'] ?? $skill['id']) }}" class="btn btn-sm {{ $skill['is_enrolled'] ? 'btn-outline-soft' : 'btn-gradient' }}">
-                                            @if($skill['is_enrolled'])
+                                        @if (!$skill['is_active'])
+                                            <a href="{{ route('core-assets.skills.detail', $skill['slug'] ?? $skill['id']) }}" class="btn btn-sm btn-suspended">
+                                                <i class="bi bi-eye me-1"></i>View details
+                                            </a>
+                                        @elseif($skill['is_enrolled'])
+                                            <a href="{{ route('core-assets.skills.detail', $skill['slug'] ?? $skill['id']) }}" class="btn btn-sm btn-outline-soft">
                                                 <i class="bi bi-eye me-1"></i>View
-                                            @else
+                                            </a>
+                                        @else
+                                            <a href="{{ route('core-assets.skills.detail', $skill['slug'] ?? $skill['id']) }}" class="btn btn-sm btn-gradient">
                                                 <i class="bi bi-plus-lg me-1"></i>Enroll
-                                            @endif
-                                        </a>
+                                            </a>
+                                        @endif
                                     </div>
                                 </div>
                             </div>

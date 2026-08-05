@@ -13,7 +13,7 @@ final class ContentActionRequest extends FormRequest
         return true;
     }
 
-    /**
+/**
      * @return array<string, mixed>
      */
     public function rules(): array
@@ -22,7 +22,26 @@ final class ContentActionRequest extends FormRequest
             'target_id' => ['required', 'integer', 'min:1'],
             'target_type' => ['required', 'string', 'in:QUESTION,SKILL'],
             'action' => ['required', 'string', 'in:SUSPEND,RESTORE,DELETE'],
-            'reason' => ['nullable', 'string', 'max:1000'],
+            'reason' => [
+                'nullable',
+                'string',
+                'max:1000',
+                function ($attribute, $value, $fail) {
+                    if ($this->input('action') === 'SUSPEND' && empty(trim((string) $value))) {
+                        $fail('A reason is required when suspending content. Please explain why this content is being suspended.');
+                    }
+                },
+            ],
+        ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'reason.required' => 'A reason is required when suspending content. Please explain why this content is being suspended.',
         ];
     }
 }

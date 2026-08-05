@@ -136,24 +136,14 @@ class QuizDeliveryServiceTest extends TestCase
         $this->assertNotContains((int) $questions[1]->id, $returnedIds);
     }
 
-    /** @test */
-    public function it_throws_exception_when_less_than_5_unseen_questions(): void
+/** @test */
+    public function it_throws_exception_when_no_unseen_questions(): void
     {
-        // Create only 2 questions (less than required 5)
-        for ($i = 1; $i <= 2; $i++) {
-            $q = Question::query()->create([
-                'skill_id' => $this->skill->id,
-                'question_text' => "Q{$i}?",
-                'difficulty' => 'easy',
-                'is_active' => true,
-            ]);
-            Option::query()->create(['question_id' => $q->id, 'option_text' => 'A', 'is_correct' => true]);
-            Option::query()->create(['question_id' => $q->id, 'option_text' => 'B', 'is_correct' => false]);
-        }
+        // Create 0 questions - should throw since none available
 
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage(
-            'Not enough unseen questions available for this skill. A minimum of 5 questions is required to generate a quiz.'
+            'No unseen questions available for this skill. All questions may have been answered already.'
         );
 
         $this->service->generateUnseenQuiz((int) $this->user->id, (int) $this->skill->id);

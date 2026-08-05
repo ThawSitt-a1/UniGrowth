@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UniGrowth — Student Development Platform</title>
+    <title>{{ $platformName ?? 'UniGrowth' }} — Student Development Platform</title>
     <!-- Bootstrap 5 CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
@@ -188,7 +188,7 @@
 
                     <!-- Main heading -->
 <h1 class="display-4 fw-bold text-white mb-3" style="line-height: 1.2;">
-                       UniGrowth
+                        {{ $platformName ?? 'UniGrowth' }}
                     </h1>
                     <p class="text-white-50 fs-5 mb-4" style="color: rgba(199,210,254,0.8) !important;">
                         Set goals, develop skills, and track your personal growth throughout your university journey.
@@ -202,7 +202,7 @@
                     </div>
 
                     <!-- Footer -->
-                    <p class="small" style="color: rgba(165,180,252,0.4);">&copy; {{ date('Y') }} UniGrowth. All rights reserved.</p>
+                    <p class="small" style="color: rgba(165,180,252,0.4);">&copy; {{ date('Y') }} {{ $platformName ?? 'UniGrowth' }}. All rights reserved.</p>
                 </div>
             </div>
 
@@ -222,6 +222,12 @@
                             <div class="alert alert-success d-flex align-items-center gap-2 py-3 px-4 mb-4 rounded-3 small" role="alert">
                                 <i class="bi bi-check-circle-fill flex-shrink-0"></i>
                                 <span>{{ session('status') }}</span>
+                            </div>
+                        @endif
+                        @if (session('error'))
+                            <div class="alert alert-danger d-flex align-items-center gap-2 py-3 px-4 mb-4 rounded-3 small" role="alert">
+                                <i class="bi bi-exclamation-triangle-fill flex-shrink-0"></i>
+                                <span>{{ session('error') }}</span>
                             </div>
                         @endif
 
@@ -252,7 +258,7 @@
                                             <i class="bi bi-person text-muted"></i>
                                         </span>
                                         <input type="text" name="username" id="username" value="{{ old('username') }}"
-                                            placeholder="johndoe"
+                                            placeholder="John"
                                             required autofocus
                                             class="form-control input-field @error('username') input-error @enderror" style="border-radius: 0 10px 10px 0;">
                                     </div>
@@ -269,10 +275,13 @@
                                             <i class="bi bi-envelope text-muted"></i>
                                         </span>
                                         <input type="email" name="email" id="email" value="{{ old('email') }}"
-                                            placeholder="you@university.edu"
+                                            placeholder="you@example.com"
                                             required
                                             class="form-control input-field @error('email') input-error @enderror" style="border-radius: 0 10px 10px 0;">
                                     </div>
+                                    <p id="emailAdminHint" class="text-danger small mt-1 mb-0 d-none">
+                                        <i class="bi bi-exclamation-triangle-fill me-1"></i>The email address cannot contain the word "admin".
+                                    </p>
                                     @error('email')
                                         <p class="text-danger small mt-1 mb-0">{{ $message }}</p>
                                     @enderror
@@ -286,7 +295,7 @@
                                             <i class="bi bi-lock text-muted"></i>
                                         </span>
                                         <input type="password" name="password" id="password"
-                                            placeholder="Min. 8 characters, 1 letter, 1 number, 1 special"
+                                            placeholder="Min. 12 characters, 1 letter, 1 number, 1 special"
                                             required
                                             class="form-control input-field @error('password') input-error @enderror" style="border-radius: 0 10px 10px 0;">
                                     </div>
@@ -408,5 +417,35 @@
         'btnClasses' => 'btn d-inline-flex align-items-center justify-content-center border-0 shadow-lg',
         'style' => 'position: fixed; bottom: 1.25rem; right: 1.25rem; width: 44px; height: 44px; border-radius: 50% !important; z-index: 1050; background: #fff; color: #374151;',
     ])
+
+    <script>
+        // Block the word "admin" (case-insensitive) from being entered in the email field.
+        document.addEventListener('DOMContentLoaded', function () {
+            const emailInput = document.getElementById('email');
+            const hint = document.getElementById('emailAdminHint');
+            if (!emailInput || !hint) return;
+
+            function checkAdmin() {
+                const value = emailInput.value || '';
+                const containsAdmin = /admin/i.test(value);
+
+                if (containsAdmin) {
+                    // Strip out the offending substring so the user literally cannot type it.
+                    emailInput.value = value.replace(/admin/gi, '');
+                    emailInput.classList.add('input-error');
+                    hint.classList.remove('d-none');
+                } else {
+                    emailInput.classList.remove('input-error');
+                    hint.classList.add('d-none');
+                }
+            }
+
+            emailInput.addEventListener('input', checkAdmin);
+            emailInput.addEventListener('paste', function (e) {
+                // Allow paste, then sanitize immediately afterwards.
+                setTimeout(checkAdmin, 0);
+            });
+        });
+    </script>
 </body>
 </html>

@@ -44,7 +44,7 @@
                                     @elseif($skill->is_active)
                                         <span class="badge-status active"><i class="bi bi-unlock me-1"></i>Active</span>
                                     @else
-                                        <span class="badge-status inactive">Inactive</span>
+                                        <span class="badge-status suspended"><i class="bi bi-slash-circle me-1"></i>Suspended</span>
                                     @endif
                                 </td>
                                 <td class="px-4 d-none d-sm-table-cell">

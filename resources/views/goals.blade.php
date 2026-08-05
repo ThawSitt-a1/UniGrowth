@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UniGrowth — My Goals & Habits</title>
+    <title>{{ $platformName ?? 'UniGrowth' }} — My Goals & Habits</title>
     <!-- Bootstrap 5 CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
@@ -315,7 +315,7 @@ NAVBAR — same as dashboard
 <nav class="navbar navbar-expand-lg sticky-top" style="background: linear-gradient(135deg, #1e1b4b, #3730a3, #581c87);">
     <div class="container">
         <a class="navbar-brand fw-bold text-white" href="{{ route('dashboard') }}">
-            <i class="bi bi-mortarboard-fill me-2"></i>UniGrowth
+            <i class="bi bi-mortarboard-fill me-2"></i>{{ $platformName ?? 'UniGrowth' }}
         </a>
 
         <button class="navbar-toggler border-0 p-1" type="button" data-bs-toggle="collapse" data-bs-target="#goalsNav" style="color: rgba(255,255,255,0.7);">
@@ -544,8 +544,7 @@ MAIN CONTENT
                                             <i class="bi bi-check2 me-1"></i>Complete
                                         </button>
                                     </form>
-                                    <form action="{{ route('core-assets.action') }}" method="POST"
-                                          onsubmit="return confirm('Delete this goal?')" class="m-0">
+                                    <form action="{{ route('core-assets.action') }}" method="POST" class="m-0">
                                         @csrf
                                         <input type="hidden" name="type" value="goal">
                                         <input type="hidden" name="action" value="delete">
@@ -769,8 +768,7 @@ MAIN CONTENT
                                                 </button>
                                             </form>
                                         @endif
-                                        <form action="{{ route('core-assets.action') }}" method="POST"
-                                              onsubmit="return confirm('Delete this habit and all its check-in history?')" class="m-0">
+                                        <form action="{{ route('core-assets.action') }}" method="POST" class="m-0">
                                             @csrf
                                             <input type="hidden" name="type" value="habit">
                                             <input type="hidden" name="action" value="delete">

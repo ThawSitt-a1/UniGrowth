@@ -49,75 +49,6 @@
 
             <hr class="my-4">
 
-            <!-- Localization & Formatting -->
-            <h6 class="fw-semibold mb-3" style="color: #1a1a2e;">
-                <i class="bi bi-globe me-2"></i>Localization & Formatting
-            </h6>
-            <div class="row g-3 mb-4">
-                <div class="col-md-4">
-                    <form method="POST" action="{{ route('admin.settings.update') }}">
-                        @csrf
-                        <label class="form-label-admin" for="default_language">Default Language</label>
-                        <div class="d-flex gap-2">
-                            <select name="setting_value" id="default_language" class="form-select form-control-admin flex-grow-1">
-                                <option value="en" {{ ($settings['default_language'] ?? 'en') === 'en' ? 'selected' : '' }}>English</option>
-                                <option value="es" {{ ($settings['default_language'] ?? '') === 'es' ? 'selected' : '' }}>Spanish</option>
-                                <option value="fr" {{ ($settings['default_language'] ?? '') === 'fr' ? 'selected' : '' }}>French</option>
-                                <option value="de" {{ ($settings['default_language'] ?? '') === 'de' ? 'selected' : '' }}>German</option>
-                                <option value="ja" {{ ($settings['default_language'] ?? '') === 'ja' ? 'selected' : '' }}>Japanese</option>
-                            </select>
-                            <input type="hidden" name="setting_key" value="default_language">
-                            <button type="submit" class="btn btn-sm btn-outline-primary">
-                                <i class="bi bi-check-lg"></i>
-                            </button>
-                        </div>
-                    </form>
-                </div>
-                <div class="col-md-4">
-                    <form method="POST" action="{{ route('admin.settings.update') }}">
-                        @csrf
-                        <label class="form-label-admin" for="app_timezone">Timezone</label>
-                        <div class="d-flex gap-2">
-                            <select name="setting_value" id="app_timezone" class="form-select form-control-admin flex-grow-1">
-                                <option value="UTC" {{ ($settings['app_timezone'] ?? 'UTC') === 'UTC' ? 'selected' : '' }}>UTC</option>
-                                <option value="America/New_York" {{ ($settings['app_timezone'] ?? '') === 'America/New_York' ? 'selected' : '' }}>America/New_York</option>
-                                <option value="America/Chicago" {{ ($settings['app_timezone'] ?? '') === 'America/Chicago' ? 'selected' : '' }}>America/Chicago</option>
-                                <option value="America/Denver" {{ ($settings['app_timezone'] ?? '') === 'America/Denver' ? 'selected' : '' }}>America/Denver</option>
-                                <option value="America/Los_Angeles" {{ ($settings['app_timezone'] ?? '') === 'America/Los_Angeles' ? 'selected' : '' }}>America/Los_Angeles</option>
-                                <option value="Europe/London" {{ ($settings['app_timezone'] ?? '') === 'Europe/London' ? 'selected' : '' }}>Europe/London</option>
-                                <option value="Europe/Berlin" {{ ($settings['app_timezone'] ?? '') === 'Europe/Berlin' ? 'selected' : '' }}>Europe/Berlin</option>
-                                <option value="Asia/Tokyo" {{ ($settings['app_timezone'] ?? '') === 'Asia/Tokyo' ? 'selected' : '' }}>Asia/Tokyo</option>
-                                <option value="Asia/Rangoon" {{ ($settings['app_timezone'] ?? '') === 'Asia/Rangoon' ? 'selected' : '' }}>Asia/Rangoon</option>
-                            </select>
-                            <input type="hidden" name="setting_key" value="app_timezone">
-                            <button type="submit" class="btn btn-sm btn-outline-primary">
-                                <i class="bi bi-check-lg"></i>
-                            </button>
-                        </div>
-                    </form>
-                </div>
-                <div class="col-md-4">
-                    <form method="POST" action="{{ route('admin.settings.update') }}">
-                        @csrf
-                        <label class="form-label-admin" for="date_display_format">Date Format</label>
-                        <div class="d-flex gap-2">
-                            <select name="setting_value" id="date_display_format" class="form-select form-control-admin flex-grow-1">
-                                <option value="Y-m-d" {{ ($settings['date_display_format'] ?? 'Y-m-d') === 'Y-m-d' ? 'selected' : '' }}>YYYY-MM-DD</option>
-                                <option value="m/d/Y" {{ ($settings['date_display_format'] ?? '') === 'm/d/Y' ? 'selected' : '' }}>MM/DD/YYYY</option>
-                                <option value="d/m/Y" {{ ($settings['date_display_format'] ?? '') === 'd/m/Y' ? 'selected' : '' }}>DD/MM/YYYY</option>
-                                <option value="M j, Y" {{ ($settings['date_display_format'] ?? '') === 'M j, Y' ? 'selected' : '' }}>Mon DD, YYYY</option>
-                            </select>
-                            <input type="hidden" name="setting_key" value="date_display_format">
-                            <button type="submit" class="btn btn-sm btn-outline-primary">
-                                <i class="bi bi-check-lg"></i>
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <hr class="my-4">
-
             <!-- Registration & Access -->
             <h6 class="fw-semibold mb-3" style="color: #1a1a2e;">
                 <i class="bi bi-person-plus me-2"></i>Registration & Access
@@ -200,8 +131,8 @@
             <h6 class="fw-semibold mb-3" style="color: #1a1a2e;">
                 <i class="bi bi-toggles me-2"></i>Feature Rollouts
             </h6>
-            <div class="row g-4 mb-4">
-                <div class="col-md-4">
+<div class="row g-4 mb-4">
+                <div class="col-md-6">
                     <form method="POST" action="{{ route('admin.settings.update') }}" class="toggle-form">
                         @csrf
                         @php $skillsKilled = ($settings['feature_kill_skills'] ?? 'false') === 'true'; @endphp
@@ -219,7 +150,25 @@
                         </div>
                     </form>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-6">
+                    <form method="POST" action="{{ route('admin.settings.update') }}" class="toggle-form">
+                        @csrf
+                        @php $goalsHabitsKilled = ($settings['feature_kill_goals_habits'] ?? 'false') === 'true'; @endphp
+                        <div class="d-flex align-items-center justify-content-between p-3 bg-light rounded-3">
+                            <div>
+                                <div class="fw-semibold small">Goals & Habits Enabled</div>
+                                <div class="small text-muted">Toggle goal and habit tracking features.</div>
+                            </div>
+                            <div class="form-check form-switch form-switch-admin">
+                                <input class="form-check-input toggle-checkbox toggle-kill-switch" type="checkbox" role="switch"
+                                       id="goals_habits_enabled" {{ !$goalsHabitsKilled ? 'checked' : '' }}>
+                                <input type="hidden" name="setting_value" value="{{ $goalsHabitsKilled ? 'true' : 'false' }}">
+                                <input type="hidden" name="setting_key" value="feature_kill_goals_habits">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-6">
                     <form method="POST" action="{{ route('admin.settings.update') }}" class="toggle-form">
                         @csrf
                         @php $quizKilled = ($settings['feature_kill_quiz'] ?? 'false') === 'true'; @endphp
@@ -237,72 +186,9 @@
                         </div>
                     </form>
                 </div>
-                <div class="col-md-4">
-                    <form method="POST" action="{{ route('admin.settings.update') }}" class="toggle-form">
-                        @csrf
-                        @php $seasonKilled = ($settings['feature_kill_season'] ?? 'false') === 'true'; @endphp
-                        <div class="d-flex align-items-center justify-content-between p-3 bg-light rounded-3">
-                            <div>
-                                <div class="fw-semibold small">Seasons Enabled</div>
-                                <div class="small text-muted">Toggle season/competition features.</div>
-                            </div>
-                            <div class="form-check form-switch form-switch-admin">
-                                <input class="form-check-input toggle-checkbox toggle-kill-switch" type="checkbox" role="switch"
-                                       id="seasons_enabled" {{ !$seasonKilled ? 'checked' : '' }}>
-                                <input type="hidden" name="setting_value" value="{{ $seasonKilled ? 'true' : 'false' }}">
-                                <input type="hidden" name="setting_key" value="feature_kill_season">
-                            </div>
-                        </div>
-                    </form>
-                </div>
             </div>
 
-            <hr class="my-4">
-
-            <!-- Content & Notifications -->
-            <h6 class="fw-semibold mb-3" style="color: #1a1a2e;">
-                <i class="bi bi-bell me-2"></i>Content & Notifications
-            </h6>
-            <div class="row g-4 mb-4">
-                <div class="col-md-6">
-                    <form method="POST" action="{{ route('admin.settings.update') }}" class="toggle-form">
-                        @csrf
-                        <div class="d-flex align-items-center justify-content-between p-3 bg-light rounded-3">
-                            <div>
-                                <div class="fw-semibold small">Content Approval Required</div>
-                                <div class="small text-muted">Edits by editors require admin approval.</div>
-                            </div>
-                            <div class="form-check form-switch form-switch-admin">
-                                <input class="form-check-input toggle-checkbox" type="checkbox" role="switch"
-                                       id="content_approval_required"
-                                       {{ ($settings['content_approval_required'] ?? 'false') === 'true' ? 'checked' : '' }}>
-                                <input type="hidden" name="setting_value" value="{{ ($settings['content_approval_required'] ?? 'false') === 'true' ? 'true' : 'false' }}">
-                                <input type="hidden" name="setting_key" value="content_approval_required">
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="col-md-6">
-                    <form method="POST" action="{{ route('admin.settings.update') }}" class="toggle-form">
-                        @csrf
-                        <div class="d-flex align-items-center justify-content-between p-3 bg-light rounded-3">
-                            <div>
-                                <div class="fw-semibold small">Notifications Enabled</div>
-                                <div class="small text-muted">Global master switch for email/SMS alerts.</div>
-                            </div>
-                            <div class="form-check form-switch form-switch-admin">
-                                <input class="form-check-input toggle-checkbox" type="checkbox" role="switch"
-                                       id="notifications_enabled"
-                                       {{ ($settings['notifications_enabled'] ?? 'true') === 'true' ? 'checked' : '' }}>
-                                <input type="hidden" name="setting_value" value="{{ ($settings['notifications_enabled'] ?? 'true') === 'true' ? 'true' : 'false' }}">
-                                <input type="hidden" name="setting_key" value="notifications_enabled">
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <hr class="my-4">
+<hr class="my-4">
 
             <!-- Maintenance Mode -->
             <h6 class="fw-semibold mb-3" style="color: #1a1a2e;">
@@ -349,7 +235,7 @@
                                 Started: {{ $seasonStatus['started_at'] ? \Carbon\Carbon::parse($seasonStatus['started_at'])->format('M j, Y') : 'N/A' }}<br>
                                 Ends: {{ $seasonStatus['ends_at'] ? \Carbon\Carbon::parse($seasonStatus['ends_at'])->format('M j, Y g:i A') : 'N/A' }}
                             </div>
-                            <form method="POST" action="{{ route('admin.seasons.end') }}" onsubmit="return confirm('End current season? Scores will be snapshotted, platform scores reset, and no new season will be created. You can start a new season at any time.')">
+                            <form method="POST" action="{{ route('admin.seasons.end') }}">
                                 @csrf
                                 <button type="submit" class="btn btn-sm btn-outline-warning">
                                     <i class="bi bi-stop-circle me-1"></i>End Season
