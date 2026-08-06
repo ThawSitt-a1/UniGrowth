@@ -80,4 +80,12 @@ final class SkillRepository implements SkillRepositoryInterface
             ->where('locked_by_admin', true)
             ->exists();
     }
+
+    public function isSuspended(int $id): bool
+    {
+        return Skill::query()
+            ->where('id', $id)
+            ->where('is_active', false)
+            ->exists();
+    }
 }

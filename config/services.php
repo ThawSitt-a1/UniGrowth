@@ -36,9 +36,13 @@ return [
     ],
 
 
-    'recaptcha' => [
+'recaptcha' => [
         'key' => env('RECAPTCHA_SITE_KEY'),
         'secret' => env('RECAPTCHA_SECRET_KEY'),
+    ],
+
+    'discord' => [
+        'invite_url' => env('DISCORD_INVITE_URL', 'https://discord.gg/unigrowth'),
     ],
 
 ];

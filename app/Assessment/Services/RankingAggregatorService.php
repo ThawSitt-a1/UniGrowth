@@ -32,10 +32,14 @@ final class RankingAggregatorService
         return $rawScore * $multiplier;
     }
 
-    /**
-     * Update student proficiency and platform score after an attempt.
+/**
+     * Update student proficiency after an attempt.
+     *
+     * The lifetime `platform_score` is incremented by the marks earned from
+     * correct answers on this attempt, so it accumulates across seasons and
+     * is never reset.
      */
-    public function updateProficiencyAndPlatformScore(int $studentId, int $skillId, float $weightedScore): void
+    public function updateProficiencyAndPlatformScore(int $studentId, int $skillId, float $weightedScore, float $marksEarned): void
     {
         $this->assessmentRepository->upsertStudentSkillProficiency(
             $studentId,
@@ -43,7 +47,7 @@ final class RankingAggregatorService
             $weightedScore,
         );
 
-        $this->assessmentRepository->updateUserPlatformScore($studentId);
+        $this->assessmentRepository->incrementUserPlatformScore($studentId, $marksEarned);
     }
 }
 

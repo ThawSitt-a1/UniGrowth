@@ -80,7 +80,7 @@ class="d-inline">
                                            @endif
 
                                            @if(($report['status'] ?? 'pending') === 'resolved')
-                                               <form method="POST" action="{{ route('admin.bug-reports.delete', $report['id']) }}" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this resolved bug report?');">
+<form method="POST" action="{{ route('admin.bug-reports.delete', $report['id']) }}" class="d-inline">
                                                    @csrf
                                                    <button type="submit" class="btn-admin-action delete">
                                                        <i class="bi bi-trash"></i>Delete

@@ -110,9 +110,9 @@
         </div>
         <div class="col-md-4">
             <label class="form-label profile-form-label">Academic Year</label>
-            <select wire:model="academic_year" class="form-select">
+<select wire:model="academic_year" class="form-select">
                 <option value="">Select year</option>
-                @foreach (['Freshman', 'Sophomore', 'Junior', 'Senior', 'Graduate', 'Postgraduate'] as $year)
+                @foreach (['1st Year', '2nd Year', '3rd Year', '4th Year', '5th Year', 'Graduate'] as $year)
                     <option value="{{ $year }}">{{ $year }}</option>
                 @endforeach
             </select>

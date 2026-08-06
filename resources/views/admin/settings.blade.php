@@ -127,6 +127,37 @@
 
             <hr class="my-4">
 
+            <!-- Content Publishing -->
+            <h6 class="fw-semibold mb-3" style="color: #1a1a2e;">
+                <i class="bi bi-megaphone me-2"></i>Content Publishing
+            </h6>
+            <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                    <form method="POST" action="{{ route('admin.settings.update') }}" class="toggle-form">
+                        @csrf
+                        <div class="d-flex align-items-center justify-content-between p-3 bg-light rounded-3">
+                            <div>
+                                <div class="fw-semibold small">Require Content Approval</div>
+                                <div class="small text-muted">
+                                    When enabled, newly created skills are auto-suspended until
+                                    an admin approves them via the Content Moderation console.
+                                    Questions are always published immediately.
+                                </div>
+                            </div>
+                            <div class="form-check form-switch form-switch-admin">
+                                <input class="form-check-input toggle-checkbox" type="checkbox" role="switch"
+                                       id="content_approval_required"
+                                       {{ ($settings['content_approval_required'] ?? 'false') === 'true' ? 'checked' : '' }}>
+                                <input type="hidden" name="setting_value" value="{{ ($settings['content_approval_required'] ?? 'false') === 'true' ? 'true' : 'false' }}">
+                                <input type="hidden" name="setting_key" value="content_approval_required">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <hr class="my-4">
+
             <!-- Feature Rollouts -->
             <h6 class="fw-semibold mb-3" style="color: #1a1a2e;">
                 <i class="bi bi-toggles me-2"></i>Feature Rollouts

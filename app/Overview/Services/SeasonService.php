@@ -139,10 +139,11 @@ daysRemaining: $season?->ends_at
         // 1. Snapshot all final scores
         $this->seasonScoreRepo->archiveScores($currentSeason->id);
 
-        // 2. Reset platform_score for all users
-        User::query()->update(['platform_score' => 0]);
-
-        // 3. End the current season
+        // 2. End the current season.
+        // NOTE: `platform_score` is intentionally NOT reset here. Since the
+        // ranking-system revision, `platform_score` is a *lifetime* score — the
+        // total marks earned from correct quiz answers since day one — and it
+        // accumulates across seasons to power the persistent rank titles.
         $this->seasonRepo->endSeason($currentSeason->id);
 
         // Return the ended (now inactive) season
@@ -217,6 +218,11 @@ daysRemaining: $season?->ends_at
                 $base['university_name'] = $user->university_name;
                 $base['major'] = $user->major;
             }
+
+            // Lifetime rank title (based on platform_score, never reset).
+            $base['rank_title'] = $user?->platform_score !== null
+                ? User::rankTitle((float) $user->platform_score)
+                : User::rankTitle(0.0);
 
             $leaderboard[] = $base;
         }

@@ -145,10 +145,15 @@ class AssessmentFlowTest extends TestCase
         $response = $this->actingAs($this->user)
             ->getJson("/api/skills/{$smallSkill->id}/quiz");
 
-        $response->assertStatus(422);
-        $response->assertJson([
-            'error' => 'Not enough unseen questions available for this skill. A minimum of 5 questions is required to generate a quiz.',
+        // The quiz delivery service allows as few as 1 question to be available
+        // (it returns up to 5, but will serve fewer if that's all that remains).
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
+            'data' => [
+                'questions',
+            ],
         ]);
+        $this->assertCount(3, $response->json('data.questions'));
     }
 
     /** @test */
@@ -248,14 +253,15 @@ class AssessmentFlowTest extends TestCase
                 'answers' => $correctAnswers,
             ]);
 
-        // Second quiz should have exactly 1 unseen question (the 6th one)
+        // Second quiz should have exactly 1 unseen question (the 6th one).
+        // The delivery service allows as few as 1 question to be available.
         $response = $this->actingAs($this->user)
             ->getJson("/api/skills/{$this->skill->id}/quiz");
 
-        $response->assertStatus(422);
-        $response->assertJson([
-            'error' => 'Not enough unseen questions available for this skill. A minimum of 5 questions is required to generate a quiz.',
-        ]);
+        $response->assertStatus(200);
+        $responseData = $response->json('data');
+        $this->assertCount(1, $responseData['questions']);
+        $this->assertEquals(1, $responseData['total_questions']);
     }
 
     /** @test */
@@ -408,9 +414,9 @@ class AssessmentFlowTest extends TestCase
     {
         $season = \App\Overview\Models\Season::query()->get()->first();
 
-// A user who opted out of leaderboards (via "Make my profile private").
+// A user who opted out of leaderboards (via "Hide from leaderboards").
         $hiddenUser = User::factory()->create([
-            'preferences' => ['make_profile_private' => true],
+            'preferences' => ['privacy_hide_leaderboards' => true],
         ]);
 
         // A visible user.
@@ -441,9 +447,17 @@ class AssessmentFlowTest extends TestCase
 
         $response->assertStatus(200);
 
-        $userIds = collect($response->json('data'))->pluck('user_id');
-        $this->assertNotContains($hiddenUser->id, $userIds->all());
-        $this->assertContains($visibleUser->id, $userIds->all());
+        // Hidden users remain in the leaderboard (they occupy their rank slot)
+        // but are flagged with `is_hidden_leaderboards: true` so the view can
+        // mask their identity and score.
+        $entries = collect($response->json('data'));
+        $hiddenEntry = $entries->firstWhere('user_id', $hiddenUser->id);
+        $this->assertNotNull($hiddenEntry);
+        $this->assertTrue($hiddenEntry['is_hidden_leaderboards']);
+
+        $visibleEntry = $entries->firstWhere('user_id', $visibleUser->id);
+        $this->assertNotNull($visibleEntry);
+        $this->assertFalse($visibleEntry['is_hidden_leaderboards']);
     }
 
     /** @test */

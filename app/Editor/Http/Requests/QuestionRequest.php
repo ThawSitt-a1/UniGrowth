@@ -23,8 +23,8 @@ final class QuestionRequest extends FormRequest
             'question_type' => ['required', 'string', 'in:multiple_choice,true_false'],
             'marks' => ['required', 'numeric', 'min:0', 'max:100'],
             'options' => ['nullable', 'array'],
-            'options.*.option_text' => ['required_with:options', 'string', 'max:500'],
-            'options.*.is_correct' => ['required_with:options', 'boolean'],
+            'options.*.option_text' => ['nullable', 'string', 'max:500'],
+            'options.*.is_correct' => ['nullable', 'boolean'],
             'options.*.option_id' => ['nullable', 'integer', 'exists:options,id'],
         ];
     }
@@ -32,9 +32,18 @@ final class QuestionRequest extends FormRequest
     public function withValidator($validator): void
     {
         $validator->after(function ($validator) {
-            $options = $this->input('options', []);
+            $rawOptions = $this->input('options', []);
             $questionType = $this->input('question_type', 'multiple_choice');
             $questionId = $this->input('question_id');
+
+            // Filter out empty option rows so blank/hidden rows don't count,
+            // matching the behaviour in EditorConsoleController::saveQuestion.
+            $options = [];
+            foreach ($rawOptions as $opt) {
+                if (!empty(trim((string) ($opt['option_text'] ?? '')))) {
+                    $options[] = $opt;
+                }
+            }
 
             if (empty($options)) {
                 $validator->errors()->add('options', 'Options are required.');
@@ -67,3 +76,4 @@ final class QuestionRequest extends FormRequest
         });
     }
 }
+

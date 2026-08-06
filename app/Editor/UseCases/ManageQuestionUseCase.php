@@ -23,6 +23,11 @@ final class ManageQuestionUseCase
             throw new \RuntimeException('You do not own the skill associated with this question.');
         }
 
+        // Editors cannot create or edit questions for a suspended skill.
+        if ($this->skillRepository->isSuspended($data->skillId)) {
+            throw new \RuntimeException('You cannot add or edit questions for a suspended skill.');
+        }
+
         if ($data->questionId) {
             if ($this->questionRepository->isLockedByAdmin($data->questionId)) {
                 throw new \RuntimeException('This question is locked by admin and cannot be edited.');
@@ -43,6 +48,23 @@ final class ManageQuestionUseCase
                 ));
             }
         }
+
+        // Questions always publish immediately when created; "Require Content
+        // Approval" only applies to skills. On edits, preserve the existing
+        // active state so an approved question stays live.
+        $isActive = $data->questionId ? $data->isActive : true;
+
+        $data = new QuestionDataDTO(
+            questionId: $data->questionId,
+            editorId: $data->editorId,
+            skillId: $data->skillId,
+            questionText: $data->questionText,
+            difficulty: $data->difficulty,
+            questionType: $data->questionType,
+            marks: $data->marks,
+            options: $data->options,
+            isActive: $isActive,
+        );
 
         $saved = $this->questionRepository->save($data);
         if (!$saved) {

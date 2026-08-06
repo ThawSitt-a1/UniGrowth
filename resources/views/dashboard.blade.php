@@ -6,10 +6,8 @@
     <title>{{ $platformName ?? 'UniGrowth' }} — Student Development Platform</title>
     <!-- Bootstrap 5 CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
+<!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <style>
         :root {
             --primary: #6366f1;
@@ -364,7 +362,7 @@
             border-radius: 50%;
             background: radial-gradient(circle, rgba(99,102,241,0.2) 0%, transparent 70%);
         }
-        .welcome-banner::after {
+.welcome-banner::after {
             content: '';
             position: absolute;
             bottom: -30%;
@@ -373,6 +371,79 @@
             height: 200px;
             border-radius: 50%;
             background: radial-gradient(circle, rgba(139,92,246,0.15) 0%, transparent 70%);
+        }
+
+        /* ===== Motivational Quote Banners ===== */
+        .quote-banner {
+            background: linear-gradient(135deg, #1e1b4b, #3730a3, #581c87);
+            border-radius: 18px;
+            padding: 1.75rem 2rem;
+            position: relative;
+            overflow: hidden;
+            color: #fff;
+            box-shadow: 0 12px 30px rgba(30,27,75,0.18);
+        }
+        .quote-banner::before {
+            content: '';
+            position: absolute;
+            top: -60%;
+            right: -10%;
+            width: 320px;
+            height: 320px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(99,102,241,0.25) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .quote-banner::after {
+            content: '';
+            position: absolute;
+            bottom: -50%;
+            left: 5%;
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(139,92,246,0.2) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .quote-banner-alt { background: linear-gradient(135deg, #0f172a, #1e1b4b, #4c1d95); }
+        .quote-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.18);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            color: #a5b4fc;
+            flex-shrink: 0;
+            backdrop-filter: blur(8px);
+        }
+        .quote-text {
+            font-size: 1.15rem;
+            font-weight: 600;
+            line-height: 1.5;
+            color: #fff;
+            position: relative;
+            z-index: 1;
+            margin-bottom: 0.75rem;
+        }
+        .quote-author {
+            display: inline-flex;
+            align-items: center;
+            font-weight: 700;
+            color: #c7d2fe;
+        }
+        .quote-occupation {
+            display: inline-flex;
+            align-items: center;
+            font-size: 0.85rem;
+            color: rgba(199,210,254,0.7);
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.12);
+            padding: 4px 12px;
+            border-radius: 999px;
         }
 
 @media (max-width: 767.98px) {
@@ -479,6 +550,67 @@
                 <span>{{ session('error') }}</span>
             </div>
         @endif
+
+<!-- Security Suggestion: Password Manager -->
+        <div class="alert alert-dismissible fade show d-flex align-items-center gap-3 mb-4 rounded-3 border-0 shadow-sm"
+             role="alert"
+             style="background: linear-gradient(135deg, #eef2ff, #f5f3ff); border: 1px solid rgba(99,102,241,0.15) !important;">
+            <div class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0"
+                 style="width: 42px; height: 42px; background: #6366f1;">
+                <i class="bi bi-shield-lock-fill fs-5 text-white"></i>
+            </div>
+            <div class="flex-grow-1">
+                <p class="mb-0 fw-semibold" style="color: #1f2937; font-size: 0.9rem;">Security Tip: Use a password manager</p>
+                <p class="mb-0 small text-muted" style="color: #4b5563 !important;">
+                    Using a password manager strengthens your resilience to credential theft — it generates and stores unique, strong passwords for every account so you never reuse or forget one.
+                </p>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="filter: none;"></button>
+        </div>
+
+<!-- ===== Motivational Quotes (Side-by-Side, Top) ===== -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <div class="quote-banner h-100">
+                    <div class="d-flex align-items-start gap-3 flex-wrap">
+                        <div class="quote-icon">
+                            <i class="bi bi-quote"></i>
+                        </div>
+                        <div class="flex-grow-1 min-width-0">
+                            <p class="quote-text mb-2">
+                                "Education is the most powerful weapon which you can use to change the world."
+                            </p>
+                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                                <span class="quote-author">
+                                    <i class="bi bi-person-fill me-1"></i>Nelson Mandela
+                                </span>
+                                <span class="quote-occupation">Anti-apartheid Revolutionary &amp; Former President of South Africa</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="quote-banner quote-banner-alt h-100">
+                    <div class="d-flex align-items-start gap-3 flex-wrap">
+                        <div class="quote-icon">
+                            <i class="bi bi-quote"></i>
+                        </div>
+                        <div class="flex-grow-1 min-width-0">
+                            <p class="quote-text mb-2">
+                                "The only way to do great work is to love what you do. If you haven't found it yet, keep looking. Don't settle."
+                            </p>
+                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                                <span class="quote-author">
+                                    <i class="bi bi-person-fill me-1"></i>Steve Jobs
+                                </span>
+                                <span class="quote-occupation">Entrepreneur &amp; Co-founder of Apple</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- Welcome Banner with Image on Left -->
         <div class="welcome-banner mb-4">
@@ -660,28 +792,38 @@
                         <h2 class="h5 fw-bold text-white mb-0">
                             <i class="bi bi-trophy-fill me-2"></i>Top 10 Leaderboard
                         </h2>
-                        <p class="text-white-50 small mb-0 mt-1">{{ $currentSeasonName }}</p>
+                        <p class="text-white-50 small mb-0 mt-1">
+                            @if (($leaderboardSource ?? 'season') === 'platform')
+                                Overall Top Scores
+                            @else
+                                {{ $currentSeasonName }}
+                            @endif
+                        </p>
                     </div>
                     <span class="badge text-decoration-none" style="background: rgba(255,255,255,0.2); color: #fff; font-size: 0.75rem; padding: 6px 14px; border-radius: 8px;">
-                        <i class="bi bi-trophy-fill me-1"></i>Season Standings
+                        <i class="bi bi-trophy-fill me-1"></i>
+                        @if (($leaderboardSource ?? 'season') === 'platform')
+                            Overall Standings
+                        @else
+                            Season Standings
+                        @endif
                     </span>
                 </div>
             </div>
 
-            @if ($hasActiveSeason && count($leaderboard) > 0)
+@if (count($leaderboard) > 0)
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0">
                         <thead class="table-light small text-muted text-uppercase">
-                            <tr>
+<tr>
                                 <th class="px-4" style="width: 60px;">#</th>
                                 <th class="px-4">User</th>
                                 <th class="px-4 text-end">Score</th>
-                                <th class="px-4 text-end">Skills</th>
                             </tr>
                         </thead>
                         <tbody>
 @foreach ($leaderboard as $entry)
-                                <tr class="{{ $entry['rank'] <= 3 ? 'table-warning' : '' }}">
+                                <tr @if ($entry['rank'] === 1) style="background: linear-gradient(90deg, #fef3c7, #fde68a, #fef3c7);" @elseif ($entry['rank'] === 2) style="background: linear-gradient(90deg, #f1f5f9, #e2e8f0, #f1f5f9);" @elseif ($entry['rank'] === 3) style="background: linear-gradient(90deg, #fef3c7, #ffedd5, #fef3c7);" @endif>
                                     <td class="px-4">
                                         @if ($entry['rank'] === 1)
                                             <span class="d-inline-flex align-items-center justify-content-center rounded-circle text-white fw-bold rank-glow-1" style="width: 32px; height: 32px; background: #f59e0b;">🥇</span>
@@ -715,13 +857,23 @@
                                                     </div>
                                                 @endif
                                                 <div>
-                                                    @if ($entry['is_profile_viewable'])
+                                                @if ($entry['is_profile_viewable'])
                                                         <a href="{{ route('profile.public', $entry['user_id']) }}" class="fw-semibold mb-0 text-decoration-none" style="color: #1f2937;">
                                                             {{ $entry['username'] }}
+                                                            @if (!empty($entry['rank_title']))
+                                                                <span data-bs-toggle="modal" data-bs-target="#rankTiersModal" style="cursor: pointer; color: #6366f1; font-weight: 600;" onclick="event.preventDefault(); event.stopPropagation();" title="View rank tiers">
+                                                                    [{{ $entry['rank_title'] }}]
+                                                                </span>
+                                                            @endif
                                                         </a>
                                                     @else
                                                         <p class="fw-semibold mb-0" style="color: #1f2937;">
                                                             {{ $entry['username'] }}
+                                                            @if (!empty($entry['rank_title']))
+                                                                <span data-bs-toggle="modal" data-bs-target="#rankTiersModal" style="cursor: pointer; color: #6366f1; font-weight: 600;" onclick="event.preventDefault(); event.stopPropagation();" title="View rank tiers">
+                                                                    [{{ $entry['rank_title'] }}]
+                                                                </span>
+                                                            @endif
                                                             @if ($entry['is_profile_private'])
                                                                 <i class="bi bi-lock-fill ms-1" style="color: #94a3b8; font-size: 0.8rem;" title="Private profile"></i>
                                                             @endif
@@ -734,37 +886,28 @@
                                             </div>
                                         @endif
                                     </td>
-                                    <td class="px-4 text-end">
+<td class="px-4 text-end">
                                         @if ($entry['is_hidden_leaderboards'])
                                             <span class="text-muted fst-italic small">Hidden</span>
                                         @else
-                                            <span class="fw-bold fs-5 {{ $entry['rank'] === 1 ? 'text-warning' : ($entry['rank'] === 2 ? 'text-secondary' : ($entry['rank'] === 3 ? 'text-danger' : 'text-dark')) }}">
+<span class="fw-bold fs-5" style="color: {{ $entry['rank'] === 1 ? '#d97706' : ($entry['rank'] === 2 ? '#64748b' : ($entry['rank'] === 3 ? '#b45309' : '#4f46e5')) }};">
                                                 {{ number_format($entry['season_score'], 1) }}
                                             </span>
                                         @endif
-                                    </td>
-                                    <td class="px-4 text-end text-muted">
-                                        @if ($entry['is_hidden_leaderboards']) &mdash; @else {{ $entry['skill_count'] }} @endif
                                     </td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
                 </div>
-            @elseif ($hasActiveSeason && count($leaderboard) === 0)
+            @elseif (count($leaderboard) === 0)
                 <div class="text-center py-5 text-muted bg-dots">
                     <i class="bi bi-inbox fs-1 d-block mb-2"></i>
-                    <p class="fw-semibold mb-1">No scores yet this season.</p>
+                    <p class="fw-semibold mb-1">No scores yet.</p>
                     <p class="small mb-3">Take a quiz to get on the leaderboard!</p>
                     <a href="{{ route('assessment.test.index') }}" class="btn btn-primary-custom btn-sm">
                         <i class="bi bi-pencil-square me-1"></i>Take a Quiz
                     </a>
-                </div>
-            @else
-                <div class="text-center py-5 text-muted bg-dots">
-                    <i class="bi bi-pause-circle fs-1 d-block mb-2"></i>
-                    <p class="fw-semibold mb-1">No active season running.</p>
-                    <p class="small mb-0">Contact an administrator to start a season.</p>
                 </div>
             @endif
         </div>
@@ -832,93 +975,122 @@
             </div>
         </div>
 
-        <!-- Performance Analytics & Charts -->
+<!-- Recently Enrolled Skills -->
         <div class="form-card p-4 mb-4">
-            <div class="d-flex align-items-center gap-2 mb-3">
-                <i class="bi bi-graph-up-arrow fs-4" style="color: #7c3aed;"></i>
-                <h5 class="fw-bold mb-0" style="color: #1f2937;">Performance Analytics</h5>
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-person-check fs-4" style="color: #059669;"></i>
+                    <h5 class="fw-bold mb-0" style="color: #1f2937;">Recently Enrolled Skills</h5>
+                </div>
+                <a href="{{ route('core-assets.skills') }}" class="btn btn-sm text-decoration-none" style="background: #ecfdf5; color: #059669; border-radius: 8px; font-weight: 600;">
+                    <i class="bi bi-arrow-right me-1"></i>Browse all skills
+                </a>
             </div>
-            @if (!empty($seasonInfo['is_active']))
-                <div class="row g-4">
-                    <div class="col-md-8">
-                        <div class="bg-light rounded-3 p-3" style="min-height: 260px;">
-                            <canvas id="quizPerformanceChart"></canvas>
+
+            @if (count($recentEnrolledSkills) > 0)
+                <div class="row g-3">
+                    @foreach ($recentEnrolledSkills->take(6) as $skill)
+                        <div class="col-6 col-md-4 col-lg-2">
+                            <a href="{{ route('core-assets.skills.detail', $skill['skill_id'] ?? '#') }}" class="text-decoration-none">
+                                <div class="stat-card h-100 text-center" style="cursor: pointer;">
+                                    <div class="d-inline-flex align-items-center justify-content-center rounded-3 mb-2" style="width: 44px; height: 44px; background: linear-gradient(135deg, #ecfdf5, #d1fae5);">
+                                        <i class="bi bi-bookmark-check-fill fs-5" style="color: #059669;"></i>
+                                    </div>
+                                    <div class="fw-semibold small" style="color: #1f2937; line-height: 1.3;">{{ Str::limit($skill['skill_title'] ?? 'Unknown', 22) }}</div>
+                                    @if (!empty($skill['enrolled_at']))
+                                        <div class="small text-muted mt-1" style="font-size: 0.7rem;">
+                                            <i class="bi bi-clock me-1"></i>{{ \Carbon\CarbonImmutable::parse($skill['enrolled_at'])->format('M d') }}
+                                        </div>
+                                    @endif
+                                </div>
+                            </a>
                         </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="bg-light rounded-3 p-3" style="min-height: 260px;">
-                            <canvas id="scoreDistributionChart"></canvas>
-                        </div>
-                    </div>
+                    @endforeach
                 </div>
             @else
-<div class="text-center py-5 text-muted bg-dots rounded-3">
-                    <i class="bi bi-pause-circle fs-1 d-block mb-3"></i>
-                    <p class="fw-semibold mb-1">No active season running.</p>
-                    <p class="small mb-0">Performance analytics will be available once an administrator starts a new season.</p>
+                <div class="text-center py-4 text-muted bg-dots rounded-3">
+                    <i class="bi bi-bookmark-plus fs-2 d-block mb-2"></i>
+                    <p class="fw-semibold mb-1">No enrolled skills yet.</p>
+                    <p class="small mb-3">Enroll in a skill to start your learning journey.</p>
+                    <a href="{{ route('core-assets.skills') }}" class="btn btn-primary-custom btn-sm">
+                        <i class="bi bi-plus-lg me-1"></i>Explore Skills
+                    </a>
                 </div>
             @endif
         </div>
 
-        <!-- Chart.js scripts -->
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                @if (!empty($seasonInfo['is_active']) && !empty($quizStats))
-                    // Quiz Performance Chart (Line)
-                    const perfCtx = document.getElementById('quizPerformanceChart');
-                    if (perfCtx) {
-                        const perfLabels = @json(array_column($quizStats, 'quiz_date'));
-                        const perfScores = @json(array_column($quizStats, 'score'));
-                        new Chart(perfCtx, {
-                            type: 'line',
-                            data: {
-                                labels: perfLabels,
-                                datasets: [{
-                                    label: 'Quiz Score',
-                                    data: perfScores,
-                                    borderColor: '#6366f1',
-                                    backgroundColor: 'rgba(99,102,241,0.1)',
-                                    fill: true,
-                                    tension: 0.3,
-                                    pointBackgroundColor: '#6366f1',
-                                }]
-                            },
-                            options: {
-                                responsive: true,
-                                maintainAspectRatio: false,
-                                plugins: { legend: { display: false } },
-                                scales: { y: { beginAtZero: true } }
-                            }
-                        });
-                    }
+        <!-- Newly Added Skills -->
+        <div class="form-card p-4 mb-4">
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-stars fs-4" style="color: #7c3aed;"></i>
+                    <h5 class="fw-bold mb-0" style="color: #1f2937;">Newly Added Skills</h5>
+                </div>
+                <a href="{{ route('core-assets.skills', ['sort' => 'newest']) }}" class="btn btn-sm text-decoration-none" style="background: #faf5ff; color: #7c3aed; border-radius: 8px; font-weight: 600;">
+                    <i class="bi bi-arrow-right me-1"></i>View all
+                </a>
+            </div>
 
-                    // Score Distribution Chart (Doughnut)
-                    const distCtx = document.getElementById('scoreDistributionChart');
-                    if (distCtx) {
-                        const scoreValues = @json(array_column($quizStats, 'score'));
-                        const passed = scoreValues.filter(s => s >= 50).length;
-                        const failed = scoreValues.filter(s => s < 50).length;
-                        new Chart(distCtx, {
-                            type: 'doughnut',
-                            data: {
-                                labels: ['Passed (>=50%)', 'Failed (<50%)'],
-                                datasets: [{
-                                    data: [passed, failed],
-                                    backgroundColor: ['#059669', '#ef4444'],
-                                    borderWidth: 0,
-                                }]
-                            },
-                            options: {
-                                responsive: true,
-                                maintainAspectRatio: false,
-                                plugins: { legend: { position: 'bottom' } }
-                            }
-                        });
-                    }
-                @endif
-            });
-        </script>
+            @if (count($newlyAddedSkills) > 0)
+                <div class="row g-3">
+                    @foreach ($newlyAddedSkills as $skill)
+                        <div class="col-6 col-md-4 col-lg-2">
+                            <a href="{{ route('core-assets.skills.detail', $skill['slug'] ?? $skill['skill_id']) }}" class="text-decoration-none">
+                                <div class="stat-card h-100" style="cursor: pointer;">
+                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                        <div class="d-inline-flex align-items-center justify-content-center rounded-3" style="width: 36px; height: 36px; background: linear-gradient(135deg, #faf5ff, #f3e8ff); flex-shrink: 0;">
+                                            <i class="bi bi-lightning-charge-fill" style="color: #7c3aed;"></i>
+                                        </div>
+                                        <div class="fw-semibold small" style="color: #1f2937; line-height: 1.3;">{{ Str::limit($skill['title'], 20) }}</div>
+                                    </div>
+                                    @if (!empty($skill['tags']))
+                                        <div class="d-flex flex-wrap gap-1">
+                                            @foreach (array_slice($skill['tags'], 0, 2) as $tag)
+                                                <span class="badge rounded-pill" style="background: #eef2ff; color: #4338ca; font-size: 0.6rem; padding: 3px 6px;">{{ $tag }}</span>
+                                            @endforeach
+                                        </div>
+                                    @endif
+                                </div>
+                            </a>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <div class="text-center py-4 text-muted bg-dots rounded-3">
+                    <i class="bi bi-journal-plus fs-2 d-block mb-2"></i>
+                    <p class="mb-0">No new skills have been added yet. Check back soon!</p>
+                </div>
+            @endif
+        </div>
+
+        <!-- Discord Community Section -->
+        <div class="row g-0 align-items-center mb-4 overflow-hidden rounded-4 position-relative" style="background: linear-gradient(135deg, #5865F2, #7c3aed); color: #fff;">
+            <div class="col-12 col-md-8 p-4 p-md-5">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <i class="bi bi-discord fs-3"></i>
+                    <span class="fw-bold" style="letter-spacing: 0.04em; text-transform: uppercase; font-size: 0.8rem;">Join our community</span>
+                </div>
+                <h4 class="fw-bold mb-2">Connect with fellow learners on Discord</h4>
+                <p class="mb-3" style="color: rgba(255,255,255,0.85); max-width: 620px;">
+                    Chat, share resources, ask questions, and grow together with the UniGrowth community. Get real-time support from peers and mentors.
+                </p>
+                <a href="{{ $discordLink }}" target="_blank" rel="noopener noreferrer" class="btn btn-lg" style="background: #fff; color: #5865F2; border-radius: 10px; font-weight: 700;">
+                    <i class="bi bi-discord me-2"></i>Join the Discord Server
+                </a>
+            </div>
+<div class="col-md-4 d-none d-md-flex align-items-center justify-content-center">
+                <div style="width: 120px; height: 120px; opacity: 0.25;">
+                    <i class="bi bi-discord" style="font-size: 7rem;"></i>
+                </div>
+            </div>
+        </div>
     </div>
+
+@include('partials.footer')
+
+    @include('partials.rank-tiers')
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
 

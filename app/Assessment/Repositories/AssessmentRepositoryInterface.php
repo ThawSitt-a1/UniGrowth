@@ -52,10 +52,18 @@ interface AssessmentRepositoryInterface
      */
     public function upsertStudentSkillProficiency(int $userId, int $skillId, float $score): void;
 
-    /**
+/**
      * Update user's total platform score (sum of all skill proficiencies).
      */
     public function updateUserPlatformScore(int $userId): void;
+
+    /**
+     * Increment a user's lifetime platform_score by the given marks earned.
+     *
+     * The lifetime score is the total marks earned from correct quiz answers
+     * since day one and is never reset (unless the user is deleted).
+     */
+    public function incrementUserPlatformScore(int $userId, float $marks): void;
 
     /**
      * Fetch leaderboard data — top 10 users by platform_score.

@@ -44,9 +44,72 @@
         .search-shell .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8; }
         .search-input { width: 100%; border: 1px solid #e2e8f0; border-radius: 12px; padding: 10px 14px 10px 42px; font-size: 0.92rem; outline: none; }
         .search-input:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12); }
-        .recommend-card .match-pill { background: #dcfce7; color: #166534; }
+.recommend-card .match-pill { background: #dcfce7; color: #166534; }
         .recommend-card .cold-pill { background: #fef3c7; color: #92400e; }
         .section-title { font-size: 1rem; font-weight: 700; color: #0f172a; }
+
+        /* ===== Motivational Quote Banners ===== */
+        .quote-banner {
+            background: linear-gradient(135deg, #1e1b4b, #3730a3, #581c87);
+            border-radius: 20px;
+            padding: 1.75rem 2rem;
+            position: relative;
+            overflow: hidden;
+            color: #fff;
+            box-shadow: 0 12px 30px rgba(30,27,75,0.18);
+        }
+        .quote-banner::before {
+            content: '';
+            position: absolute;
+            top: -60%;
+            right: -10%;
+            width: 320px;
+            height: 320px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(99,102,241,0.25) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .quote-banner-alt { background: linear-gradient(135deg, #0f172a, #1e1b4b, #4c1d95); }
+        .quote-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.18);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            color: #a5b4fc;
+            flex-shrink: 0;
+            backdrop-filter: blur(8px);
+        }
+        .quote-text {
+            font-size: 1.15rem;
+            font-weight: 600;
+            line-height: 1.5;
+            color: #fff;
+            position: relative;
+            z-index: 1;
+            margin-bottom: 0.75rem;
+        }
+        .quote-author {
+            display: inline-flex;
+            align-items: center;
+            font-weight: 700;
+            color: #c7d2fe;
+        }
+        .quote-occupation {
+            display: inline-flex;
+            align-items: center;
+            font-size: 0.85rem;
+            color: rgba(199,210,254,0.75);
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.12);
+            padding: 4px 12px;
+            border-radius: 999px;
+        }
+
 @media (max-width: 767.98px) {
             .hero-card { padding: 1.2rem !important; }
             .skill-card { padding: 1rem !important; }
@@ -111,6 +174,42 @@
         </div>
     @endif
 
+{{-- MOTIVATIONAL QUOTES (Side-by-Side, Top) --}}
+    <div class="row g-3 mb-4">
+        <div class="col-md-6">
+            <div class="quote-banner h-100">
+                <div class="d-flex align-items-start gap-3 flex-wrap">
+                    <div class="quote-icon"><i class="bi bi-quote"></i></div>
+                    <div class="flex-grow-1 min-width-0">
+                        <p class="quote-text mb-2">
+                            "Anyone who has never made a mistake has never tried anything new."
+                        </p>
+                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                            <span class="quote-author"><i class="bi bi-person-fill me-1"></i>Albert Einstein</span>
+                            <span class="quote-occupation">Theoretical Physicist</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="quote-banner quote-banner-alt h-100">
+                <div class="d-flex align-items-start gap-3 flex-wrap">
+                    <div class="quote-icon"><i class="bi bi-quote"></i></div>
+                    <div class="flex-grow-1 min-width-0">
+                        <p class="quote-text mb-2">
+                            "An investment in knowledge pays the best interest."
+                        </p>
+                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                            <span class="quote-author"><i class="bi bi-person-fill me-1"></i>Benjamin Franklin</span>
+                            <span class="quote-occupation">Founding Father, Inventor &amp; Statesman</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="hero-card p-4 p-lg-5 mb-4">
         <div class="row g-4 align-items-center">
             <div class="col-lg-7">
@@ -139,9 +238,9 @@
                 </div>
             </div>
         </div>
-    </div>
+</div>
 
-    <div class="row g-4">
+<div class="row g-4">
         <div class="col-xl-8">
             <div class="panel-card p-4 mb-4">
                 <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
@@ -272,10 +371,10 @@
                         <i class="bi bi-emoji-smile fs-2 d-block mb-2"></i>
                         <p class="mb-0">No recommendations yet. Enroll in a few skills to unlock this section.</p>
                     </div>
-                @endif
+@endif
             </div>
         </div>
-    </div>
+</div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

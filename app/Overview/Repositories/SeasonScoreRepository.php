@@ -51,8 +51,11 @@ public function upsertScore(int $userId, int $seasonId, float $score, int $quest
             return 0;
         }
 
-        $rank = SeasonScore::query()
+$rank = SeasonScore::query()
             ->where('season_id', $seasonId)
+            // Exclude admin/editor users from rank computation so they don't
+            // influence student positions on the dashboard.
+            ->whereHas('user', fn ($q) => $q->whereNotIn('role', [User::ROLE_ADMIN, User::ROLE_EDITOR]))
             ->where('total_score', '>', $userScore->total_score)
             ->count();
 
@@ -63,7 +66,12 @@ public function getLeaderboard(int $seasonId, int $limit = 10): Collection
     {
         return SeasonScore::query()
             ->where('season_id', $seasonId)
-            ->with('user:id,username,platform_score,avatar_path,academic_year,major,university_name,preferences')
+            // Users with a zero score must not appear on the leaderboard.
+            ->where('total_score', '>', 0)
+            // Only students (role = 'user') may appear on the leaderboard.
+            // Admins and editors are excluded so they never show up on the dashboard.
+            ->whereHas('user', fn ($q) => $q->whereNotIn('role', [User::ROLE_ADMIN, User::ROLE_EDITOR]))
+            ->with('user:id,username,platform_score,avatar_path,academic_year,major,university_name,preferences,role')
             ->orderBy('total_score', 'desc')
             ->limit(50)
             ->get()

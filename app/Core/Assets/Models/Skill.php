@@ -21,6 +21,7 @@ final class Skill extends Model
         'description',
         'content',
         'resource_link',
+        'resource_links',
         'is_active',
         'editor_id',
         'locked_by_admin',

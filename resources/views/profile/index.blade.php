@@ -717,6 +717,34 @@
             opacity: 1;
             margin: 1.25rem 0;
         }
+        .delete-modal-body {
+            padding: 1.5rem 1.75rem;
+        }
+        .delete-step-panel {
+            display: none;
+        }
+        .delete-step-panel.is-active {
+            display: block;
+        }
+        .modal-progress {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.75rem;
+            margin: 0 1.75rem 1rem;
+        }
+        .modal-progress .progress-step {
+            height: 6px;
+            border-radius: 999px;
+            background: var(--border-default);
+            transition: background-color var(--duration-fast) var(--ease-out);
+        }
+        .modal-progress .progress-step.is-active,
+        .modal-progress .progress-step.is-complete {
+            background: var(--primary);
+        }
+        .modal-progress .progress-step.is-active {
+            box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.25);
+        }
         .delete-ack {
             display: flex;
             align-items: flex-start;
@@ -935,6 +963,9 @@ MAIN CONTENT: Grid with Sidebar + Content
                         <a href="#bug-report" class="nav-link" data-section="bug-report">
                             <i class="bi bi-bug"></i>Bug Report
                         </a>
+                        <a href="{{ route('profile.security') }}" class="nav-link">
+                            <i class="bi bi-shield-lock"></i>Security
+                        </a>
                     </nav>
                 </div>
             </div>
@@ -958,7 +989,11 @@ MAIN CONTENT: Grid with Sidebar + Content
                         @endif
                     </div>
                     <div class="flex-grow-1">
-                        <h4 class="hero-name mb-1">{{ $profile['username'] ?? 'User' }}</h4>
+                        <h4 class="hero-name mb-1">{{ $profile['username'] ?? 'User' }}
+                            <span data-bs-toggle="modal" data-bs-target="#rankTiersModal" style="cursor: pointer; color: #6366f1; font-weight: 600; font-size: 0.9rem;" title="View rank tiers">
+                                [{{ \App\Auth\Models\User::rankTitle((float) ($profile['platform_score'] ?? 0)) }}]
+                            </span>
+                        </h4>
                         <p class="hero-meta mb-1 small">
                             <i class="bi bi-mortarboard me-1"></i>
                             {{ $profile['major'] ?? 'No major set' }}
@@ -1210,7 +1245,7 @@ A polished, stagger-stepped confirmation flow:
   5. Optional feedback for why the user is leaving.
 --}}
 <div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
         <div class="modal-content" style="overflow: hidden;">
             {{-- Tinted header band --}}
             <div class="delete-modal-header">
@@ -1223,15 +1258,123 @@ A polished, stagger-stepped confirmation flow:
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-
+ 
+            <div class="modal-progress" aria-hidden="true">
+                <span class="progress-step is-active"></span>
+                <span class="progress-step"></span>
+                <span class="progress-step"></span>
+                <span class="progress-step"></span>
+            </div>
+ 
             <form action="{{ route('profile.account.update') }}" method="POST" id="delete-account-form">
                 @csrf
                 @method('PUT')
                 <input type="hidden" name="action" value="deactivate">
-
-                <div class="modal-body">
-
+  
+                <div class="modal-body delete-modal-body">
+ 
                     {{-- STEP 1: Impact summary --}}
+                    <div class="delete-step-panel is-active" data-step="1">
+                        <div class="delete-step">
+                            <div class="delete-step-head">
+                                <span class="delete-step-badge">1</span>
+                                <span class="fw-semibold" style="color: var(--text-strong);">What will be deleted</span>
+                            </div>
+                            <div class="delete-impact-grid">
+                                <div class="impact-item">
+                                    <i class="bi bi-person-circle"></i>
+                                    <div>
+                                        <span class="d-block fw-semibold small">Profile & bio</span>
+                                        <small class="text-muted">Username, avatar, major, links</small>
+                                    </div>
+                                </div>
+                                <div class="impact-item">
+                                    <i class="bi bi-bullseye"></i>
+                                    <div>
+                                        <span class="d-block fw-semibold small">Goals & habits</span>
+                                        <small class="text-muted">All progress & streaks</small>
+                                    </div>
+                                </div>
+                                <div class="impact-item">
+                                    <i class="bi bi-journal-check"></i>
+                                    <div>
+                                        <span class="d-block fw-semibold small">Quiz attempts</span>
+                                        <small class="text-muted">Scores & history</small>
+                                    </div>
+                                </div>
+                                <div class="impact-item">
+                                    <i class="bi bi-trophy"></i>
+                                    <div>
+                                        <span class="d-block fw-semibold small">Season standings</span>
+                                        <small class="text-muted">Rank & leaderboard entry</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="delete-danger-note">
+                                <i class="bi bi-exclamation-triangle-fill"></i>
+                                <span><strong>Irreversible.</strong> You will not be able to log in or recover any of this data.</span>
+                            </div>
+                        </div>
+                    </div>
+ 
+                    <div class="delete-step-panel" data-step="2">
+                        <div class="delete-step">
+                            <div class="delete-step-head">
+                                <span class="delete-step-badge">2</span>
+                                <span class="fw-semibold" style="color: var(--text-strong);">Verify your identity</span>
+                            </div>
+                            <div class="mb-3 mb-0">
+                                <label for="del_current_password" class="form-label fw-semibold">Current Password <span class="text-danger">*</span></label>
+                                <input type="password" name="current_password" id="del_current_password" required class="form-control" autocomplete="current-password" placeholder="Enter your current password to confirm">
+                                <div class="form-text">You must enter your current password to verify your identity.</div>
+                            </div>
+                        </div>
+                    </div>
+ 
+                    <div class="delete-step-panel" data-step="3">
+                        <div class="delete-step">
+                            <div class="delete-step-head">
+                                <span class="delete-step-badge">3</span>
+                                <span class="fw-semibold" style="color: var(--text-strong);">Confirm your intent</span>
+                            </div>
+                            <div class="mb-3">
+                                <label for="del_confirmation" class="form-label fw-semibold">Type <code>DELETE</code> to confirm <span class="text-danger">*</span></label>
+                                <input type="text" name="confirmation" id="del_confirmation" required class="form-control" placeholder="Type DELETE here" autocomplete="off">
+                                <div class="form-text">Please type the word <strong>DELETE</strong> exactly as shown to confirm you understand.</div>
+                            </div>
+ 
+                            <div class="delete-ack">
+                                <input class="form-check-input" type="checkbox" name="agree_irreversible" value="1" id="del_agree_irreversible" required>
+                                <label class="form-check-label small" for="del_agree_irreversible" style="color: var(--text-strong);">
+                                    I understand that this action is <strong>irreversible</strong> and my account and all data will be permanently deleted.
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+ 
+                    <div class="delete-step-panel" data-step="4">
+                        <div class="delete-step">
+                            <div class="delete-step-head">
+                                <span class="delete-step-badge"><i class="bi bi-chat-heart"></i></span>
+                                <span class="fw-semibold" style="color: var(--text-strong);">Would you like to tell us why? <span class="text-muted fw-normal">(optional)</span></span>
+                            </div>
+                            <div class="mb-3">
+                                <select name="feedback_reason" id="del_feedback_reason" class="form-select">
+                                    <option value="">Select a reason...</option>
+                                    <option value="not_useful">Content is not useful</option>
+                                    <option value="too_expensive">Too expensive</option>
+                                    <option value="privacy">Privacy concerns</option>
+                                    <option value="found_alternative">Found a better alternative</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="mb-0">
+                                <textarea name="feedback" id="del_feedback" rows="3" maxlength="500" class="form-control" placeholder="Tell us more (optional)..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+ 
+                </div>
                     <div class="delete-step">
                         <div class="delete-step-head">
                             <span class="delete-step-badge">1</span>
@@ -1340,7 +1483,13 @@ A polished, stagger-stepped confirmation flow:
                     <button type="button" class="btn btn-light" data-bs-dismiss="modal" style="border-radius: var(--radius-md); border: 1px solid var(--border-default);">
                         <i class="bi bi-arrow-left me-1"></i>Keep my account
                     </button>
-                    <button type="submit" class="btn btn-danger btn-delete-solid" id="btn-delete-account">
+                    <button type="button" class="btn btn-secondary" id="delete-step-back" style="border-radius: var(--radius-md);">
+                        <i class="bi bi-arrow-left me-1"></i>Back
+                    </button>
+                    <button type="button" class="btn btn-primary" id="delete-step-next" style="border-radius: var(--radius-md);">
+                        <i class="bi bi-arrow-right me-1"></i>Next step
+                    </button>
+                    <button type="submit" class="btn btn-danger btn-delete-solid" id="btn-delete-account" disabled>
                         <i class="bi bi-trash3 me-1"></i>Permanently Delete My Account
                     </button>
                 </div>
@@ -1392,7 +1541,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Update active link on scroll
     window.addEventListener('scroll', updateActiveLink, { passive: true });
     updateActiveLink();
-
+ 
     // Scroll to section if URL has hash on page load
     if (window.location.hash) {
         const target = document.querySelector(window.location.hash);
@@ -1404,8 +1553,114 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
-
+ 
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const deleteModal = document.getElementById('deleteAccountModal');
+    const stepPanels = Array.from(document.querySelectorAll('.delete-step-panel'));
+    const progressSteps = Array.from(document.querySelectorAll('.modal-progress .progress-step'));
+    const passwordInput = document.getElementById('del_current_password');
+    const confirmationInput = document.getElementById('del_confirmation');
+    const agreeCheckbox = document.getElementById('del_agree_irreversible');
+    const backButton = document.getElementById('delete-step-back');
+    const nextButton = document.getElementById('delete-step-next');
+    const deleteButton = document.getElementById('btn-delete-account');
+ 
+    let currentStep = 1;
+    const totalSteps = stepPanels.length;
+ 
+    function showStep(step) {
+        currentStep = step;
+        stepPanels.forEach(panel => {
+            panel.classList.toggle('is-active', Number(panel.dataset.step) === step);
+        });
+        progressSteps.forEach((indicator, index) => {
+            const stepIndex = index + 1;
+            indicator.classList.toggle('is-active', stepIndex === step);
+            indicator.classList.toggle('is-complete', stepIndex < step);
+        });
+ 
+        if (backButton) {
+            backButton.style.display = step > 1 ? 'inline-flex' : 'none';
+        }
+        if (nextButton) {
+            nextButton.style.display = step < totalSteps ? 'inline-flex' : 'none';
+            nextButton.disabled = !canAdvance(step);
+        }
+        if (deleteButton) {
+            deleteButton.style.display = step === totalSteps ? 'inline-flex' : 'none';
+        }
+ 
+        if (step === 2 && passwordInput) {
+            passwordInput.focus();
+        }
+    }
+ 
+    function canAdvance(step) {
+        if (step === 1) {
+            return true;
+        }
+        if (step === 2) {
+            return passwordInput && passwordInput.value.trim().length > 0;
+        }
+        if (step === 3) {
+            return confirmationInput && confirmationInput.value.trim().toUpperCase() === 'DELETE' && agreeCheckbox && agreeCheckbox.checked;
+        }
+        return true;
+    }
+ 
+    function updateDeleteActionState() {
+        const hasPassword = passwordInput && passwordInput.value.trim().length > 0;
+        const confirmed = confirmationInput && confirmationInput.value.trim().toUpperCase() === 'DELETE';
+        const acknowledged = agreeCheckbox && agreeCheckbox.checked;
+        if (deleteButton) {
+            deleteButton.disabled = !(hasPassword && confirmed && acknowledged);
+        }
+        if (nextButton) {
+            nextButton.disabled = !canAdvance(currentStep);
+        }
+    }
+ 
+    if (backButton) {
+        backButton.addEventListener('click', function () {
+            if (currentStep > 1) {
+                showStep(currentStep - 1);
+            }
+        });
+    }
+ 
+    if (nextButton) {
+        nextButton.addEventListener('click', function () {
+            if (currentStep < totalSteps && canAdvance(currentStep)) {
+                showStep(currentStep + 1);
+            }
+        });
+    }
+ 
+    [passwordInput, confirmationInput, agreeCheckbox].forEach(function (element) {
+        if (!element) return;
+        element.addEventListener('input', updateDeleteActionState);
+        element.addEventListener('change', updateDeleteActionState);
+    });
+ 
+    if (deleteModal) {
+        deleteModal.addEventListener('shown.bs.modal', function () {
+            showStep(1);
+        });
+        deleteModal.addEventListener('hidden.bs.modal', function () {
+            if (passwordInput) passwordInput.value = '';
+            if (confirmationInput) confirmationInput.value = '';
+            if (agreeCheckbox) agreeCheckbox.checked = false;
+            updateDeleteActionState();
+        });
+    }
+    showStep(1);
+});
+</script>
+  
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+@include('partials.rank-tiers')
+
 @livewireScripts
 @include('partials.footer')
 </body>

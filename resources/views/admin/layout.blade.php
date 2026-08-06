@@ -272,11 +272,30 @@
             }
         });
 
-        // Theme toggle using Bootstrap's data-bs-theme
+// Theme toggle using Bootstrap's data-bs-theme
         const html = document.documentElement;
         const themeIcon = document.getElementById('themeIcon');
+        const adminDarkCssId = 'admin-dark-mode-css';
         const savedTheme = localStorage.getItem('adminTheme') || 'light';
+
+        // Load the admin dark-mode stylesheet when dark is active
+        function applyAdminDarkCss(theme) {
+            let link = document.getElementById(adminDarkCssId);
+            if (theme === 'dark') {
+                if (!link) {
+                    link = document.createElement('link');
+                    link.id = adminDarkCssId;
+                    link.rel = 'stylesheet';
+                    link.href = '{{ asset('css/admin-dark-mode.css') }}';
+                    document.head.appendChild(link);
+                }
+            } else if (link) {
+                link.remove();
+            }
+        }
+
         html.setAttribute('data-bs-theme', savedTheme);
+        applyAdminDarkCss(savedTheme);
         updateThemeIcon(savedTheme);
 
         document.getElementById('themeToggle').addEventListener('click', function() {
@@ -284,6 +303,7 @@
             const next = current === 'dark' ? 'light' : 'dark';
             html.setAttribute('data-bs-theme', next);
             localStorage.setItem('adminTheme', next);
+            applyAdminDarkCss(next);
             updateThemeIcon(next);
         });
 

@@ -122,11 +122,12 @@ final class EvaluateQuizUseCase
             $percentage,
         );
 
-// Update proficiency and platform score
+// Update proficiency (weighted) and lifetime platform score (raw marks earned)
         $this->rankingService->updateProficiencyAndPlatformScore(
             $studentId,
             $skillId,
             $weightedScore,
+            $rawScore,
         );
 
         // Record score in the current season

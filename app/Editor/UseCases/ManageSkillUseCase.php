@@ -12,7 +12,7 @@ final class ManageSkillUseCase
 {
     public function __construct(
         private readonly SkillRepositoryInterface $skillRepository,
-        private readonly SystemSettingsServiceInterface $settingsService,
+        private readonly SystemSettingsServiceInterface $systemSettings,
     ) {
     }
 
@@ -27,7 +27,10 @@ final class ManageSkillUseCase
             }
         }
 
-        $isActive = ! $this->settingsService->isContentApprovalRequired();
+        // When "Require Content Approval" is enabled, newly created skills are
+        // auto-suspended until an admin approves them via the content moderation
+        // console. On edits, preserve the existing active state.
+        $isActive = $data->skillId ? $data->isActive : ! $this->systemSettings->isContentApprovalRequired();
 
         $data = new SkillDataDTO(
             skillId: $data->skillId,

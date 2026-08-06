@@ -132,8 +132,8 @@
                         <label for="academic_year" class="form-label fw-semibold small text-secondary">Academic Year</label>
                         <select name="academic_year" id="academic_year"
                                 class="form-select">
-                            <option value="">Select year</option>
-                            @foreach (['Freshman', 'Sophomore', 'Junior', 'Senior', 'Graduate', 'Postgraduate'] as $year)
+<option value="">Select year</option>
+                            @foreach (['1st Year', '2nd Year', '3rd Year', '4th Year', '5th Year', 'Graduate'] as $year)
                                 <option value="{{ $year }}" {{ ($profile['academic_year'] ?? '') === $year ? 'selected' : '' }}>{{ $year }}</option>
                             @endforeach
                         </select>

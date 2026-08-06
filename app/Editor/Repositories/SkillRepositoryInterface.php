@@ -12,4 +12,5 @@ interface SkillRepositoryInterface
     public function deleteByOwner(int $id, int $editorId): bool;
     public function verifyOwnership(int $id, int $editorId): bool;
     public function isLockedByAdmin(int $id): bool;
+    public function isSuspended(int $id): bool;
 }

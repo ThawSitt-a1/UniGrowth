@@ -16,9 +16,13 @@ return new class extends Migration
             ->whereIn('role', ['superadmin', 'admins'])
             ->update(['role' => 'admin']);
 
-        // 2. For MySQL 8.0+ we can use MODIFY COLUMN; for older versions we use raw SQL
-        // MySQL doesn't support changing ENUM values via Schema builder, so use raw statement.
-        DB::statement("ALTER TABLE users MODIFY COLUMN role ENUM('user', 'admin', 'editor') NOT NULL DEFAULT 'user'");
+        // 2. For MySQL, use the raw MODIFY COLUMN statement since the Schema
+        // builder does not support changing ENUM values. For SQLite (used by
+        // the test-suite) the column is a plain TEXT column, so no change is
+        // required — the application layer validates role values in PHP.
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("ALTER TABLE users MODIFY COLUMN role ENUM('user', 'admin', 'editor') NOT NULL DEFAULT 'user'");
+        }
     }
 
     public function down(): void
@@ -28,7 +32,9 @@ return new class extends Migration
             ->where('role', 'editor')
             ->update(['role' => 'user']);
 
-        DB::statement("ALTER TABLE users MODIFY COLUMN role ENUM('admins', 'user', 'superadmin') NOT NULL DEFAULT 'user'");
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("ALTER TABLE users MODIFY COLUMN role ENUM('admins', 'user', 'superadmin') NOT NULL DEFAULT 'user'");
+        }
     }
 };
 

@@ -8,6 +8,8 @@ use App\Assessment\Services\QuizDeliveryService;
 use App\Assessment\Services\StudentDashboardService;
 use App\Assessment\UseCases\EvaluateQuizUseCase;
 use App\Core\Assets\Models\Skill;
+use App\Overview\Services\SeasonService;
+use App\Overview\Services\StudentOverviewService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -17,6 +19,8 @@ final class TestAssessmentController
         private readonly QuizDeliveryService $quizDeliveryService,
         private readonly EvaluateQuizUseCase $evaluateQuizUseCase,
         private readonly StudentDashboardService $dashboardService,
+        private readonly SeasonService $seasonService,
+        private readonly StudentOverviewService $overviewService,
     ) {
     }
 
@@ -29,7 +33,7 @@ final class TestAssessmentController
     {
         $studentId = (int) $request->user()->getAuthIdentifier();
         $skills = Skill::query()->orderBy('title')->get(['id', 'title']);
-        $selectedSkillId = (int) $request->query('skill_id');
+$selectedSkillId = (int) $request->query('skill_id');
         $quiz = null;
         $result = null;
         $dashboard = null;
@@ -45,8 +49,19 @@ final class TestAssessmentController
             }
         }
 
+        // Keep the assessment-specific progress metrics (attempts, avg, answered).
         $dashboard = $this->dashboardService->aggregateProgressMetrics($studentId);
-        $leaderboard = $this->dashboardService->fetchGlobalLeaderboard();
+
+        // Season-based data (same sources as the /dashboard page).
+        $seasonInfo = $this->seasonService->getCurrentSeasonInfo();
+        $overview = $this->overviewService->getStudentOverview($studentId);
+        $currentSeason = $this->seasonService->getCurrentSeason();
+        $seasonLeaderboard = $currentSeason
+            ? $this->seasonService->getSeasonLeaderboard($currentSeason->id, 10)
+            : [];
+
+        $seasonScore = $overview->totalSeasonScore;
+        $seasonRank = $overview->seasonRank;
 
         return view('assessment.test-assessment', [
             'skills' => $skills,
@@ -54,7 +69,12 @@ final class TestAssessmentController
             'quiz' => $quiz?->toArray(),
             'result' => $result,
             'dashboard' => $dashboard,
-            'leaderboard' => $leaderboard,
+            'leaderboard' => $seasonLeaderboard,
+            'seasonInfo' => $seasonInfo,
+            'hasActiveSeason' => $seasonInfo->isActive,
+            'currentSeasonName' => $seasonInfo->seasonName,
+            'seasonScore' => $seasonScore,
+            'seasonRank' => $seasonRank,
         ]);
     }
 

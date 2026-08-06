@@ -58,14 +58,18 @@ final class StudentDashboardService
     {
         $topUsers = $this->assessmentRepository->fetchLeaderboardData();
 
-        $leaderboard = [];
+$leaderboard = [];
         $rank = 1;
         foreach ($topUsers as $user) {
-            $leaderboard[] = [
+$leaderboard[] = [
                 'rank' => $rank++,
                 'user_id' => $user->id,
                 'username' => $user->username,
                 'platform_score' => $user->platform_score,
+                'rank_title' => User::rankTitle((float) $user->platform_score),
+                'avatar_path' => $user->avatar_path,
+                'university_name' => $user->university_name,
+                'major' => $user->major,
             ];
         }
 

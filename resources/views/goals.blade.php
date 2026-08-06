@@ -196,7 +196,7 @@
             border-color: rgba(99,102,241,0.2);
             box-shadow: 0 4px 16px rgba(99,102,241,0.06);
         }
-        .habit-icon {
+.habit-icon {
             width: 42px;
             height: 42px;
             border-radius: 12px;
@@ -271,13 +271,79 @@
         }
         .cal-nav-btn:hover { background: #eef2ff; border-color: #6366f1; }
 
-        .habit-stat-card {
+.habit-stat-card {
             background: #fff;
             border-radius: 12px;
             padding: 1rem;
             text-align: center;
             border: 1px solid rgba(0,0,0,0.04);
             box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+        }
+
+        /* ===== Motivational Quote Banners ===== */
+        .quote-banner {
+            background: linear-gradient(135deg, #1e1b4b, #3730a3, #581c87);
+            border-radius: 18px;
+            padding: 1.5rem 1.75rem;
+            position: relative;
+            overflow: hidden;
+            color: #fff;
+            box-shadow: 0 12px 30px rgba(30,27,75,0.15);
+        }
+        .quote-banner::before {
+            content: '';
+            position: absolute;
+            top: -60%;
+            right: -10%;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(99,102,241,0.25) 0%, transparent 70%);
+            pointer-events: none;
+        }
+.quote-banner-alt { background: linear-gradient(135deg, #0f172a, #1e1b4b, #4c1d95); }
+        .quote-banner-green { background: linear-gradient(135deg, #064e3b, #065f46, #047857); }
+        .quote-banner-cyan { background: linear-gradient(135deg, #164e63, #155e75, #0e7490); }
+        .quote-banner-teal { background: linear-gradient(135deg, #134e4a, #0f766e, #0891b2); }
+        .quote-banner-emerald { background: linear-gradient(135deg, #064e3b, #047857, #059669); }
+        .quote-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.18);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #a5b4fc;
+            flex-shrink: 0;
+            backdrop-filter: blur(8px);
+        }
+        .quote-text {
+            font-size: 1.05rem;
+            font-weight: 600;
+            line-height: 1.5;
+            color: #fff;
+            position: relative;
+            z-index: 1;
+            margin-bottom: 0.65rem;
+        }
+        .quote-author {
+            display: inline-flex;
+            align-items: center;
+            font-weight: 700;
+            color: #c7d2fe;
+        }
+        .quote-occupation {
+            display: inline-flex;
+            align-items: center;
+            font-size: 0.8rem;
+            color: rgba(199,210,254,0.75);
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.12);
+            padding: 3px 12px;
+            border-radius: 999px;
         }
 
         @media (max-width: 575.98px) {
@@ -383,6 +449,31 @@ MAIN CONTENT
 --}}
 <div class="container py-4">
 
+    <div class="row g-3 mb-5">
+        <div class="col-12">
+            <div class="row row-cols-1 row-cols-md-3 g-3">
+                <div class="col">
+                    <div class="quote-banner quote-banner">
+                        <p class="quote-text">“Style is a way to say who you are without having to speak.”</p>
+                        <div class="quote-author">Rachel Zoe</div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="quote-banner quote-banner-alt">
+                        <p class="quote-text">“Design is not just what it looks like and feels like. Design is how it works.”</p>
+                        <div class="quote-author">Steve Jobs</div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="quote-banner quote-banner-green">
+                        <p class="quote-text">“Good design is obvious. Great design is transparent.”</p>
+                        <div class="quote-author">Joe Sparano</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Flash Messages -->
     @if (session('success'))
         <div class="alert alert-success d-flex align-items-center gap-2 py-3 px-4 mb-4 rounded-3 small" role="alert">
@@ -449,9 +540,9 @@ MAIN CONTENT
                 @endif
             </button>
         </li>
-    </ul>
+</ul>
 
-    <div class="tab-content">
+<div class="tab-content">
 
         {{--
         ============================================================
@@ -459,6 +550,7 @@ MAIN CONTENT
         ============================================================
         --}}
         <div class="tab-pane fade show active" id="pane-goals" role="tabpanel" aria-labelledby="goals-tab">
+
             {{--
             CREATE GOAL FORM
             --}}
@@ -493,7 +585,7 @@ MAIN CONTENT
                         </div>
                     </div>
                 </form>
-            </div>
+</div>
 
             {{--
             ACTIVE GOALS
@@ -621,6 +713,7 @@ MAIN CONTENT
         --}}
         <div class="tab-pane fade" id="pane-habits" role="tabpanel" aria-labelledby="habits-tab">
 
+
             {{--
             CREATE HABIT FORM
             --}}
@@ -664,7 +757,7 @@ MAIN CONTENT
                 </form>
             </div>
 
-            @if (count($allHabits) > 0)
+@if (count($allHabits) > 0)
                 {{--
                 HABIT STATS
                 --}}
@@ -826,8 +919,10 @@ MAIN CONTENT
         </div>
     </div>
 
+    </div>
+
     <!-- Bottom Navigation -->
-    <div class="text-center mt-4">
+    <div class="text-center mt-4 mb-5">
         <a href="{{ route('dashboard') }}" class="btn btn-outline-custom" style="padding: 8px 24px;">
             <i class="bi bi-arrow-left me-1"></i>Back to Dashboard
         </a>

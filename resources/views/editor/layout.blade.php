@@ -158,17 +158,37 @@
                 document.getElementById('sidebarOverlay').classList.remove('show');
             }
         });
-        // Theme toggle using Bootstrap's data-bs-theme
+// Theme toggle using Bootstrap's data-bs-theme
         const html = document.documentElement;
         const themeIcon = document.getElementById('themeIcon');
+        const editorDarkCssId = 'editor-dark-mode-css';
         const savedTheme = localStorage.getItem('editorTheme') || 'light';
+
+        // Load the editor dark-mode stylesheet when dark is active
+        function applyEditorDarkCss(theme) {
+            let link = document.getElementById(editorDarkCssId);
+            if (theme === 'dark') {
+                if (!link) {
+                    link = document.createElement('link');
+                    link.id = editorDarkCssId;
+                    link.rel = 'stylesheet';
+                    link.href = '{{ asset('css/editor-dark-mode.css') }}';
+                    document.head.appendChild(link);
+                }
+            } else if (link) {
+                link.remove();
+            }
+        }
+
         html.setAttribute('data-bs-theme', savedTheme);
+        applyEditorDarkCss(savedTheme);
         updateThemeIcon(savedTheme);
         document.getElementById('themeToggle').addEventListener('click', function() {
             const current = html.getAttribute('data-bs-theme');
             const next = current === 'dark' ? 'light' : 'dark';
             html.setAttribute('data-bs-theme', next);
             localStorage.setItem('editorTheme', next);
+            applyEditorDarkCss(next);
             updateThemeIcon(next);
         });
         function updateThemeIcon(theme) {

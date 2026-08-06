@@ -24,23 +24,6 @@
             </div>
         </div>
 
-        <!-- Stickiness (DAU/MAU) -->
-        <div class="col-xl-3 col-lg-6 col-md-6">
-            <div class="stat-card">
-                <div class="stat-icon" style="background: #dbeafe; color: #1e40af;">
-                    <i class="bi bi-activity"></i>
-                </div>
-                <div class="stat-value">{{ number_format($m['dau'] ?? 0) }}</div>
-                <div class="stat-label">Daily Active Users</div>
-                <div class="stat-trend text-muted">
-                    <span>{{ number_format($m['mau'] ?? 0) }}</span> MAU &middot;
-                    <span class="fw-semibold" style="color: #059669;">
-                        {{ number_format(($m['stickiness_ratio'] ?? 0) * 100, 1) }}% stickiness
-                    </span>
-                </div>
-            </div>
-        </div>
-
         <!-- Popular Skill -->
         <div class="col-xl-3 col-lg-6 col-md-6">
             <div class="stat-card">
@@ -59,30 +42,54 @@
 
         <!-- Banned Users + Total Skills -->
         <div class="col-xl-3 col-lg-6 col-md-6">
-            <div class="stat-card d-flex flex-column justify-content-between" style="height: 100%;">
-                <div>
-                    <div class="d-flex align-items-center gap-3 mb-3">
-                        <div class="stat-icon" style="background: #fee2e2; color: #dc2626; margin-bottom: 0;">
-                            <i class="bi bi-shield-exclamation"></i>
-                        </div>
-                        <div>
-                            <div class="stat-value" style="font-size: 1.3rem;">{{ number_format($m['total_banned_users'] ?? 0) }}</div>
-                            <div class="stat-label">Banned Users</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="pt-3 border-top d-flex align-items-center gap-3">
-                    <div class="stat-icon" style="background: #ecfdf5; color: #059669; width: 36px; height: 36px; font-size: 1rem; margin-bottom: 0;">
-                        <i class="bi bi-book"></i>
-                    </div>
-                    <div>
-                        <div class="fw-bold" style="color: #1a1a2e;">{{ number_format($m['total_skills'] ?? 0) }}</div>
-                        <div class="stat-label">Total Skills</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+
+<div class="stat-card d-flex flex-column justify-content-between" style="height: 100%;">
+
+<div>
+
+<div class="d-flex align-items-center gap-3 mb-3">
+
+<div class="stat-icon" style="background: #fee2e2; color: #dc2626; margin-bottom: 0;">
+
+<i class="bi bi-shield-exclamation"></i>
+
+</div>
+
+<div>
+
+<div class="stat-value" style="font-size: 1.3rem;">{{ number_format($m['total_banned_users'] ?? 0) }}</div>
+
+<div class="stat-label">Banned Users</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="pt-3 border-top d-flex align-items-center gap-3">
+
+<div class="stat-icon" style="background: #ecfdf5; color: #059669; width: 36px; height: 36px; font-size: 1rem; margin-bottom: 0;">
+
+<i class="bi bi-book"></i>
+
+</div>
+
+<div>
+
+<div class="fw-bold" style="color: #1a1a2e;">{{ number_format($m['total_skills'] ?? 0) }}</div>
+
+<div class="stat-label">Total Skills</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
 
     <!-- Second Row: Quick Stats & Season Management -->
     <div class="row g-3 mb-4">

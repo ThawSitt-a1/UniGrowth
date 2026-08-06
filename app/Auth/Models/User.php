@@ -26,9 +26,42 @@ class User extends Authenticatable implements MustVerifyEmail
     }
     // Note: The 'CanResetPassword' trait is already included inside Authenticatable by default!
 
-    public const ROLE_ADMIN = 'admin';
+public const ROLE_ADMIN = 'admin';
     public const ROLE_EDITOR = 'editor';
     public const ROLE_USER = 'user';
+
+    /**
+     * Lifetime score rank tiers (ascending).
+     *
+     * The rank is based on the user's lifetime `platform_score` — the total
+     * marks earned from correct quiz answers since day one (never reset).
+     *
+     * @return array<int, array{title: string, min: int, max: int|null, icon: string}>
+     */
+    public static function rankTiers(): array
+    {
+        return [
+            ['title' => 'Beginner', 'min' => 0, 'max' => 499, 'icon' => '🌱'],
+            ['title' => 'Expert', 'min' => 500, 'max' => 1999, 'icon' => '🥈'],
+            ['title' => 'Master', 'min' => 2000, 'max' => 4999, 'icon' => '🥇'],
+            ['title' => 'Grandmaster', 'min' => 5000, 'max' => 9999, 'icon' => '🏆'],
+            ['title' => 'Guru', 'min' => 10000, 'max' => null, 'icon' => '👑'],
+        ];
+    }
+
+    /**
+     * Determine the rank title for a given lifetime score.
+     */
+    public static function rankTitle(float $score): string
+    {
+        foreach (self::rankTiers() as $tier) {
+            if ($score >= $tier['min'] && ($tier['max'] === null || $score <= $tier['max'])) {
+                return $tier['title'];
+            }
+        }
+
+        return 'Beginner';
+    }
 
 protected $fillable = [
         'username',

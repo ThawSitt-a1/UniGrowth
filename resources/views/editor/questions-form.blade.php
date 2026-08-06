@@ -118,14 +118,7 @@
                     </div>
                 </div>
 
-                <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
-                    <a href="{{ route('editor.questions.index') }}" class="btn btn-sm btn-secondary">Cancel</a>
-                    <button type="submit" class="btn btn-sm btn-primary">
-                        <i class="bi bi-check-lg me-1"></i>{{ $question ? 'Update Question' : 'Create Question' }}
-                    </button>
-                </div>
-            </form>
-        </div>
+</div>
     </div>
 
 <!-- Inline Options Section -->
@@ -236,13 +229,21 @@
                 @endfor
             </div>
 
-            @error('options')
+@error('options')
                 <div class="alert alert-danger py-2 mt-2">
                     <i class="bi bi-exclamation-triangle me-1"></i>{{ $message }}
                 </div>
             @enderror
+
+            <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+                <a href="{{ route('editor.questions.index') }}" class="btn btn-sm btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-sm btn-primary">
+                    <i class="bi bi-check-lg me-1"></i>{{ $question ? 'Update Question' : 'Create Question' }}
+                </button>
+            </div>
         </div>
     </div>
+    </form>
 @endsection
 
 @push('scripts')

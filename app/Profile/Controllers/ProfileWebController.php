@@ -79,6 +79,7 @@ public function showPublic(Request $request, int $user): View|RedirectResponse
                 'username' => $target->username,
                 'avatar_path' => $target->avatar_path,
                 'platform_score' => $target->platform_score,
+                'rank_title' => \App\Auth\Models\User::rankTitle((float) ($target->platform_score ?? 0)),
                 'academic_year' => $target->academic_year,
                 'major' => $target->major,
                 'university_name' => $target->university_name,
@@ -227,6 +228,14 @@ public function showPublic(Request $request, int $user): View|RedirectResponse
         }
 
         return view('profile.security', ['profile' => $profile->toArray()]);
+    }
+
+    /**
+     * Show the delete account wizard.
+     */
+    public function showDeleteAccount(): View
+    {
+        return view('profile.delete-account');
     }
 
     /**

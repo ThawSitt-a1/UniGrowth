@@ -49,6 +49,7 @@ class RankingAggregatorServiceTest extends TestCase
             (int) $this->user->id,
             (int) $this->skill->id,
             85.5,
+            42.0,
         );
 
         $this->assertDatabaseHas('student_skills', [
@@ -58,7 +59,7 @@ class RankingAggregatorServiceTest extends TestCase
         ]);
 
         $this->user->refresh();
-        $this->assertEquals(85.5, (float) $this->user->platform_score);
+        $this->assertEquals(42.0, (float) $this->user->platform_score);
     }
 
     /** @test */
@@ -70,15 +71,17 @@ class RankingAggregatorServiceTest extends TestCase
             (int) $this->user->id,
             (int) $this->skill->id,
             50.0,
+            30.0,
         );
 
         $this->service->updateProficiencyAndPlatformScore(
             (int) $this->user->id,
             (int) $skill2->id,
             75.0,
+            45.0,
         );
 
         $this->user->refresh();
-        $this->assertEquals(125.0, (float) $this->user->platform_score);
+        $this->assertEquals(75.0, (float) $this->user->platform_score);
     }
 }

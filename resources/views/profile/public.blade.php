@@ -292,8 +292,14 @@
                             <div class="avatar-initial-xl">{{ strtoupper(substr($p['username'] ?? 'U', 0, 1)) }}</div>
                         @endif
                     </div>
-                    <div class="text-center text-sm-start flex-grow-1">
-                        <h4 class="fw-bold mb-1" style="color: #1f2937;">{{ $p['username'] ?? 'User' }}</h4>
+                     <div class="text-center text-sm-start flex-grow-1">
+                        <h4 class="fw-bold mb-1" style="color: #1f2937;">{{ $p['username'] ?? 'User' }}
+                            @if (!empty($p['rank_title']))
+                                <span data-bs-toggle="modal" data-bs-target="#rankTiersModal" style="cursor: pointer; color: #6366f1; font-weight: 600; font-size: 0.9rem;" title="View rank tiers">
+                                    [{{ $p['rank_title'] }}]
+                                </span>
+                            @endif
+                        </h4>
                         @if (!empty($p['major']) || !empty($p['university_name']))
                             <p class="text-muted small mb-1">
                                 @if (!empty($p['major']))<i class="bi bi-mortarboard me-1"></i>{{ $p['major'] }}@endif
@@ -369,12 +375,25 @@
                                 <p class="mb-0 text-muted small">{{ number_format($p['platform_score'] ?? 0, 1) }}</p>
                             </div>
                         </div>
+                        <div class="info-item">
+                            <div class="info-icon"><i class="bi bi-stars"></i></div>
+                            <div>
+                                <p class="mb-0 small fw-semibold" style="color: #334155;">Rank</p>
+                                <p class="mb-0 text-muted small">
+                                    <span data-bs-toggle="modal" data-bs-target="#rankTiersModal" style="cursor: pointer; color: #6366f1; font-weight: 600;" title="View rank tiers">
+                                        {{ $p['rank_title'] ?? 'Beginner' }}
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     @endif
 </div>
+
+@include('partials.rank-tiers')
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 @include('partials.footer')

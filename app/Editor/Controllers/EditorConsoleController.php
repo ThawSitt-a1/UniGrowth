@@ -139,7 +139,7 @@ final class EditorConsoleController
             }
 
             $dto = new SkillDataDTO(
-                skillId: $request->input('skill_id'),
+                skillId: $request->input('skill_id') ? (int) $request->input('skill_id') : null,
                 editorId: $editorId,
                 title: $request->input('title'),
                 slug: $request->input('slug'),

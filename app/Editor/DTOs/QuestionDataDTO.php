@@ -18,6 +18,7 @@ final class QuestionDataDTO
         public readonly string $questionType = 'multiple_choice',
         public readonly float $marks = 10.00,
         public readonly array $options = [],
+        public readonly ?bool $isActive = null,
     ) {
     }
 }

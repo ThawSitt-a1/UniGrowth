@@ -103,7 +103,7 @@ public function upsertStudentSkillProficiency(int $userId, int $skillId, float $
         $record->save();
     }
 
-    public function updateUserPlatformScore(int $userId): void
+public function updateUserPlatformScore(int $userId): void
     {
         $totalScore = StudentSkill::query()
             ->where('user_id', $userId)
@@ -114,17 +114,26 @@ public function upsertStudentSkillProficiency(int $userId, int $skillId, float $
         ]);
     }
 
+    public function incrementUserPlatformScore(int $userId, float $marks): void
+    {
+        User::query()->where('id', $userId)->update([
+            'platform_score' => DB::raw('platform_score + ' . (float) $marks),
+        ]);
+    }
+
 /**
      * @return Collection<int, User>
      */
-    public function fetchLeaderboardData(): Collection
+public function fetchLeaderboardData(): Collection
     {
-        return User::query()
+return User::query()
+            // Users with a zero score must not appear on the leaderboard.
+            ->where('platform_score', '>', 0)
             ->orderBy('platform_score', 'desc')
             ->limit(50)
-->get(['id', 'username', 'platform_score', 'preferences'])
+            ->get(['id', 'username', 'platform_score', 'preferences', 'avatar_path', 'university_name', 'major'])
             ->filter(fn (User $user) => !$this->isHiddenFromLeaderboards($user))
-->take(10)
+            ->take(10)
             ->values();
     }
 

@@ -255,6 +255,8 @@ Route::middleware(['auth', 'auth.ensure'])->prefix('profile')->name('profile.')-
     Route::get('/report', [\App\Profile\Controllers\ProfileWebController::class, 'downloadReport'])->name('report');
     Route::post('/bug-report', [\App\Profile\Controllers\ProfileWebController::class, 'submitBugReport'])->name('bug-report.submit');
     Route::put('/account', [\App\Profile\Controllers\ProfileWebController::class, 'updateAccount'])->name('account.update');
+    Route::get('/security', [\App\Profile\Controllers\ProfileWebController::class, 'showSecurity'])->name('security');
+    Route::get('/delete-account', [\App\Profile\Controllers\ProfileWebController::class, 'showDeleteAccount'])->name('delete-account');
     // Public profile route must be last so it doesn't capture static paths above.
     Route::get('/{user}', [\App\Profile\Controllers\ProfileWebController::class, 'showPublic'])->name('public');
 });

@@ -32,7 +32,7 @@ final class QuestionRepository implements QuestionRepositoryInterface
                 'question_type' => $data->questionType,
                 'difficulty' => $data->difficulty,
                 'marks' => $data->marks,
-                'is_active' => true,
+                'is_active' => $data->isActive ?? true,
                 'locked_by_admin' => false,
             ]);
         }

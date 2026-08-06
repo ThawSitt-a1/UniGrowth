@@ -1,0 +1,376 @@
+/* ============================================================
+   UniGrowth — Admin Console Dark Mode Redesign
+   ============================================================
+   Loaded ONLY when the admin console's own theme toggle is set
+   to "dark" (stored in localStorage under the `adminTheme` key).
+   Scoped under [data-bs-theme="dark"] so the light admin theme
+   is never affected.
+
+   This file re-skins the hardcoded LIGHT inline colors used
+   throughout the admin views (stat icons, text like #1a1a2e,
+   badges, bg-light toggles, etc.) into a cohesive dark palette
+   that matches Bootstrap 5.3's dark mode.
+   ============================================================ */
+
+[data-bs-theme="dark"] {
+    color-scheme: dark;
+}
+
+/* ------------------------------------------------------------
+   1. Base layout
+   ------------------------------------------------------------ */
+[data-bs-theme="dark"] body {
+    background: #0f172a !important;
+    color: #e2e8f0;
+}
+
+[data-bs-theme="dark"] .admin-topbar.bg-body {
+    background-color: #1e293b !important;
+    border-bottom-color: #334155 !important;
+}
+
+[data-bs-theme="dark"] .admin-main {
+    background: #0f172a;
+}
+
+/* ------------------------------------------------------------
+   2. Sidebar (already dark, add depth)
+   ------------------------------------------------------------ */
+[data-bs-theme="dark"] .admin-sidebar {
+    background: #0b0a24 !important;
+}
+[data-bs-theme="dark"] .admin-sidebar-brand {
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+[data-bs-theme="dark"] .admin-sidebar-nav .nav-link.active {
+    background: rgba(124, 58, 237, 0.35);
+}
+
+/* ------------------------------------------------------------
+   3. Stat cards & content cards
+   ------------------------------------------------------------ */
+[data-bs-theme="dark"] .stat-card,
+[data-bs-theme="dark"] .content-card {
+    background: #1e293b !important;
+    border-color: #334155 !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4) !important;
+}
+[data-bs-theme="dark"] .stat-card:hover,
+[data-bs-theme="dark"] .content-card:hover {
+    box-shadow: 0 4px 16px rgba(99, 102, 241, 0.15) !important;
+    border-color: rgba(99, 102, 241, 0.4) !important;
+}
+[data-bs-theme="dark"] .content-card .card-header-custom {
+    border-bottom-color: #334155 !important;
+}
+[data-bs-theme="dark"] .content-card .card-header-custom h5 {
+    color: #f1f5f9 !important;
+}
+
+/* Hardcoded stat value text colours */
+[data-bs-theme="dark"] .stat-value,
+[data-bs-theme="dark"] [style*="color: #1a1a2e"] {
+    color: #f1f5f9 !important;
+}
+
+/* ------------------------------------------------------------
+   4. Stat icon backgrounds (light pastels -> dark tints)
+   ------------------------------------------------------------ */
+[data-bs-theme="dark"] .stat-icon[style*="background: #ede9fe"],
+[data-bs-theme="dark"] [style*="background: #ede9fe"] {
+    background-color: #2e1065 !important;
+}
+[data-bs-theme="dark"] .stat-icon[style*="color: #6d28d9"],
+[data-bs-theme="dark"] [style*="color: #6d28d9"] {
+    color: #c4b5fd !important;
+}
+
+[data-bs-theme="dark"] .stat-icon[style*="background: #dbeafe"],
+[data-bs-theme="dark"] [style*="background: #dbeafe"] {
+    background-color: #1e3a8a !important;
+}
+[data-bs-theme="dark"] .stat-icon[style*="color: #1e40af"],
+[data-bs-theme="dark"] [style*="color: #1e40af"] {
+    color: #93c5fd !important;
+}
+
+[data-bs-theme="dark"] .stat-icon[style*="background: #fef3c7"],
+[data-bs-theme="dark"] [style*="background: #fef3c7"] {
+    background-color: #78350f !important;
+}
+[data-bs-theme="dark"] .stat-icon[style*="color: #b45309"],
+[data-bs-theme="dark"] [style*="color: #b45309"] {
+    color: #fcd34d !important;
+}
+
+[data-bs-theme="dark"] .stat-icon[style*="background: #fee2e2"],
+[data-bs-theme="dark"] [style*="background: #fee2e2"] {
+    background-color: #7f1d1d !important;
+}
+[data-bs-theme="dark"] .stat-icon[style*="color: #dc2626"],
+[data-bs-theme="dark"] [style*="color: #dc2626"] {
+    color: #fca5a5 !important;
+}
+
+[data-bs-theme="dark"] .stat-icon[style*="background: #ecfdf5"],
+[data-bs-theme="dark"] [style*="background: #ecfdf5"] {
+    background-color: #064e3b !important;
+}
+[data-bs-theme="dark"] .stat-icon[style*="color: #059669"],
+[data-bs-theme="dark"] [style*="color: #059669"] {
+    color: #6ee7b7 !important;
+}
+
+[data-bs-theme="dark"] .stat-icon[style*="background: #e0f2fe"],
+[data-bs-theme="dark"] [style*="background: #e0f2fe"] {
+    background-color: #164e63 !important;
+}
+[data-bs-theme="dark"] .stat-icon[style*="color: #0369a1"],
+[data-bs-theme="dark"] [style*="color: #0369a1"] {
+    color: #7dd3fc !important;
+}
+
+[data-bs-theme="dark"] .stat-icon[style*="background: #d1fae5"],
+[data-bs-theme="dark"] [style*="background: #d1fae5"] {
+    background-color: #065f46 !important;
+}
+[data-bs-theme="dark"] .stat-icon[style*="color: #065f46"],
+[data-bs-theme="dark"] [style*="color: #065f46"] {
+    color: #6ee7b7 !important;
+}
+
+/* ------------------------------------------------------------
+   5. Badges (role / status)
+   ------------------------------------------------------------ */
+[data-bs-theme="dark"] .badge-role.user {
+    background: #164e63 !important;
+    color: #7dd3fc !important;
+}
+[data-bs-theme="dark"] .badge-role.editor {
+    background: #78350f !important;
+    color: #fcd34d !important;
+}
+[data-bs-theme="dark"] .badge-role.admin {
+    background: #2e1065 !important;
+    color: #c4b5fd !important;
+}
+
+[data-bs-theme="dark"] .badge-status.allowed,
+[data-bs-theme="dark"] .badge-status.resolved {
+    background: #064e3b !important;
+    color: #6ee7b7 !important;
+}
+[data-bs-theme="dark"] .badge-status.banned {
+    background: #7f1d1d !important;
+    color: #fca5a5 !important;
+}
+[data-bs-theme="dark"] .badge-status.suspended,
+[data-bs-theme="dark"] .badge-status.pending {
+    background: #78350f !important;
+    color: #fcd34d !important;
+}
+[data-bs-theme="dark"] .badge-status.reviewed {
+    background: #164e63 !important;
+    color: #7dd3fc !important;
+}
+[data-bs-theme="dark"] .badge-status.in_progress {
+    background: #1e3a8a !important;
+    color: #93c5fd !important;
+}
+
+/* ------------------------------------------------------------
+   6. Admin action buttons
+   ------------------------------------------------------------ */
+[data-bs-theme="dark"] .btn-admin-action {
+    border-color: #334155 !important;
+}
+[data-bs-theme="dark"] .btn-admin-action.ban,
+[data-bs-theme="dark"] .btn-admin-action.delete {
+    background: #7f1d1d !important;
+    color: #fca5a5 !important;
+    border-color: #991b1b !important;
+}
+[data-bs-theme="dark"] .btn-admin-action.ban:hover,
+[data-bs-theme="dark"] .btn-admin-action.delete:hover {
+    background: #991b1b !important;
+    border-color: #b91c1c !important;
+}
+[data-bs-theme="dark"] .btn-admin-action.suspend,
+[data-bs-theme="dark"] .btn-admin-action.demote {
+    background: #78350f !important;
+    color: #fcd34d !important;
+    border-color: #92400e !important;
+}
+[data-bs-theme="dark"] .btn-admin-action.suspend:hover,
+[data-bs-theme="dark"] .btn-admin-action.demote:hover {
+    background: #92400e !important;
+}
+[data-bs-theme="dark"] .btn-admin-action.promote,
+[data-bs-theme="dark"] .btn-admin-action.restore,
+[data-bs-theme="dark"] .btn-admin-action.complete {
+    background: #064e3b !important;
+    color: #6ee7b7 !important;
+    border-color: #14532d !important;
+}
+[data-bs-theme="dark"] .btn-admin-action.promote:hover,
+[data-bs-theme="dark"] .btn-admin-action.restore:hover,
+[data-bs-theme="dark"] .btn-admin-action.complete:hover {
+    background: #065f46 !important;
+}
+[data-bs-theme="dark"] .btn-admin-action.view {
+    background: #273449 !important;
+    color: #cbd5e1 !important;
+    border-color: #334155 !important;
+}
+[data-bs-theme="dark"] .btn-admin-action.view:hover {
+    background: #334155 !important;
+}
+[data-bs-theme="dark"] .btn-admin-action.edit {
+    background: #1e3a8a !important;
+    color: #93c5fd !important;
+    border-color: #1e40af !important;
+}
+[data-bs-theme="dark"] .btn-admin-action.edit:hover {
+    background: #1e40af !important;
+}
+
+/* ------------------------------------------------------------
+   7. Season badges
+   ------------------------------------------------------------ */
+[data-bs-theme="dark"] .season-badge.active {
+    background: #064e3b !important;
+    color: #6ee7b7 !important;
+}
+[data-bs-theme="dark"] .season-badge.inactive {
+    background: #273449 !important;
+    color: #94a3b8 !important;
+}
+
+/* ------------------------------------------------------------
+   8. Settings page — bg-light toggle panels
+   ------------------------------------------------------------ */
+[data-bs-theme="dark"] .bg-light {
+    background-color: #1e293b !important;
+}
+[data-bs-theme="dark"] .bg-light.rounded-3 {
+    border: 1px solid #334155;
+}
+[data-bs-theme="dark"] .form-check-input {
+    background-color: #0f172a;
+    border-color: #334155;
+}
+[data-bs-theme="dark"] .form-check-input:checked {
+    background-color: #6366f1;
+    border-color: #6366f1;
+}
+
+/* ------------------------------------------------------------
+   9. Tables (admin)
+   ------------------------------------------------------------ */
+[data-bs-theme="dark"] .table-admin {
+    --bs-table-color: #e2e8f0;
+    --bs-table-border-color: #334155;
+}
+[data-bs-theme="dark"] .table-admin thead th {
+    color: #94a3b8 !important;
+}
+[data-bs-theme="dark"] .table-admin td {
+    color: #e2e8f0;
+}
+[data-bs-theme="dark"] .table-admin tbody tr:hover {
+    background-color: #273449 !important;
+}
+
+/* ------------------------------------------------------------
+   10. Modals
+   ------------------------------------------------------------ */
+[data-bs-theme="dark"] .modal-admin .modal-content {
+    background-color: #1e293b !important;
+    color: #e2e8f0;
+    border: 1px solid #334155;
+}
+[data-bs-theme="dark"] .modal-admin .modal-header,
+[data-bs-theme="dark"] .modal-admin .modal-footer {
+    border-color: #334155 !important;
+}
+[data-bs-theme="dark"] .modal-admin .modal-title {
+    color: #f1f5f9 !important;
+}
+[data-bs-theme="dark"] .modal-admin .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+/* ------------------------------------------------------------
+   11. Forms
+   ------------------------------------------------------------ */
+[data-bs-theme="dark"] .form-control-admin,
+[data-bs-theme="dark"] .form-select.form-control-admin {
+    background-color: #0f172a !important;
+    color: #e2e8f0 !important;
+    border-color: #334155 !important;
+}
+[data-bs-theme="dark"] .form-control-admin:focus,
+[data-bs-theme="dark"] .form-select.form-control-admin:focus {
+    background-color: #0f172a !important;
+    border-color: #6366f1 !important;
+}
+[data-bs-theme="dark"] .form-label-admin {
+    color: #cbd5e1 !important;
+}
+[data-bs-theme="dark"] .btn-search {
+    background-color: #273449 !important;
+    border-color: #334155 !important;
+    color: #cbd5e1 !important;
+}
+[data-bs-theme="dark"] .btn-search:hover {
+    background-color: #6366f1 !important;
+    border-color: #6366f1 !important;
+    color: #fff !important;
+}
+
+/* ------------------------------------------------------------
+   12. Text helpers
+   ------------------------------------------------------------ */
+[data-bs-theme="dark"] .text-muted {
+    color: #94a3b8 !important;
+}
+[data-bs-theme="dark"] .text-dark {
+    color: #e2e8f0 !important;
+}
+[data-bs-theme="dark"] .text-success {
+    color: #6ee7b7 !important;
+}
+
+/* Hardcoded inline dark text */
+[data-bs-theme="dark"] [style*="color: #1a1a2e"] {
+    color: #f1f5f9 !important;
+}
+[data-bs-theme="dark"] .page-title {
+    color: #f1f5f9 !important;
+}
+
+/* ------------------------------------------------------------
+   13. Miscellaneous
+   ------------------------------------------------------------ */
+[data-bs-theme="dark"] hr {
+    border-color: #334155 !important;
+}
+[data-bs-theme="dark"] .empty-state i,
+[data-bs-theme="dark"] .empty-state p {
+    color: #94a3b8 !important;
+}
+[data-bs-theme="dark"] .badge.bg-secondary {
+    background-color: #334155 !important;
+    color: #e2e8f0 !important;
+}
+[data-bs-theme="dark"] ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+[data-bs-theme="dark"] ::-webkit-scrollbar-track {
+    background: #0f172a;
+}
+[data-bs-theme="dark"] ::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 6px;
+}
