@@ -336,12 +336,21 @@ public function clearEditorRememberToken(int $id): RedirectResponse
         $request->validate([
             'name' => ['required', 'string', 'max:100'],
             'ends_at' => ['required', 'date', 'after:now'],
+            'season_image' => ['nullable', 'image', 'max:2048'],
+        ], [
+            'ends_at.after' => 'The season end date must be in the future.',
         ]);
 
         try {
+            $imagePath = null;
+            if ($request->hasFile('season_image')) {
+                $imagePath = $request->file('season_image')->store('season-images', 'public');
+            }
+
             $season = $this->adminService->startNewSeason(
                 $request->input('name'),
                 $request->input('ends_at'),
+                $imagePath,
             );
 
             return redirect()
@@ -366,6 +375,46 @@ public function clearEditorRememberToken(int $id): RedirectResponse
             return redirect()
                 ->back()
                 ->with('error', 'Failed to end season: ' . $e->getMessage());
+        }
+    }
+
+    public function updateSeasonImage(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'season_image' => ['nullable', 'image', 'max:2048'],
+            'season_id' => ['required', 'integer', 'exists:seasons,id'],
+        ]);
+
+        try {
+            $seasonId = (int) $request->input('season_id');
+            $file = $request->file('season_image');
+
+            $season = \App\Overview\Models\Season::query()->find($seasonId);
+            $oldImage = $season?->image;
+
+            if ($file) {
+                $path = $file->store('season-images', 'public');
+
+                if ($oldImage) {
+                    Storage::disk('public')->delete($oldImage);
+                }
+
+                $this->adminService->updateSeasonImage($seasonId, $path);
+            } else {
+                if ($oldImage) {
+                    Storage::disk('public')->delete($oldImage);
+                }
+
+                $this->adminService->updateSeasonImage($seasonId, null);
+            }
+
+            return redirect()
+                ->back()
+                ->with('success', 'Season image updated successfully.');
+        } catch (\Exception $e) {
+            return redirect()
+                ->back()
+                ->with('error', 'Failed to update season image: ' . $e->getMessage());
         }
     }
 }

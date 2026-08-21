@@ -70,16 +70,13 @@ class ProfileUpdateManager extends Component
 
         $userId = auth()->id();
 
-        // Resolve use cases from container
         $manageProfileUseCase = app(ManageProfileUseCase::class);
         $uploadProfileAssetUseCase = app(UploadProfileAssetUseCase::class);
 
-        // Upload profile photo if provided
         if ($this->profile_photo) {
             $uploadProfileAssetUseCase->execute($userId, $this->profile_photo);
         }
 
-        // Update profile data
         $manageProfileUseCase->updateProfile($userId, [
             'username' => $this->username,
             'major' => $this->major,
@@ -87,6 +84,10 @@ class ProfileUpdateManager extends Component
             'university_name' => $this->university_name,
             'description' => $this->description,
         ]);
+
+        $this->profile_photo = null;
+        $this->photo_preview_visible = false;
+        $this->photo_preview_url = '';
 
         $this->dispatch('profile-updated', message: 'Profile updated successfully!');
     }

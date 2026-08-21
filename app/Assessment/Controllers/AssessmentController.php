@@ -7,6 +7,7 @@ namespace App\Assessment\Controllers;
 use App\Assessment\Http\Requests\QuizSubmissionRequest;
 use App\Assessment\Services\QuizDeliveryService;
 use App\Assessment\UseCases\EvaluateQuizUseCase;
+use App\Overview\Services\SeasonService;
 use Illuminate\Http\JsonResponse;
 
 final class AssessmentController
@@ -14,6 +15,7 @@ final class AssessmentController
     public function __construct(
         private readonly QuizDeliveryService $quizDeliveryService,
         private readonly EvaluateQuizUseCase $evaluateQuizUseCase,
+        private readonly SeasonService $seasonService,
     ) {
     }
 
@@ -24,6 +26,12 @@ final class AssessmentController
      */
     public function getQuiz(int $skillId): JsonResponse
     {
+        if (!$this->seasonService->hasActiveSeason()) {
+            return response()->json([
+                'error' => 'No active season is running. Quizzes are only available during an active season.',
+            ], 403);
+        }
+
         $studentId = (int) request()->user()->getAuthIdentifier();
 
         try {
@@ -46,6 +54,12 @@ final class AssessmentController
      */
     public function submitQuiz(QuizSubmissionRequest $request, int $skillId): JsonResponse
     {
+        if (!$this->seasonService->hasActiveSeason()) {
+            return response()->json([
+                'error' => 'No active season is running. Quizzes are only available during an active season.',
+            ], 403);
+        }
+
         $studentId = $request->getStudentId();
         $answers = $request->getAnswers();
 
@@ -56,7 +70,6 @@ final class AssessmentController
         } catch (\InvalidArgumentException $e) {
             return response()->json(['error' => $e->getMessage()], 422);
         } catch (\RuntimeException $e) {
-            // e.g. the season was ended between quiz start and submission
             return response()->json(['error' => $e->getMessage()], 422);
         }
 

@@ -53,6 +53,8 @@ final class SeasonAdminController
         $request->validate([
             'name' => 'required|string|max:100',
             'ends_at' => 'required|date|after:now',
+        ], [
+            'ends_at.after' => 'The season end date must be in the future.',
         ]);
 
         try {

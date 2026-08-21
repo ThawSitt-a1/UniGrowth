@@ -72,8 +72,13 @@
                                   class="form-control form-control-editor @error('content') is-invalid @enderror"
                                   placeholder="Write the full lesson content here. Supports paragraphs, code snippets, and structured text. This content is only visible to enrolled users.">{{ old('content', $skill->content ?? '') }}</textarea>
                         @error('content') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                        <div class="form-text small text-muted">
+<div class="form-text small text-muted">
                             <i class="bi bi-lock me-1"></i> Hidden from non-enrolled users. Use clear headings and structured text for the best reading experience.
+                            <span class="d-block mt-1">
+                                <i class="bi bi-list-steps me-1"></i>
+                                Tip: Use <code>## Step 1: Title</code>, <code>## Step 2: Title</code>… to render guided learning steps.
+                                Add <code>- [Label](https://url)</code> lines under a step to attach per-step resource links.
+                            </span>
                         </div>
                     </div>
 
@@ -130,7 +135,21 @@
                         <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="add-link-btn">
                             <i class="bi bi-plus-circle me-1"></i>Add Another Link
                         </button>
-                        <div class="form-text small text-muted mt-2">Add multiple resource links. Leave blank to remove.</div>
+<div class="form-text small text-muted mt-2">Add multiple resource links. Leave blank to remove.</div>
+                    </div>
+
+                    <!-- Project Suggestion -->
+                    <div class="col-12">
+                        <label class="form-label-editor" for="project_suggestion">
+                            <i class="bi bi-rocket-takeoff me-1"></i> Project Suggestion
+                        </label>
+                        <textarea id="project_suggestion" name="project_suggestion" rows="4"
+                                  class="form-control form-control-editor @error('project_suggestion') is-invalid @enderror"
+                                  placeholder="Suggest a hands-on final project learners can build to apply this skill...">{{ old('project_suggestion', $skill->project_suggestion ?? '') }}</textarea>
+                        @error('project_suggestion') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        <div class="form-text small text-muted">
+                            <i class="bi bi-info-circle me-1"></i> Optional. Shown to enrolled users as a guided capstone challenge.
+                        </div>
                     </div>
                 </div>
 

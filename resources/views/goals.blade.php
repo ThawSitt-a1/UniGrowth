@@ -449,30 +449,6 @@ MAIN CONTENT
 --}}
 <div class="container py-4">
 
-    <div class="row g-3 mb-5">
-        <div class="col-12">
-            <div class="row row-cols-1 row-cols-md-3 g-3">
-                <div class="col">
-                    <div class="quote-banner quote-banner">
-                        <p class="quote-text">“Style is a way to say who you are without having to speak.”</p>
-                        <div class="quote-author">Rachel Zoe</div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="quote-banner quote-banner-alt">
-                        <p class="quote-text">“Design is not just what it looks like and feels like. Design is how it works.”</p>
-                        <div class="quote-author">Steve Jobs</div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="quote-banner quote-banner-green">
-                        <p class="quote-text">“Good design is obvious. Great design is transparent.”</p>
-                        <div class="quote-author">Joe Sparano</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Flash Messages -->
     @if (session('success'))

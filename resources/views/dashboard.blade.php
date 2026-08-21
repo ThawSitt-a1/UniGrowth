@@ -636,8 +636,8 @@
                     </p>
                 </div>
                 <div class="col-md-3 d-none d-md-flex justify-content-end">
-                    <div style="width: 80px; height: 80px; opacity: 0.15;">
-                        {!! file_get_contents(public_path('images/developer-illustration.svg')) !!}
+                    <div style="width: 80px; height: 80px;">
+                        <img src="{{ asset('images/developer-illustration.svg') }}" alt="Developer illustration" style="width: 100%; height: 100%; object-fit: contain; opacity: 0.15;">
                     </div>
                 </div>
             </div>
@@ -689,8 +689,8 @@
         <div class="row g-0 align-items-center mb-4 overflow-hidden rounded-4" style="background: #f8fafc; border: 1px solid rgba(0,0,0,0.04);">
             <div class="col-md-5 p-0">
                 <div style="background: linear-gradient(135deg, #eef2ff, #faf5ff); padding: 3rem 2rem; min-height: 280px; display: flex; align-items: center; justify-content: center;">
-                    <div style="max-width: 220px; opacity: 0.8;">
-                        {!! file_get_contents(public_path('images/developer-illustration.svg')) !!}
+                    <div style="width: 90%; height: 90%;">
+                        <img src="{{ asset('images/hub.jpeg') }}" alt="Hub" style="width: 100%; height: 100%; object-fit: contain; opacity: 0.8;">
                     </div>
                 </div>
             </div>
@@ -747,8 +747,8 @@
             </div>
             <div class="col-md-5 p-0 order-1 order-md-2">
                 <div style="background: linear-gradient(135deg, #faf5ff, #f3e8ff); padding: 3rem 2rem; min-height: 280px; display: flex; align-items: center; justify-content: center;">
-                    <div style="max-width: 220px; opacity: 0.8;">
-                        {!! file_get_contents(public_path('images/developer-illustration.svg')) !!}
+                    <div style="width: 90%; height: 90%;">
+                        <img src="{{ asset('images/skill.jpeg') }}" alt="Skill development" style="width: 100%; height: 100%; object-fit: contain; opacity: 0.8;">
                     </div>
                 </div>
             </div>
@@ -758,8 +758,8 @@
         <div class="row g-0 align-items-center mb-4 overflow-hidden rounded-4" style="background: #f8fafc; border: 1px solid rgba(0,0,0,0.04);">
             <div class="col-md-5 p-0">
                 <div style="background: linear-gradient(135deg, #ecfdf5, #d1fae5); padding: 3rem 2rem; min-height: 280px; display: flex; align-items: center; justify-content: center;">
-                    <div style="max-width: 220px; opacity: 0.8;">
-                        {!! file_get_contents(public_path('images/developer-illustration.svg')) !!}
+                    <div style="width: 90%; height: 90%;">
+                        <img src="{{ asset('images/growth.jpeg') }}" alt="Seasonal growth" style="width: 100%; height: 100%; object-fit: contain; opacity: 0.8;">
                     </div>
                 </div>
             </div>
@@ -793,20 +793,12 @@
                             <i class="bi bi-trophy-fill me-2"></i>Top 10 Leaderboard
                         </h2>
                         <p class="text-white-50 small mb-0 mt-1">
-                            @if (($leaderboardSource ?? 'season') === 'platform')
-                                Overall Top Scores
-                            @else
-                                {{ $currentSeasonName }}
-                            @endif
+                            {{ $currentSeasonName ?? 'Season Standings' }}
                         </p>
                     </div>
                     <span class="badge text-decoration-none" style="background: rgba(255,255,255,0.2); color: #fff; font-size: 0.75rem; padding: 6px 14px; border-radius: 8px;">
                         <i class="bi bi-trophy-fill me-1"></i>
-                        @if (($leaderboardSource ?? 'season') === 'platform')
-                            Overall Standings
-                        @else
-                            Season Standings
-                        @endif
+                        Season Standings
                     </span>
                 </div>
             </div>
@@ -852,6 +844,8 @@
                                                     <img src="{{ asset('storage/' . $entry['avatar_path']) }}" alt="avatar"
                                                          class="rounded-circle object-fit-cover border" style="width: 36px; height: 36px;">
                                                 @else
+
+
                                                     <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white" style="width: 36px; height: 36px; background: linear-gradient(135deg, #6366f1, #7c3aed); font-size: 0.85rem;">
                                                         {{ strtoupper(substr($entry['username'], 0, 1)) }}
                                                     </div>
@@ -901,14 +895,22 @@
                     </table>
                 </div>
             @elseif (count($leaderboard) === 0)
-                <div class="text-center py-5 text-muted bg-dots">
-                    <i class="bi bi-inbox fs-1 d-block mb-2"></i>
-                    <p class="fw-semibold mb-1">No scores yet.</p>
-                    <p class="small mb-3">Take a quiz to get on the leaderboard!</p>
-                    <a href="{{ route('assessment.test.index') }}" class="btn btn-primary-custom btn-sm">
-                        <i class="bi bi-pencil-square me-1"></i>Take a Quiz
-                    </a>
-                </div>
+                @if ($hasActiveSeason)
+                    <div class="text-center py-5 text-muted bg-dots">
+                        <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                        <p class="fw-semibold mb-1">No scores yet.</p>
+                        <p class="small mb-3">Take a quiz to get on the leaderboard!</p>
+                        <a href="{{ route('assessment.test.index') }}" class="btn btn-primary-custom btn-sm">
+                            <i class="bi bi-pencil-square me-1"></i>Take a Quiz
+                        </a>
+                    </div>
+                @else
+                    <div class="text-center py-5 text-muted bg-dots">
+                        <i class="bi bi-calendar-x fs-1 d-block mb-2"></i>
+                        <p class="fw-semibold mb-1">No Active Season</p>
+                        <p class="small mb-0">Quizzes and leaderboards are only available during an active season. Please wait for an administrator to start a new season.</p>
+                    </div>
+                @endif
             @endif
         </div>
 
@@ -967,10 +969,14 @@
                         @endif
                     </div>
                 </div>
-                <div class="col-md-3 d-none d-md-flex align-items-center justify-content-center" style="background: linear-gradient(135deg, #eef2ff, #faf5ff);">
-                    <div style="width: 100px; height: 100px; opacity: 0.4;">
-                        {!! file_get_contents(public_path('images/developer-illustration.svg')) !!}
-                    </div>
+                <div class="col-md-3 d-none d-md-flex align-items-center justify-content-center position-relative overflow-hidden" style="background: linear-gradient(135deg, #eef2ff, #faf5ff); min-height: 180px;">
+                    @if (!empty($currentSeasonImage))
+                        <img src="{{ asset('storage/' . $currentSeasonImage) }}" alt="Current season" class="w-100 h-100" style="object-fit: cover; position: absolute; inset: 0;">
+                    @else
+                        <div style="width: 100px; height: 100px; position: relative; z-index: 1;">
+                            <img src="{{ asset('images/developer-illustration.svg') }}" alt="Developer illustration" style="width: 100%; height: 100%; object-fit: contain; opacity: 0.4;">
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>

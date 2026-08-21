@@ -15,14 +15,18 @@ final class UploadProfileAssetUseCase
 
     public function execute(int $userId, UploadedFile $file): ?string
     {
+        $user = \App\Auth\Models\User::query()->find($userId);
+
+        if ($user !== null && !empty($user->avatar_path)) {
+            Storage::disk('public')->delete($user->avatar_path);
+        }
+
         $path = $file->store('avatars/' . $userId, 'public');
 
         if ($path === false) {
             return null;
         }
 
-        // Store the relative path (e.g. 'avatars/1/abc.jpg')
-        // Views use: asset('storage/' . $avatar_path) which resolves correctly
         $this->profileRepository->updateAvatarPath($userId, $path);
 
         return $path;

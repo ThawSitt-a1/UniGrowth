@@ -50,5 +50,15 @@ final class SeasonRepository implements SeasonRepositoryInterface
             'highest_score' => $highestScore,
         ]);
     }
+
+    /**
+     * Update the image path for a season.
+     */
+    public function updateImage(int $seasonId, ?string $imagePath): void
+    {
+        Season::query()->where('id', $seasonId)->update([
+            'image' => $imagePath,
+        ]);
+    }
 }
 

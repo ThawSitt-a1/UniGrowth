@@ -435,20 +435,21 @@ final class AdminService
     */
 
     /**
-     * Start a new season.
-     */
-    public function startNewSeason(string $name, string $endsAt): array
-    {
-        $season = $this->seasonService->initializeNewSeason($name, $endsAt);
+      * Start a new season.
+      */
+     public function startNewSeason(string $name, string $endsAt, ?string $image = null): array
+     {
+         $season = $this->seasonService->initializeNewSeason($name, $endsAt, $image);
+ 
+         return [
+             'season_id' => $season->id,
+             'name' => $season->name,
+             'started_at' => $season->started_at?->toISOString(),
+             'ends_at' => $season->ends_at?->toISOString(),
+             'is_active' => $season->is_active,
+         ];
+     }
 
-        return [
-            'season_id' => $season->id,
-            'name' => $season->name,
-            'started_at' => $season->started_at?->toISOString(),
-            'ends_at' => $season->ends_at?->toISOString(),
-            'is_active' => $season->is_active,
-        ];
-    }
 
     /**
      * End the current season.
@@ -482,7 +483,16 @@ final class AdminService
             'name' => $season?->name,
             'started_at' => $season?->started_at?->toISOString(),
             'ends_at' => $season?->ends_at?->toISOString(),
+            'image' => $season?->image,
         ];
+    }
+
+    /**
+     * Update the image for a season.
+     */
+    public function updateSeasonImage(int $seasonId, ?string $imagePath): void
+    {
+        $this->seasonService->updateSeasonImage($seasonId, $imagePath);
     }
 }
 

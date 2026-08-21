@@ -256,31 +256,61 @@
             </h6>
             <div class="row">
                 <div class="col-md-6">
-                    @if(!empty($seasonStatus['has_active_season']))
-                        <div class="p-3 bg-light rounded-3">
-                            <div class="d-flex align-items-center gap-2 mb-2">
-                                <span class="season-badge active"><i class="bi bi-fire"></i>Active</span>
-                                <span class="fw-semibold">{{ $seasonStatus['name'] }}</span>
-                            </div>
-                            <div class="small text-muted mb-3">
-                                Started: {{ $seasonStatus['started_at'] ? \Carbon\Carbon::parse($seasonStatus['started_at'])->format('M j, Y') : 'N/A' }}<br>
-                                Ends: {{ $seasonStatus['ends_at'] ? \Carbon\Carbon::parse($seasonStatus['ends_at'])->format('M j, Y g:i A') : 'N/A' }}
-                            </div>
-                            <form method="POST" action="{{ route('admin.seasons.end') }}">
-                                @csrf
-                                <button type="submit" class="btn btn-sm btn-outline-warning">
-                                    <i class="bi bi-stop-circle me-1"></i>End Season
-                                </button>
-                            </form>
-                        </div>
-                    @else
-                        <div class="p-3 bg-light rounded-3">
-                            <p class="small text-muted mb-3">No active season running. Start a new season to enable competition features.</p>
-                            <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#startSeasonSettingsModal">
-                                <i class="bi bi-play-fill me-1"></i>Start New Season
-                            </button>
-                        </div>
-                    @endif
+                     @if(!empty($seasonStatus['has_active_season']))
+                         <div class="p-3 bg-light rounded-3">
+                             <div class="d-flex align-items-center gap-2 mb-2">
+                                 <span class="season-badge active"><i class="bi bi-fire"></i>Active</span>
+                                 <span class="fw-semibold">{{ $seasonStatus['name'] }}</span>
+                             </div>
+                             <div class="small text-muted mb-2">
+                                 Started: {{ $seasonStatus['started_at'] ? \Carbon\Carbon::parse($seasonStatus['started_at'])->format('M j, Y') : 'N/A' }}<br>
+                                 Ends: {{ $seasonStatus['ends_at'] ? \Carbon\Carbon::parse($seasonStatus['ends_at'])->format('M j, Y g:i A') : 'N/A' }}
+                             </div>
+                             @if(!empty($seasonStatus['image']))
+                                 <div class="mb-2 p-2 bg-white rounded-3 d-inline-block">
+                                     <img src="{{ asset('storage/' . $seasonStatus['image']) }}" alt="Current season" style="max-height: 80px; max-width: 160px; border-radius: 6px; object-fit: cover;">
+                                 </div>
+                                 <form method="POST" action="{{ route('admin.seasons.image') }}" enctype="multipart/form-data" class="d-inline ms-2">
+                                     @csrf
+                                     <input type="hidden" name="season_id" value="{{ $seasonStatus['season_id'] }}">
+                                     <input type="file" name="season_image" class="form-control form-control-admin d-inline-block" style="width: auto; display: inline-block;" accept="image/*" required>
+                                     <button type="submit" class="btn btn-sm btn-outline-primary ms-1">
+                                         <i class="bi bi-arrow-repeat me-1"></i>Change
+                                     </button>
+                                 </form>
+                                 <form method="POST" action="{{ route('admin.seasons.image') }}" class="d-inline ms-1" onsubmit="return confirm('Remove current season image?')">
+                                     @csrf
+                                     <input type="hidden" name="season_id" value="{{ $seasonStatus['season_id'] }}">
+                                     <button type="submit" class="btn btn-sm btn-outline-danger">
+                                         <i class="bi bi-trash me-1"></i>Remove
+                                     </button>
+                                 </form>
+                             @else
+                                 <form method="POST" action="{{ route('admin.seasons.image') }}" enctype="multipart/form-data" class="d-flex align-items-center gap-2">
+                                     @csrf
+                                     <input type="hidden" name="season_id" value="{{ $seasonStatus['season_id'] }}">
+                                     <input type="file" name="season_image" class="form-control form-control-admin" accept="image/*" required>
+                                     <button type="submit" class="btn btn-sm btn-outline-primary">
+                                         <i class="bi bi-upload me-1"></i>Upload Image
+                                     </button>
+                                 </form>
+                             @endif
+                             <form method="POST" action="{{ route('admin.seasons.end') }}" class="mt-2">
+                                 @csrf
+                                 <button type="submit" class="btn btn-sm btn-outline-warning">
+                                     <i class="bi bi-stop-circle me-1"></i>End Season
+                                 </button>
+                             </form>
+                         </div>
+                     @else
+                         <div class="p-3 bg-light rounded-3">
+                             <p class="small text-muted mb-3">No active season running. Start a new season to enable competition features.</p>
+                             <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#startSeasonSettingsModal">
+                                 <i class="bi bi-play-fill me-1"></i>Start New Season
+                             </button>
+                         </div>
+                     @endif
+
                 </div>
             </div>
         </div>
@@ -289,7 +319,7 @@
     <!-- Start Season Modal -->
     <div class="modal fade modal-admin" id="startSeasonSettingsModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
-            <form class="modal-content" method="POST" action="{{ route('admin.seasons.start') }}">
+            <form class="modal-content" method="POST" action="{{ route('admin.seasons.start') }}" enctype="multipart/form-data">
                 @csrf
                 <div class="modal-header">
                     <h5 class="modal-title fw-semibold">Start New Season</h5>
@@ -303,6 +333,11 @@
                     <div class="mb-3">
                         <label class="form-label-admin" for="seasonEndsAtSettings">Ends At</label>
                         <input type="datetime-local" name="ends_at" id="seasonEndsAtSettings" class="form-control form-control-admin" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label-admin" for="seasonImageSettings">Season Image</label>
+                        <input type="file" name="season_image" id="seasonImageSettings" class="form-control form-control-admin" accept="image/*">
+                        <div class="form-text">Optional. Recommended size: 1200x400px.</div>
                     </div>
                 </div>
                 <div class="modal-footer">

@@ -135,6 +135,38 @@
                             Started: {{ $seasonStatus['started_at'] ? \Carbon\Carbon::parse($seasonStatus['started_at'])->format('M j, Y') : 'N/A' }}<br>
                             Ends: {{ $seasonStatus['ends_at'] ? \Carbon\Carbon::parse($seasonStatus['ends_at'])->format('M j, Y g:i A') : 'N/A' }}
                         </div>
+                        @if(!empty($seasonStatus['image']))
+                            <div class="mb-3 p-2 bg-light rounded-3 d-inline-block">
+                                <img src="{{ asset('storage/' . $seasonStatus['image']) }}" alt="Current season" style="max-height: 100px; max-width: 200px; border-radius: 6px; object-fit: cover;">
+                            </div>
+                            <form method="POST" action="{{ route('admin.seasons.image') }}" enctype="multipart/form-data" class="d-inline ms-2">
+                                @csrf
+                                <input type="hidden" name="season_id" value="{{ $seasonStatus['season_id'] }}">
+                                <input type="file" name="season_image" class="form-control form-control-admin d-inline-block" style="width: auto; display: inline-block;" accept="image/*" required>
+                                <button type="submit" class="btn btn-sm btn-outline-primary ms-1">
+                                    <i class="bi bi-arrow-repeat me-1"></i>Change
+                                </button>
+                            </form>
+                            <form method="POST" action="{{ route('admin.seasons.image') }}" class="d-inline ms-1" onsubmit="return confirm('Remove current season image?')">
+                                @csrf
+                                <input type="hidden" name="season_id" value="{{ $seasonStatus['season_id'] }}">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                    <i class="bi bi-trash me-1"></i>Remove
+                                </button>
+                            </form>
+                        @else
+                            <form method="POST" action="{{ route('admin.seasons.image') }}" enctype="multipart/form-data" class="mb-3">
+                                @csrf
+                                <input type="hidden" name="season_id" value="{{ $seasonStatus['season_id'] }}">
+                                <div class="mb-2">
+                                    <label class="form-label-admin small" for="seasonImage">Season Image</label>
+                                    <input type="file" name="season_image" id="seasonImage" class="form-control form-control-admin" accept="image/*">
+                                </div>
+                                <button type="submit" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-upload me-1"></i>Upload Image
+                                </button>
+                            </form>
+                        @endif
                         <form method="POST" action="{{ route('admin.seasons.end') }}">
                             @csrf
                             <button type="submit" class="btn btn-sm btn-outline-warning">
@@ -168,7 +200,7 @@
     <!-- Start Season Modal -->
     <div class="modal fade modal-admin" id="startSeasonModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
-            <form class="modal-content" method="POST" action="{{ route('admin.seasons.start') }}">
+            <form class="modal-content" method="POST" action="{{ route('admin.seasons.start') }}" enctype="multipart/form-data">
                 @csrf
                 <div class="modal-header">
                     <h5 class="modal-title fw-semibold">Start New Season</h5>
@@ -182,6 +214,11 @@
                     <div class="mb-3">
                         <label class="form-label-admin" for="seasonEndsAt">Ends At</label>
                         <input type="datetime-local" name="ends_at" id="seasonEndsAt" class="form-control form-control-admin" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label-admin" for="seasonImage">Season Image</label>
+                        <input type="file" name="season_image" id="seasonImage" class="form-control form-control-admin" accept="image/*">
+                        <div class="form-text">Optional. Recommended size: 1200x400px.</div>
                     </div>
                 </div>
                 <div class="modal-footer">

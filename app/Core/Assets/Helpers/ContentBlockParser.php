@@ -29,9 +29,24 @@ final class ContentBlockParser
         while ($i < $total) {
             $line = $lines[$i];
 
-            // Skip empty lines
+// Skip empty lines
             if (trim($line) === '') {
                 $i++;
+                continue;
+            }
+
+            // Skip learning-step blocks entirely - they are rendered only in the
+            // dedicated "Learning Steps" section, not in the reading text content.
+            if (preg_match('/^(?:#+\s*)?Step(?:\s+\d+)?[:\-]/i', trim($line))) {
+                $i++;
+                while ($i < $total) {
+                    $cur = trim($lines[$i]);
+                    // Stop at the next step header or a top-level heading (a new content section)
+                    if (preg_match('/^(?:#+\s*)?Step(?:\s+\d+)?[:\-]/i', $cur) || preg_match('/^#{1,6}\s+/', $cur)) {
+                        break;
+                    }
+                    $i++;
+                }
                 continue;
             }
 
@@ -137,7 +152,7 @@ final class ContentBlockParser
         return $blocks;
     }
 
-    /**
+/**
      * Extract headings for TOC generation.
      */
     public static function extractHeadings(string $content): array
@@ -156,6 +171,100 @@ final class ContentBlockParser
         }
 
         return $headings;
+    }
+
+    /**
+     * Parse structured learning steps from raw content.
+     *
+     * Convention (markdown-ish, authored inside the skill `content` field):
+     *
+     *     ## Step 1: Understand the Basics
+     *     A paragraph describing what to do in this step.
+     *     - [Official Docs](https://example.com/docs)   <- step resource link
+     *     - [Tutorial](https://example.com/tutorial)    <- step resource link
+     *
+     *     ## Step 2: Build Something
+     *     Another paragraph describing the next step.
+     *
+     * Steps are auto-numbered in order. Each step may optionally include
+     * `- [label](url)` resource links that are rendered beneath the step
+     * description (StepResourcesList).
+     *
+     * @return array<int, array{title: string, description: string, resources: array<int, array{label: string, url: string}>}>
+     */
+    public static function parseSteps(string $content): array
+    {
+        $steps = [];
+        $lines = explode("\n", $content);
+        $total = count($lines);
+        $i = 0;
+
+        while ($i < $total) {
+            $line = $lines[$i];
+
+// Detect a step header: "## Step 1: ...", "Step 3: ...", "Step: ...", "## Step 2 - ..."
+            if (preg_match('/^(?:#+\s*)?Step(?:\s+\d+)?[:\-]\s*(.*)$/i', trim($line), $matches)) {
+                $title = trim($matches[1]);
+                $i++;
+
+                $descriptionLines = [];
+                $resources = [];
+
+                // Collect description lines and step resource links until the next step header
+                while ($i < $total) {
+                    $current = trim($lines[$i]);
+
+                    // Stop at the next step header
+                    if (preg_match('/^(?:#+\s*)?Step(?:\s+\d+)?[:\-]/i', $current)) {
+                        break;
+                    }
+
+                    // Stop at a top-level heading (new section outside steps)
+                    if (preg_match('/^#{1,6}\s+/', $current)) {
+                        break;
+                    }
+
+                    // Step resource link formats:
+                    //   [label](url)
+                    //   - [label](url)
+                    //   https://example.com  (bare URL)
+                    if (preg_match('/^[-*]?\s*\[([^\]]*)\]\(([^)]+)\)$/', $current, $linkMatches)) {
+                        $resources[] = [
+                            'label' => trim($linkMatches[1]) ?: $linkMatches[2],
+                            'url' => trim($linkMatches[2]),
+                        ];
+                        $i++;
+                        continue;
+                    }
+
+                    if (preg_match('/^https?:\/\/\S+$/i', $current)) {
+                        $resources[] = [
+                            'label' => $current,
+                            'url' => $current,
+                        ];
+                        $i++;
+                        continue;
+                    }
+
+                    if ($current !== '') {
+                        $descriptionLines[] = $current;
+                    }
+                    $i++;
+                }
+
+                $steps[] = [
+                    'title' => $title,
+                    'description' => implode("\n", $descriptionLines),
+                    'resources' => $resources,
+                ];
+
+                continue;
+            }
+
+            $i++;
+        }
+
+        return $steps;
     }
 
     /**

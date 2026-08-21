@@ -369,7 +369,7 @@ class AssessmentFlowTest extends TestCase
         $response->assertStatus(200)
             ->assertJsonStructure([
                 'data' => [
-                    '*' => ['rank', 'user_id', 'username', 'platform_score'],
+                    '*' => ['rank', 'user_id', 'username', 'season_score'],
                 ],
                 'meta' => ['total'],
             ]);
@@ -378,33 +378,61 @@ class AssessmentFlowTest extends TestCase
     /** @test */
     public function it_excludes_users_hiding_from_leaderboards(): void
     {
-        // Give the authenticated user a high score so they appear on the board.
-        $this->user->update(['platform_score' => 100]);
+        $season = \App\Overview\Models\Season::query()->get()->first();
 
-// Create a user who opted out of leaderboards (via "Make my profile private"),
-        // with a higher score.
+        // Give the authenticated user a season score so they appear on the board.
+        \App\Overview\Models\SeasonScore::query()->create([
+            'user_id' => $this->user->id,
+            'season_id' => $season->id,
+            'total_score' => 100,
+            'skill_count' => 1,
+            'total_questions_answered' => 10,
+            'total_attempts' => 1,
+            'last_active_at' => now(),
+        ]);
+
+        // Create a user who opted out of leaderboards (via "Make my profile private"),
+        // with a higher season score.
         $hiddenUser = User::factory()->create([
-            'platform_score' => 200,
             'preferences' => ['make_profile_private' => true],
         ]);
 
-        // Create a normal user with a lower score.
-        $visibleUser = User::factory()->create([
-            'platform_score' => 50,
+        \App\Overview\Models\SeasonScore::query()->create([
+            'user_id' => $hiddenUser->id,
+            'season_id' => $season->id,
+            'total_score' => 200,
+            'skill_count' => 1,
+            'total_questions_answered' => 10,
+            'total_attempts' => 1,
+            'last_active_at' => now(),
+        ]);
+
+        // Create a normal user with a lower season score.
+        $visibleUser = User::factory()->create();
+
+        \App\Overview\Models\SeasonScore::query()->create([
+            'user_id' => $visibleUser->id,
+            'season_id' => $season->id,
+            'total_score' => 50,
+            'skill_count' => 1,
+            'total_questions_answered' => 10,
+            'total_attempts' => 1,
+            'last_active_at' => now(),
         ]);
 
         $response = $this->actingAs($this->user)
             ->getJson('/api/leaderboard');
 
-        $response->assertStatus(200)
-            ->assertJsonMissing([
-                'data' => [
-                    ['user_id' => $hiddenUser->id],
-                ],
-            ]);
+        $response->assertStatus(200);
 
-        $userIds = collect($response->json('data'))->pluck('user_id');
-        $this->assertNotContains($hiddenUser->id, $userIds->all());
+        // Users who opted out still occupy their rank slot but are flagged
+        // so the view can mask their identity and score.
+        $entries = collect($response->json('data'));
+        $hiddenEntry = $entries->firstWhere('user_id', $hiddenUser->id);
+        $this->assertNotNull($hiddenEntry);
+        $this->assertTrue($hiddenEntry['is_profile_private']);
+
+        $userIds = $entries->pluck('user_id');
         $this->assertContains($visibleUser->id, $userIds->all());
         $this->assertContains($this->user->id, $userIds->all());
     }

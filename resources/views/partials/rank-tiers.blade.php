@@ -1,6 +1,6 @@
 {{--
 ====================================================================
-RANK TIERS MODAL — lifetime score tiers
+RANK TIERS MODAL — total platform score tiers
 ====================================================================
 Shown when a user clicks a rank title badge on a leaderboard.
 Invoke with: @include('partials.rank-tiers')
@@ -16,7 +16,7 @@ Invoke with: @include('partials.rank-tiers')
             </div>
             <div class="modal-body p-4">
                 <p class="text-muted small mb-3">
-                    Your rank is based on your <strong>lifetime score</strong> — the total marks you've earned from correct quiz answers since day one.
+                    Your rank is based on your <strong>total platform score</strong> — the total marks you've earned from correct quiz answers since day one.
                 </p>
                 <div class="d-flex flex-column gap-2" id="rankTiersList">
                     @php

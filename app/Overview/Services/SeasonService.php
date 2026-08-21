@@ -53,12 +53,14 @@ final class SeasonService
             startedAt: $season?->started_at?->toISOString(),
             endsAt: $season?->ends_at?->toISOString(),
             isActive: $season?->is_active ?? false,
-daysRemaining: $season?->ends_at
+            daysRemaining: $season?->ends_at
                 ? (int) max(0, now()->diffInDays($season->ends_at, false))
                 : 0,
             highestScore: $highestScore,
+            image: $season?->image,
         );
     }
+
 
     /**
      * Ensure an active season exists.
@@ -157,7 +159,7 @@ daysRemaining: $season?->ends_at
      *                           must explicitly end the current season first —
      *                           ending and starting are kept as separate actions.
      */
-    public function initializeNewSeason(string $name, string $endsAt): Season
+    public function initializeNewSeason(string $name, string $endsAt, ?string $image = null): Season
     {
         $existing = $this->seasonRepo->getCurrentActiveSeason();
         if ($existing) {
@@ -171,6 +173,7 @@ daysRemaining: $season?->ends_at
             'started_at' => now(),
             'ends_at' => $endsAt,
             'is_active' => true,
+            'image' => $image,
         ]);
     }
 
@@ -230,7 +233,7 @@ daysRemaining: $season?->ends_at
         return $leaderboard;
     }
 
-/**
+    /**
      * Get season history.
      *
      * @return array<int, array<string, mixed>>
@@ -248,4 +251,12 @@ daysRemaining: $season?->ends_at
         ])->toArray();
     }
 
+    /**
+     * Update the image path for a season.
+     */
+    public function updateSeasonImage(int $seasonId, ?string $imagePath): void
+    {
+        $this->seasonRepo->updateImage($seasonId, $imagePath);
+    }
 }
+

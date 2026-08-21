@@ -709,6 +709,43 @@
     color: inherit !important;
 }
 
+/* Learning steps (post-enrollment) */
+[data-bs-theme="dark"] .step-card {
+    background-color: #273449 !important;
+    border-color: #334155 !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35) !important;
+}
+[data-bs-theme="dark"] .step-card .card-title {
+    color: #f1f5f9 !important;
+}
+[data-bs-theme="dark"] .step-card .card-text {
+    color: #cbd5e1 !important;
+}
+[data-bs-theme="dark"] .step-resources .btn {
+    background-color: #0f172a !important;
+    border-color: #334155 !important;
+    color: #a5b4fc !important;
+}
+[data-bs-theme="dark"] .step-resources .btn:hover {
+    background-color: #312e81 !important;
+    border-color: #6366f1 !important;
+    color: #c7d2fe !important;
+}
+
+/* Post-enrollment section headings (Learning Steps / Assessment) */
+[data-bs-theme="dark"] .detail-card h5.fw-bold {
+    color: #f1f5f9 !important;
+}
+
+/* Project suggestion box */
+[data-bs-theme="dark"] .project-suggestion {
+    background: linear-gradient(135deg, #1e293b, #111827) !important;
+    border-color: rgba(99, 102, 241, 0.3) !important;
+}
+[data-bs-theme="dark"] .project-suggestion p {
+    color: #cbd5e1 !important;
+}
+
 /* Resource links section in skill detail */
 [data-bs-theme="dark"] #resources .callout.info {
     background-color: #312e81 !important;
@@ -722,7 +759,7 @@
 }
 [data-bs-theme="dark"] #resources a {
     color: #a5b4fc !important;
-    font-family: 'SF Mono', Monaco, monospace !important;
+    font-family: "SF Mono", Monaco, monospace !important;
 }
 [data-bs-theme="dark"] #resources a:hover {
     color: #c7d2fe !important;

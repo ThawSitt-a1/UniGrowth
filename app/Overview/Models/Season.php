@@ -18,6 +18,7 @@ final class Season extends Model
         'ends_at',
         'is_active',
         'highest_score',
+        'image',
     ];
 
     protected $casts = [

@@ -76,10 +76,12 @@ final class CoreAssetsController
         $isSuspended = !$skill->is_active;
         $suspensionReason = $skill->admin_comment ?: 'This skill has been suspended by our moderators and is currently unavailable.';
 
-        $isEnrolled = false;
+$isEnrolled = false;
         $questions = collect();
         $contentBlocks = [];
         $headings = [];
+        $learningSteps = [];
+        $projectSuggestion = $skill->project_suggestion ?? '';
 
         if (! $isSuspended) {
             $isEnrolled = Enrollment::query()
@@ -100,6 +102,11 @@ final class CoreAssetsController
             $headings = !empty($skill->content)
                 ? ContentBlockParser::extractHeadings($skill->content)
                 : [];
+
+            // Parse structured learning steps (e.g. "## Step 1: ...")
+            $learningSteps = !empty($skill->content)
+                ? ContentBlockParser::parseSteps($skill->content)
+                : [];
         }
 
         return view('skill-detail', [
@@ -108,6 +115,8 @@ final class CoreAssetsController
             'questions' => $questions,
             'contentBlocks' => $contentBlocks,
             'headings' => $headings,
+            'learningSteps' => $learningSteps,
+            'projectSuggestion' => $projectSuggestion,
             'isSuspended' => $isSuspended,
             'suspensionReason' => $suspensionReason,
         ]);

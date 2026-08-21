@@ -40,8 +40,9 @@ final class ManageSkillUseCase
             description: $data->description,
             tags: $data->tags,
             content: $data->content,
-            resourceLink: $data->resourceLink,
+resourceLink: $data->resourceLink,
             resourceLinks: $data->resourceLinks,
+            projectSuggestion: $data->projectSuggestion,
             isActive: $isActive,
         );
 

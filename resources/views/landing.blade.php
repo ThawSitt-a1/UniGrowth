@@ -241,10 +241,6 @@
                     <span class="navbar-brand fw-bold fs-4">
                         <i class="bi bi-mortarboard-fill me-2"></i>{{ $platformName ?? 'UniGrowth' }}
                     </span>
-                    <div class="d-flex gap-2">
-                        <a href="{{ route('login') }}" class="btn btn-outline-light-custom btn-sm">Sign In</a>
-                        <a href="{{ route('register') }}" class="btn btn-primary-custom btn-sm">Get Started</a>
-                    </div>
                 </div>
             </nav>
 

@@ -195,12 +195,12 @@
             <!-- Member 1 -->
             <div class="col-lg-4 col-md-6">
                 <div class="member-card">
-                    <div class="member-avatar">JD</div>
-                    <span class="member-role">Founder & Lead Developer</span>
-                    <h5 class="fw-bold mb-1">Jane Doe</h5>
+                    <div class="member-avatar">T</div>
+                    <span class="member-role">Lead Developer</span>
+                    <h5 class="fw-bold mb-1">Thaw Sitt Han</h5>
                     <p class="small text-muted mb-2">Full-Stack Engineer</p>
                     <p class="small text-muted mb-0" style="line-height: 1.6;">
-                        Jane is the visionary behind UniGrowth. With over 8 years of experience in educational technology, she architects the platform's core systems and leads the development team.
+                        Thaw Sitt Han is the visionary behind UniGrowth.He architects the platform's core systems and leads the development team.
                     </p>
                     <div class="member-social">
                         <a href="#" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
@@ -213,12 +213,12 @@
             <!-- Member 2 -->
             <div class="col-lg-4 col-md-6">
                 <div class="member-card">
-                    <div class="member-avatar">JS</div>
+                    <div class="member-avatar">N</div>
                     <span class="member-role">UI/UX Designer</span>
-                    <h5 class="fw-bold mb-1">John Smith</h5>
+                    <h5 class="fw-bold mb-1">Nyan Linn Htut</h5>
                     <p class="small text-muted mb-2">Product Designer</p>
                     <p class="small text-muted mb-0" style="line-height: 1.6;">
-                        John crafts the user experience and visual design of UniGrowth. He specializes in creating intuitive, accessible interfaces that make learning feel natural and engaging.
+                        Nyan Linn Htut crafts the user experience and visual design of UniGrowth. He specializes in creating intuitive, accessible interfaces that make learning feel natural and engaging.
                     </p>
                     <div class="member-social">
                         <a href="#" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
@@ -231,12 +231,12 @@
             <!-- Member 3 -->
             <div class="col-lg-4 col-md-6">
                 <div class="member-card">
-                    <div class="member-avatar">MC</div>
+                    <div class="member-avatar">K</div>
                     <span class="member-role">Backend Developer</span>
-                    <h5 class="fw-bold mb-1">Maria Chen</h5>
+                    <h5 class="fw-bold mb-1">Kyaw Thu Htun</h5>
                     <p class="small text-muted mb-2">Laravel Specialist</p>
                     <p class="small text-muted mb-0" style="line-height: 1.6;">
-                        Maria is the backbone of our backend infrastructure. She designs and implements the database architecture, API endpoints, and business logic that power the platform.
+                        Kyaw Thu Htun is the backbone of our backend infrastructure. He designs and implements the database architecture, API endpoints, and business logic that power the platform.
                     </p>
                     <div class="member-social">
                         <a href="#" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
@@ -249,12 +249,12 @@
             <!-- Member 4 -->
             <div class="col-lg-4 col-md-6">
                 <div class="member-card">
-                    <div class="member-avatar">AK</div>
+                    <div class="member-avatar">A</div>
                     <span class="member-role">Frontend Developer</span>
-                    <h5 class="fw-bold mb-1">Alex Kim</h5>
-                    <p class="small text-muted mb-2">JavaScript & Bootstrap Expert</p>
+                    <h5 class="fw-bold mb-1">Aung Khant Hmue</h5>
+                    <p class="small text-muted mb-2">Bootstrap Expert</p>
                     <p class="small text-muted mb-0" style="line-height: 1.6;">
-                        Alex brings the UI to life with clean, responsive frontend code. He ensures every page looks great and performs flawlessly across all devices and browsers.
+                        Aung Khant Hmue brings the UI to life with clean, responsive frontend code. He ensures every page looks great and performs flawlessly across all devices and browsers.
                     </p>
                     <div class="member-social">
                         <a href="#" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
@@ -267,12 +267,12 @@
             <!-- Member 5 -->
             <div class="col-lg-4 col-md-6">
                 <div class="member-card">
-                    <div class="member-avatar">SP</div>
-                    <span class="member-role">Content & Community Manager</span>
-                    <h5 class="fw-bold mb-1">Sarah Patel</h5>
-                    <p class="small text-muted mb-2">Educational Content Strategist</p>
+                    <div class="member-avatar">P</div>
+                    <span class="member-role">P</span>
+                    <h5 class="fw-bold mb-1">Pyae Sone Thu</h5>
+                    <p class="small text-muted mb-2">Frontend & UI Support</p>
                     <p class="small text-muted mb-0" style="line-height: 1.6;">
-                        Sarah curates and creates educational content, manages the community, and ensures that UniGrowth's resources align with the needs of students and educators alike.
+                        Pyae Sone Thu supports frontend developers by resolving UI issues, assisting with layout implementations, and ensuring smooth frontend development workflows
                     </p>
                     <div class="member-social">
                         <a href="#" title="LinkedIn"><i class="bi bi-linkedin"></i></a>

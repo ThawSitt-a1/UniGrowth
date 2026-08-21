@@ -300,6 +300,7 @@ Route::post('/users/{id}/delete', [\App\Admin\Controllers\AdminConsoleController
     // Season Management
     Route::post('/seasons/start', [\App\Admin\Controllers\AdminConsoleController::class, 'startSeason'])->name('seasons.start');
     Route::post('/seasons/end', [\App\Admin\Controllers\AdminConsoleController::class, 'endSeason'])->name('seasons.end');
+    Route::post('/seasons/image', [\App\Admin\Controllers\AdminConsoleController::class, 'updateSeasonImage'])->name('seasons.image');
 });
 
 /*

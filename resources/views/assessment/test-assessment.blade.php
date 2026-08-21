@@ -706,49 +706,70 @@ MAIN CONTENT
     HERO / HEADER — Skill Selector
     ================================================================
     --}}
-    <div class="form-card overflow-hidden mb-4 animate-fade-up">
-        <div class="card-header-gradient">
-            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-                <div>
-                    <h2 class="h4 fw-bold text-white mb-0">
-                        <i class="bi bi-pencil-square me-2"></i>Skill Assessment
-                    </h2>
-                    <p class="text-white-50 small mb-0 mt-1">Test your knowledge and track your progress</p>
+    @if ($hasActiveSeason)
+        <div class="form-card overflow-hidden mb-4 animate-fade-up">
+            <div class="card-header-gradient">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <div>
+                        <h2 class="h4 fw-bold text-white mb-0">
+                            <i class="bi bi-pencil-square me-2"></i>Skill Assessment
+                        </h2>
+                        <p class="text-white-50 small mb-0 mt-1">Test your knowledge and track your progress</p>
+                    </div>
+                    <span class="badge text-decoration-none" style="background: rgba(255,255,255,0.2); color: #fff; font-size: 0.75rem; padding: 6px 14px; border-radius: 8px;">
+                        <i class="bi bi-layers me-1"></i>{{ count($skills) }} Skills Available
+                    </span>
                 </div>
-                <span class="badge text-decoration-none" style="background: rgba(255,255,255,0.2); color: #fff; font-size: 0.75rem; padding: 6px 14px; border-radius: 8px;">
-                    <i class="bi bi-layers me-1"></i>{{ count($skills) }} Skills Available
-                </span>
+            </div>
+            <div class="p-4">
+                <form method="GET" action="{{ route('assessment.test.index') }}" id="skill-select-form">
+                    <label for="skill_id" class="form-label fw-semibold" style="color: var(--gray-700);">
+                        <i class="bi bi-bookmark me-1" style="color: var(--indigo);"></i>Select a Skill to Begin
+                    </label>
+                    <div class="row g-2 align-items-center">
+                        <div class="col-md-6">
+                            <select name="skill_id" id="skill_id"
+                                    class="form-select input-field select-custom"
+                                    onchange="document.getElementById('skill-select-form').submit()">
+                                <option value="">— Choose a skill —</option>
+                                @foreach ($skills as $skill)
+                                    <option value="{{ $skill->id }}" {{ $selectedSkillId === $skill->id ? 'selected' : '' }}>
+                                        {{ $skill->title }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <button type="submit" class="btn btn-primary-custom w-100">
+                                <i class="bi bi-arrow-right me-1"></i>Start Quiz
+                            </button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
-        <div class="p-4">
-            <form method="GET" action="{{ route('assessment.test.index') }}" id="skill-select-form">
-                <label for="skill_id" class="form-label fw-semibold" style="color: var(--gray-700);">
-                    <i class="bi bi-bookmark me-1" style="color: var(--indigo);"></i>Select a Skill to Begin
-                </label>
-                <div class="row g-2 align-items-center">
-                    <div class="col-md-6">
-                        <select name="skill_id" id="skill_id"
-                                class="form-select input-field select-custom"
-                                onchange="document.getElementById('skill-select-form').submit()">
-                            <option value="">— Choose a skill —</option>
-                            @foreach ($skills as $skill)
-                                <option value="{{ $skill->id }}" {{ $selectedSkillId === $skill->id ? 'selected' : '' }}>
-                                    {{ $skill->title }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-<div class="col-md-4">
-                        <button type="submit" class="btn btn-primary-custom w-100">
-                            <i class="bi bi-arrow-right me-1"></i>Start Quiz
-                        </button>
+    @else
+        <div class="form-card overflow-hidden mb-4 animate-fade-up">
+            <div class="card-header-gradient">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <div>
+                        <h2 class="h4 fw-bold text-white mb-0">
+                            <i class="bi bi-pencil-square me-2"></i>Skill Assessment
+                        </h2>
+                        <p class="text-white-50 small mb-0 mt-1">Test your knowledge and track your progress</p>
                     </div>
                 </div>
-            </form>
+            </div>
+            <div class="p-4 text-center">
+                <i class="bi bi-calendar-x fs-1 text-muted d-block mb-3"></i>
+                <p class="fw-semibold mb-1">No Active Season</p>
+                <p class="text-muted small mb-0">Quizzes are only available during an active season. Please wait for an administrator to start a new season.</p>
+            </div>
         </div>
-    </div>
+    @endif
 
-{{--
+    @if ($hasActiveSeason)
+    {{--
     ================================================================
     TWO-COLUMN LAYOUT: Quiz (Left) | Dashboard + Leaderboard (Right)
     ================================================================
@@ -1178,7 +1199,7 @@ MAIN CONTENT
 
         </div>{{-- END right column --}}
     </div>{{-- END row --}}
-
+    @endif
 </div>
 
 {{--

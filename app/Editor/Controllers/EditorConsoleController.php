@@ -145,9 +145,10 @@ final class EditorConsoleController
                 slug: $request->input('slug'),
                 description: $request->input('description', ''),
                 tags: $request->input('tags', []),
-                content: $request->input('content', ''),
+content: $request->input('content', ''),
                 resourceLink: $request->input('resource_link', ''),
                 resourceLinks: $resourceLinks,
+                projectSuggestion: $request->input('project_suggestion', ''),
             );
 
             $this->manageSkillUseCase->execute($dto);

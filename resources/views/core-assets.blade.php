@@ -75,27 +75,6 @@
             <p class="text-muted">Three inspirational quotes displayed side by side at the top of this page.</p>
         </div>
 
-        <div class="row g-4 mb-5">
-            <div class="col-12 col-md-4">
-                <div class="quote-card">
-                    <p>“Style is a way to say who you are without having to speak.”</p>
-                    <div class="quote-author">Rachel Zoe</div>
-                </div>
-            </div>
-            <div class="col-12 col-md-4">
-                <div class="quote-card" style="background: linear-gradient(135deg, #0f172a, #4338ca);">
-                    <p>“Design is not just what it looks like and feels like. Design is how it works.”</p>
-                    <div class="quote-author">Steve Jobs</div>
-                </div>
-            </div>
-            <div class="col-12 col-md-4">
-                <div class="quote-card" style="background: linear-gradient(135deg, #047857, #065f46);">
-                    <p>“Good design is obvious. Great design is transparent.”</p>
-                    <div class="quote-author">Joe Sparano</div>
-                </div>
-            </div>
-        </div>
-
         <div class="row gy-4">
             <div class="col-12 col-lg-6">
                 <div class="asset-card">

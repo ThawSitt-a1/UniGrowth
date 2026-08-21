@@ -38,16 +38,9 @@ $leaderboard = [];
             $leaderboard = $this->seasonService->getSeasonLeaderboard($currentSeason->id, 10);
             $hasActiveSeason = true;
             $currentSeasonName = $currentSeason->name;
-        }
-
-        // Always show a Top 10 leaderboard. When no active season exists (or
-        // the season has no scores yet), fall back to the overall top students
-        // by platform score so the dashboard always reflects the latest scores
-        // on every page refresh.
-        $leaderboardSource = 'season';
-        if (empty($leaderboard)) {
-            $leaderboard = $this->buildPlatformLeaderboard();
-            $leaderboardSource = 'platform';
+            $currentSeasonImage = $currentSeason->image;
+        } else {
+            $currentSeasonImage = null;
         }
 
         $overviewData = $this->overviewService->getStudentOverview($user->id)->toArray();
@@ -100,11 +93,11 @@ $recentGoals = collect($overviewData['active_goals'] ?? []);
         $habitSummary['total'] = $habits->count();
         $habitSummary['best_streak'] = $bestStreak;
 
-return view('dashboard', [
+ return view('dashboard', [
             'leaderboard' => $leaderboard,
-            'leaderboardSource' => $leaderboardSource,
             'hasActiveSeason' => $hasActiveSeason,
             'currentSeasonName' => $currentSeasonName,
+            'currentSeasonImage' => $currentSeasonImage,
             'recentGoals' => $recentGoals,
             'recentEnrolledSkills' => $recentEnrolledSkills,
             'newlyAddedSkills' => $newlyAddedSkills,
@@ -114,58 +107,6 @@ return view('dashboard', [
         ]);
     }
 
-/**
-     * Build a Top 10 leaderboard from overall platform scores.
-     *
-     * Used as a fallback when there is no active season (or the season has no
-     * scores yet) so the dashboard always shows the latest top scores and
-     * refreshes on every page load. Excludes admins/editors and respects the
-     * same privacy flags the season leaderboard uses.
-     *
-     * @return array<int, array<string, mixed>>
-     */
-    private function buildPlatformLeaderboard(): array
-    {
-        $users = \App\Auth\Models\User::query()
-            ->whereNotIn('role', [\App\Auth\Models\User::ROLE_ADMIN, \App\Auth\Models\User::ROLE_EDITOR])
-            ->where('platform_score', '>', 0)
-            ->orderByDesc('platform_score')
-            ->limit(10)
-            ->get();
-
-        $leaderboard = [];
-        $rank = 1;
-        foreach ($users as $user) {
-            $preferences = $user->preferences ?? [];
-            $isHiddenLeaderboards = (bool) ($preferences['privacy_hide_leaderboards'] ?? false);
-            $isProfilePrivate = (bool) ($preferences['make_profile_private'] ?? false);
-
-            $base = [
-                'rank' => $rank++,
-                'user_id' => $user->id,
-                'username' => $user->username ?? 'Unknown',
-                'season_score' => (float) $user->platform_score,
-                'skill_count' => 0,
-                'last_active_at' => $user->updated_at?->toISOString(),
-                'is_hidden_leaderboards' => $isHiddenLeaderboards,
-                'is_profile_private' => $isProfilePrivate,
-                'is_profile_viewable' => !$isProfilePrivate && !$isHiddenLeaderboards,
-            ];
-
-            if (!$isHiddenLeaderboards && !$isProfilePrivate) {
-                $base['avatar_path'] = $user->avatar_path;
-                $base['university_name'] = $user->university_name;
-                $base['major'] = $user->major;
-            }
-
-            // Lifetime rank title based on cumulative platform_score.
-            $base['rank_title'] = \App\Auth\Models\User::rankTitle((float) $user->platform_score);
-
-            $leaderboard[] = $base;
-        }
-
-        return $leaderboard;
-    }
 
     /**
      * Compute the longest consecutive-day run from a sorted collection of 'Y-m-d' date strings.

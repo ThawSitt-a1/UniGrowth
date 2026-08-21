@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace App\Assessment\Controllers;
 
 use App\Assessment\Services\StudentDashboardService;
+use App\Overview\Services\SeasonService;
 use Illuminate\Http\JsonResponse;
 
 final class DashboardController
 {
     public function __construct(
         private readonly StudentDashboardService $dashboardService,
+        private readonly SeasonService $seasonService,
     ) {
     }
 
@@ -33,18 +35,33 @@ final class DashboardController
     }
 
     /**
-     * Fetch global leaderboard.
+     * Fetch seasonal leaderboard for the current active season.
      *
      * GET /api/leaderboard
      */
     public function getLeaderboard(): JsonResponse
     {
-        $leaderboard = $this->dashboardService->fetchGlobalLeaderboard();
+        $currentSeason = $this->seasonService->getCurrentSeason();
+
+        if (!$currentSeason) {
+            return response()->json([
+                'data' => [],
+                'meta' => [
+                    'total' => 0,
+                    'season_id' => null,
+                    'season_name' => null,
+                ],
+            ]);
+        }
+
+        $leaderboard = $this->seasonService->getSeasonLeaderboard($currentSeason->id, 10);
 
         return response()->json([
             'data' => $leaderboard,
             'meta' => [
                 'total' => count($leaderboard),
+                'season_id' => $currentSeason->id,
+                'season_name' => $currentSeason->name,
             ],
         ]);
     }

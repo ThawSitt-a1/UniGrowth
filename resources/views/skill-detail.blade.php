@@ -66,8 +66,16 @@
             .tag-badge { font-size: 0.6rem !important; padding: 3px 8px !important; }
             .btn-gradient { font-size: 0.85rem !important; padding: 8px 16px !important; }
         }
-        .section-anchor { opacity: 0; margin-left: 0.5rem; font-size: 0.85em; color: #6366f1; text-decoration: none; transition: opacity 0.2s; }
+.section-anchor { opacity: 0; margin-left: 0.5rem; font-size: 0.85em; color: #6366f1; text-decoration: none; transition: opacity 0.2s; }
         h2:hover .section-anchor, h3:hover .section-anchor { opacity: 1; }
+/* Learning Steps */
+        .step-card { border: 1px solid rgba(0,0,0,0.06); border-radius: 16px; background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
+        .step-number { flex-shrink: 0; width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, #6366f1, #7c3aed); color: #fff; font-weight: 700; font-size: 1.1rem; display: inline-flex; align-items: center; justify-content: center; }
+        .step-card .card-title { font-weight: 700; color: #0f172a; }
+        .step-card .card-text { color: #475569; }
+        .step-resources .btn { border: 1px solid #e2e8f0; color: #6366f1; background: #f8fafc; font-weight: 600; }
+        .step-resources .btn:hover { background: #eef2ff; border-color: #6366f1; }
+        .project-suggestion { background: linear-gradient(135deg, #eef2ff, #faf5ff); border: 1px solid rgba(99,102,241,0.15); border-radius: 16px; }
     </style>
 </head>
 <body>
@@ -183,11 +191,17 @@
                             @else
                                 <a href="#content" class="toc-link active"><i class="bi bi-file-text me-2"></i>Content</a>
                             @endif
-                            @if(!empty($skill->resource_link))
-                                <a href="#resources" class="toc-link"><i class="bi bi-link-45deg me-2"></i>Resources</a>
+@if(!empty($learningSteps))
+                                <a href="#steps" class="toc-link"><i class="bi bi-list-steps me-2"></i>Learning Steps</a>
+                            @endif
+@if(!empty($projectSuggestion))
+                                <a href="#project" class="toc-link"><i class="bi bi-rocket-takeoff me-2"></i>Project</a>
                             @endif
                             @if($questions->count() > 0)
                                 <a href="#assessment" class="toc-link"><i class="bi bi-pencil-square me-2"></i>Assessment</a>
+                            @endif
+                            @if(!empty($skill->resource_link))
+                                <a href="#resources" class="toc-link"><i class="bi bi-link-45deg me-2"></i>Resources</a>
                             @endif
                         </div>
                     </div>
@@ -241,6 +255,11 @@
                                             @break
                                     @endswitch
                                 @endforeach
+@elseif(!empty($learningSteps))
+                                <div class="text-center py-5 text-muted">
+                                    <i class="bi bi-list-steps fs-1 d-block mb-3"></i>
+                                    <p class="mb-0">This skill is structured as a set of learning steps below. Scrolling down to the Learning Steps section to begin.</p>
+                                </div>
                             @else
                                 <div class="text-center py-5 text-muted">
                                     <i class="bi bi-file-earmark-text fs-1 d-block mb-3"></i>
@@ -248,6 +267,43 @@
                                 </div>
                             @endif
                         </div>
+
+<!-- Learning Steps -->
+                        @if(!empty($learningSteps))
+                            <hr class="my-5">
+                            <div id="steps">
+                                <div class="d-flex align-items-center gap-2 mb-3">
+                                    <i class="bi bi-list-steps fs-4" style="color: #6366f1;"></i>
+                                    <h5 class="fw-bold mb-0" style="color: #0f172a;">Learning Steps</h5>
+                                </div>
+                                <div class="d-flex flex-column gap-3">
+@foreach($learningSteps as $step)
+                                        <div class="card border-0 step-card">
+                                            <div class="card-body">
+                                                <div class="d-flex align-items-start gap-3">
+                                                    <span class="step-number">{{ $loop->iteration }}</span>
+                                                    <div class="flex-grow-1">
+                                                        <h6 class="card-title mb-2">{{ $step['title'] }}</h6>
+                                                        @if(!empty($step['description']))
+                                                            <p class="card-text mb-2">{!! nl2br(e($step['description'])) !!}</p>
+                                                        @endif
+                                                        @if(!empty($step['resources']))
+                                                            <div class="step-resources d-flex flex-wrap gap-2 mt-2">
+                                                                @foreach($step['resources'] as $res)
+                                                                    <a href="{{ $res['url'] }}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-light">
+                                                                        <i class="bi bi-link-45deg me-1"></i>{{ $res['label'] }}
+                                                                    </a>
+                                                                @endforeach
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
 
                         @php
                             $resourceLinks = [];
@@ -271,7 +327,7 @@
                         @if(!empty($resourceLinks))
                             <hr class="my-5">
                             <div id="resources">
-                                <h5 class="fw-bold mb-3" style="color: #0f172a;"><i class="bi bi-link-45deg me-2"></i>External Resources</h5>
+<h5 class="fw-bold mb-3" style="color: #0f172a;"><i class="bi bi-link-45deg me-2"></i>Premium Resources</h5>
                                 <div class="callout info">
                                     <p class="mb-2 fw-semibold">Supplemental Reading</p>
                                     <p class="text-muted small mb-3">Explore these external resources to deepen your understanding of the topics covered in this lesson.</p>
@@ -288,9 +344,23 @@
                             </div>
                         @endif
 
+@if(!empty($projectSuggestion))
+                            <hr class="my-5">
+                            <div id="project">
+                                <div class="project-suggestion p-4">
+                                    <h5 class="fw-bold mb-2" style="color: #0f172a;"><i class="bi bi-rocket-takeoff me-2"></i>Put It Into Practice</h5>
+                                    <p class="mb-0" style="color: #334155; line-height: 1.7;">{!! nl2br(e($projectSuggestion)) !!}</p>
+                                </div>
+                            </div>
+                        @endif
+
                             <hr class="my-5">
                             <div id="assessment">
-                                <h5 class="fw-bold mb-3" style="color: #0f172a;"><i class="bi bi-pencil-square me-2"></i>Assessment</h5>
+                                <div class="d-flex align-items-center gap-2 mb-3">
+                                    <i class="bi bi-pencil-square fs-4" style="color: #7c3aed;"></i>
+                                    <h5 class="fw-bold mb-0" style="color: #0f172a;">Assessment</h5>
+                                </div>
+
                                 @if($questions->count() > 0)
                                     @php
                                         $easyCount = $questions->where('difficulty', 'easy')->count();

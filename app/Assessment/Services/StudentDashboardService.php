@@ -6,11 +6,13 @@ namespace App\Assessment\Services;
 
 use App\Assessment\Repositories\AssessmentRepositoryInterface;
 use App\Auth\Models\User;
+use App\Overview\Services\SeasonService;
 
 final class StudentDashboardService
 {
     public function __construct(
         private readonly AssessmentRepositoryInterface $assessmentRepository,
+        private readonly SeasonService $seasonService,
     ) {
     }
 
@@ -50,30 +52,19 @@ final class StudentDashboardService
     }
 
     /**
-     * Fetch global leaderboard — top 10 users.
+     * Fetch seasonal leaderboard — top 10 users for the current active season.
      *
      * @return array<int, array<string, mixed>>
      */
     public function fetchGlobalLeaderboard(): array
     {
-        $topUsers = $this->assessmentRepository->fetchLeaderboardData();
+        $currentSeason = $this->seasonService->getCurrentSeason();
 
-$leaderboard = [];
-        $rank = 1;
-        foreach ($topUsers as $user) {
-$leaderboard[] = [
-                'rank' => $rank++,
-                'user_id' => $user->id,
-                'username' => $user->username,
-                'platform_score' => $user->platform_score,
-                'rank_title' => User::rankTitle((float) $user->platform_score),
-                'avatar_path' => $user->avatar_path,
-                'university_name' => $user->university_name,
-                'major' => $user->major,
-            ];
+        if (!$currentSeason) {
+            return [];
         }
 
-        return $leaderboard;
+        return $this->seasonService->getSeasonLeaderboard($currentSeason->id, 10);
     }
 
     /**

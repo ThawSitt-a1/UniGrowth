@@ -14,6 +14,7 @@ final class SeasonInfoDTO
         public readonly bool $isActive,
         public readonly int $daysRemaining,
         public readonly float $highestScore = 0.0,
+        public readonly ?string $image = null,
     ) {
     }
 
@@ -30,6 +31,7 @@ final class SeasonInfoDTO
             'is_active' => $this->isActive,
             'days_remaining' => $this->daysRemaining,
             'highest_score' => $this->highestScore,
+            'image' => $this->image,
         ];
     }
 }
