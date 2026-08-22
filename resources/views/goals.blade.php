@@ -397,7 +397,7 @@ NAVBAR — same as dashboard
                 </li>
                 <li class="nav-item">
                     <a href="{{ route('core-assets.skills') }}" class="nav-link nav-link-custom">
-                        <i class="bi bi-book"></i>Skills
+                        <i class="bi bi-book"></i>Learn
                     </a>
                 </li>
                 <li class="nav-item">
@@ -407,12 +407,7 @@ NAVBAR — same as dashboard
                 </li>
                 <li class="nav-item">
                     <a href="{{ route('core-assets.index') }}" class="nav-link nav-link-custom">
-                        <i class="bi bi-bullseye"></i>Goals
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('core-assets.index') }}#pane-habits" class="nav-link nav-link-custom">
-                        <i class="bi bi-calendar2-check"></i>Habits
+                        <i class="bi bi-bullseye"></i>Goals & Habits
                     </a>
                 </li>
             </ul>
@@ -913,13 +908,36 @@ MAIN CONTENT
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     // ============ Tab activation from URL hash ============
-    const hash = window.location.hash;
-    if (hash) {
-        const trigger = document.querySelector('[data-bs-target="' + hash + '"]');
-        if (trigger && window.bootstrap) {
-            bootstrap.Tab.getOrCreateInstance(trigger).show();
+    function activateTabFromHash() {
+        const hash = window.location.hash;
+        if (hash === '#pane-habits' || hash === '#pane-goals') {
+            const targetId = hash.replace('#', '');
+            const trigger = document.getElementById(targetId + '-tab');
+            if (trigger && window.bootstrap) {
+                try {
+                    bootstrap.Tab.getOrCreateInstance(trigger).show();
+                } catch (e) {
+                    document.querySelectorAll('.nav-tab-custom .nav-link').forEach(function (el) {
+                        el.classList.remove('active');
+                        el.setAttribute('aria-selected', 'false');
+                    });
+                    document.querySelectorAll('.tab-pane').forEach(function (el) {
+                        el.classList.remove('active', 'show');
+                    });
+                    trigger.classList.add('active');
+                    trigger.setAttribute('aria-selected', 'true');
+                    const paneId = trigger.getAttribute('data-bs-target');
+                    if (paneId) {
+                        const pane = document.querySelector(paneId);
+                        if (pane) pane.classList.add('active', 'show');
+                    }
+                }
+            }
         }
     }
+
+    activateTabFromHash();
+    window.addEventListener('hashchange', activateTabFromHash);
 
 // ============ Toggle per-habit calendar ============
     document.querySelectorAll('.habit-toggle-cal').forEach(function (btn) {

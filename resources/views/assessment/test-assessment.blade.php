@@ -161,30 +161,23 @@
             background: rgba(99,102,241,0.05);
         }
 
-        /* ===== Form Elements ===== */
-        .input-field {
-            width: 100%;
-            padding: 10px 14px;
-            border: 1px solid var(--gray-200);
-            border-radius: 10px;
-            font-size: 0.9375rem;
-            color: var(--gray-700);
-            background: var(--gray-50);
-            transition: all 0.2s;
-            outline: none;
-        }
-        .input-field:focus {
-            border-color: var(--indigo);
-            background: #fff;
-            box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
-        }
-        .select-custom {
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%236b7280' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 12px center;
-            padding-right: 36px;
-        }
+        /* ===== Search Box ===== */
+        .search-box-wrapper { position: relative; max-width: 520px; }
+        .search-box-wrapper .search-icon { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--bs-secondary-color); pointer-events: none; font-size: 1rem; z-index: 2; }
+        .search-box-wrapper .form-control { font-size: 0.95rem; border-radius: 12px !important; padding-left: 2.75rem !important; padding-right: 130px !important; border: 2px solid var(--bs-border-color); background: var(--bs-body-bg); transition: all 0.2s; height: 48px; color: var(--bs-body-color); }
+        .search-box-wrapper .form-control:focus { border-color: var(--indigo); box-shadow: 0 0 0 4px rgba(99,102,241,0.1); background: var(--bs-body-bg); }
+        .search-box-wrapper .form-control::placeholder { color: var(--bs-secondary-color); }
+        .search-box-wrapper .btn-search-start { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); border-radius: 10px !important; border: none; background: linear-gradient(135deg, var(--indigo), var(--purple)); color: #fff; padding: 0.5rem 1.25rem; font-size: 0.85rem; font-weight: 600; transition: all 0.2s; height: 36px; z-index: 2; }
+        .search-box-wrapper .btn-search-start:hover { background: linear-gradient(135deg, var(--indigo-dark), var(--purple)); color: #fff; transform: translateY(-50%) translateY(-1px); box-shadow: 0 4px 14px rgba(99,102,241,0.35); }
+        .search-box-wrapper .search-label { font-size: 0.85rem; font-weight: 600; color: var(--bs-body-color); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem; }
+        .search-box-wrapper .search-label i { color: var(--indigo); }
+        .search-dropdown { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: var(--bs-body-bg); border: 1px solid var(--bs-border-color); border-radius: 12px; max-height: 240px; overflow-y: auto; z-index: 1070; box-shadow: 0 10px 25px rgba(0,0,0,0.12); display: none; }
+        .search-dropdown.show { display: block; }
+        .search-dropdown-item { padding: 0.65rem 1rem; cursor: pointer; font-size: 0.9rem; transition: all 0.15s; border-bottom: 1px solid var(--bs-border-color); color: var(--bs-body-color); }
+        .search-dropdown-item:last-child { border-bottom: none; }
+        .search-dropdown-item:hover, .search-dropdown-item.active { background: rgba(99,102,241,0.1); color: var(--indigo); }
+        .search-dropdown-empty { padding: 1rem; text-align: center; color: var(--bs-secondary-color); font-size: 0.85rem; }
+        .search-dropdown-highlight { font-weight: 700; color: var(--indigo); }
 
         /* ===== Badges ===== */
         .badge-difficulty {
@@ -600,7 +593,7 @@ NAVIGATION — Matches dashboard's gradient navbar
                 </li>
                 <li class="nav-item">
                     <a href="{{ route('core-assets.skills') }}" class="nav-link nav-link-custom">
-                        <i class="bi bi-book"></i>Skills
+                        <i class="bi bi-book"></i>Learn
                     </a>
                 </li>
                 <li class="nav-item">
@@ -609,8 +602,8 @@ NAVIGATION — Matches dashboard's gradient navbar
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ route('core-assets.index') }}#goals" class="nav-link nav-link-custom">
-                        <i class="bi bi-bullseye"></i>Goals
+                    <a href="{{ route('core-assets.index') }}" class="nav-link nav-link-custom">
+                        <i class="bi bi-bullseye"></i>Goals & Habits
                     </a>
                 </li>
             </ul>
@@ -707,7 +700,7 @@ MAIN CONTENT
     ================================================================
     --}}
     @if ($hasActiveSeason)
-        <div class="form-card overflow-hidden mb-4 animate-fade-up">
+        <div class="form-card mb-4 animate-fade-up">
             <div class="card-header-gradient">
                 <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
                     <div>
@@ -723,27 +716,17 @@ MAIN CONTENT
             </div>
             <div class="p-4">
                 <form method="GET" action="{{ route('assessment.test.index') }}" id="skill-select-form">
-                    <label for="skill_id" class="form-label fw-semibold" style="color: var(--gray-700);">
-                        <i class="bi bi-bookmark me-1" style="color: var(--indigo);"></i>Select a Skill to Begin
+                    <label for="skill_id" class="search-label">
+                        <i class="bi bi-search"></i> Search for a skill to begin
                     </label>
-                    <div class="row g-2 align-items-center">
-                        <div class="col-md-6">
-                            <select name="skill_id" id="skill_id"
-                                    class="form-select input-field select-custom"
-                                    onchange="document.getElementById('skill-select-form').submit()">
-                                <option value="">— Choose a skill —</option>
-                                @foreach ($skills as $skill)
-                                    <option value="{{ $skill->id }}" {{ $selectedSkillId === $skill->id ? 'selected' : '' }}>
-                                        {{ $skill->title }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <button type="submit" class="btn btn-primary-custom w-100">
-                                <i class="bi bi-arrow-right me-1"></i>Start Quiz
-                            </button>
-                        </div>
+                    <div class="search-box-wrapper">
+                        <i class="bi bi-search search-icon"></i>
+                        <input type="text" class="form-control" id="skill-search" placeholder="Type to search skills..." value="{{ $selectedSkillId ? $skills->firstWhere('id', $selectedSkillId)?->title : '' }}" autocomplete="off">
+                        <input type="hidden" name="skill_id" id="skill_id" value="{{ $selectedSkillId }}">
+                        <button type="submit" class="btn-search-start">
+                            <i class="bi bi-arrow-right me-1"></i>Start Quiz
+                        </button>
+                        <div class="search-dropdown" id="skill-dropdown"></div>
                     </div>
                 </form>
             </div>
@@ -1293,6 +1276,77 @@ SCRIPTS
             if (btn) {
                 btn.disabled = true;
                 btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status"></span>Submitting...';
+            }
+        });
+    }
+
+    // ===== 5. Skill Search Autocomplete =====
+    const skillSearch = document.getElementById('skill-search');
+    const skillIdInput = document.getElementById('skill_id');
+    const skillDropdown = document.getElementById('skill-dropdown');
+    const allSkills = @json($skills->map(fn($s) => ['id' => $s->id, 'title' => $s->title]));
+
+    function escapeHtml(str) {
+        return str.replace(/[&<>"']/g, function(m) {
+            return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' })[m];
+        });
+    }
+
+    function renderSkillDropdown(query) {
+        if (!skillDropdown || !skillSearch) return;
+        const term = query.toLowerCase().trim();
+        const matches = allSkills.filter(s => s.title.toLowerCase().includes(term));
+
+        if (matches.length === 0) {
+            skillDropdown.innerHTML = '<div class="search-dropdown-empty">No skills found</div>';
+        } else {
+            skillDropdown.innerHTML = matches.map(s => {
+                const escapedTitle = escapeHtml(s.title);
+                const highlighted = term ? escapedTitle.replace(new RegExp('(' + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi'), '<span class="search-dropdown-highlight">$1</span>') : escapedTitle;
+                return '<div class="search-dropdown-item" data-id="' + s.id + '">' + highlighted + '</div>';
+            }).join('');
+        }
+        skillDropdown.classList.add('show');
+    }
+
+    if (skillSearch && skillDropdown) {
+        skillSearch.addEventListener('input', function() {
+            const val = this.value;
+            skillIdInput.value = '';
+            if (val.length > 0) {
+                renderSkillDropdown(val);
+            } else {
+                skillDropdown.classList.remove('show');
+            }
+        });
+
+        skillSearch.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const first = skillDropdown.querySelector('.search-dropdown-item');
+                if (first) {
+                    skillIdInput.value = first.getAttribute('data-id');
+                    skillDropdown.classList.remove('show');
+                    document.getElementById('skill-select-form').submit();
+                }
+            } else if (e.key === 'Escape') {
+                skillDropdown.classList.remove('show');
+            }
+        });
+
+        skillDropdown.addEventListener('click', function(e) {
+            const item = e.target.closest('.search-dropdown-item');
+            if (item) {
+                skillIdInput.value = item.getAttribute('data-id');
+                skillSearch.value = item.textContent.trim();
+                skillDropdown.classList.remove('show');
+                document.getElementById('skill-select-form').submit();
+            }
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.search-box-wrapper')) {
+                skillDropdown.classList.remove('show');
             }
         });
     }

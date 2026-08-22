@@ -239,19 +239,27 @@ public function showPublic(Request $request, int $user): View|RedirectResponse
     }
 
     /**
-     * Change password or deactivate account.
-     */
+      * Change password or deactivate account.
+      */
     public function updateAccount(UpdateAccountRequest $request): RedirectResponse
     {
         $action = $request->string('action')->toString();
         $userId = $request->user()->id;
 
-return match ($action) {
-            'change_password' => $this->handleChangePassword($request, $userId),
-            'deactivate' => $this->handleDeactivate($request, $userId),
-            default => redirect()->route('profile.security')
-                ->with('error', 'Invalid action.'),
-        };
+        try {
+            return match ($action) {
+                'change_password' => $this->handleChangePassword($request, $userId),
+                'deactivate' => $this->handleDeactivate($request, $userId),
+                default => redirect()->route('profile.security')
+                    ->with('error', 'Invalid action.'),
+            };
+        } catch (\RuntimeException $e) {
+            return redirect()->route('profile.security')
+                ->with('error', $e->getMessage());
+        } catch (\Exception $e) {
+            return redirect()->route('profile.security')
+                ->with('error', 'An unexpected error occurred. Please try again later.');
+        }
     }
 
     private function handleChangePassword(UpdateAccountRequest $request, int $userId): RedirectResponse
@@ -265,7 +273,7 @@ return match ($action) {
             ->with('success', 'Password changed successfully.');
     }
 
-private function handleDeactivate(UpdateAccountRequest $request, int $userId): RedirectResponse
+    private function handleDeactivate(UpdateAccountRequest $request, int $userId): RedirectResponse
     {
         $this->updateAccountUseCase->deactivateAccount(
             $userId,

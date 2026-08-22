@@ -523,18 +523,18 @@ TOP NAVIGATION BAR (Same as Profile pages)
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ route('profile.show') }}" class="nav-link nav-link-custom">
-                        <i class="bi bi-person-circle"></i>Profile
-                    </a>
-                </li>
-                <li class="nav-item">
                     <a href="{{ route('core-assets.skills') }}" class="nav-link nav-link-custom">
-                        <i class="bi bi-book"></i>Skills
+                        <i class="bi bi-book"></i>Learn
                     </a>
                 </li>
                 <li class="nav-item">
                     <a href="{{ route('assessment.test.index') }}" class="nav-link nav-link-custom">
                         <i class="bi bi-pencil-square"></i>Quiz
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('core-assets.index') }}" class="nav-link nav-link-custom">
+                        <i class="bi bi-bullseye"></i>Goals & Habits
                     </a>
                 </li>
             </ul>

@@ -135,9 +135,9 @@
         <div class="collapse navbar-collapse" id="skillsNav">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0 gap-1">
                 <li class="nav-item"><a href="{{ route('dashboard') }}" class="nav-link nav-link-custom"><i class="bi bi-house-door"></i>Dashboard</a></li>
-                <li class="nav-item"><a href="{{ route('core-assets.skills') }}" class="nav-link nav-link-custom"><i class="bi bi-book"></i>Skills</a></li>
+                <li class="nav-item"><a href="{{ route('core-assets.skills') }}" class="nav-link nav-link-custom"><i class="bi bi-book"></i>Learn</a></li>
                 <li class="nav-item"><a href="{{ route('assessment.test.index') }}" class="nav-link nav-link-custom"><i class="bi bi-pencil-square"></i>Quiz</a></li>
-                <li class="nav-item"><a href="{{ route('core-assets.index') }}" class="nav-link nav-link-custom"><i class="bi bi-bullseye"></i>Goals</a></li>
+                <li class="nav-item"><a href="{{ route('core-assets.index') }}" class="nav-link nav-link-custom"><i class="bi bi-bullseye"></i>Goals & Habits</a></li>
             </ul>
             <div class="d-flex align-items-center gap-3">
                 @include('partials.theme-toggle', [

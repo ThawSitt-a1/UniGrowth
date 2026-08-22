@@ -68,7 +68,7 @@
         }
 .section-anchor { opacity: 0; margin-left: 0.5rem; font-size: 0.85em; color: #6366f1; text-decoration: none; transition: opacity 0.2s; }
         h2:hover .section-anchor, h3:hover .section-anchor { opacity: 1; }
-/* Learning Steps */
+        /* Learning Steps */
         .step-card { border: 1px solid rgba(0,0,0,0.06); border-radius: 16px; background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
         .step-number { flex-shrink: 0; width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, #6366f1, #7c3aed); color: #fff; font-weight: 700; font-size: 1.1rem; display: inline-flex; align-items: center; justify-content: center; }
         .step-card .card-title { font-weight: 700; color: #0f172a; }
@@ -76,6 +76,7 @@
         .step-resources .btn { border: 1px solid #e2e8f0; color: #6366f1; background: #f8fafc; font-weight: 600; }
         .step-resources .btn:hover { background: #eef2ff; border-color: #6366f1; }
         .project-suggestion { background: linear-gradient(135deg, #eef2ff, #faf5ff); border: 1px solid rgba(99,102,241,0.15); border-radius: 16px; }
+        .section-divider { border: none; height: 2px; background: linear-gradient(90deg, #6366f1 0%, #e5e7eb 50%, transparent 100%); margin: 3rem 0; opacity: 1; }
     </style>
 </head>
 <body>
@@ -88,8 +89,9 @@
             <div class="collapse navbar-collapse" id="nav">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0 gap-1">
                     <li class="nav-item"><a href="{{ route('dashboard') }}" class="nav-link nav-link-custom"><i class="bi bi-house-door"></i>Dashboard</a></li>
-                    <li class="nav-item"><a href="{{ route('core-assets.skills') }}" class="nav-link nav-link-custom"><i class="bi bi-book"></i>Skills</a></li>
+                    <li class="nav-item"><a href="{{ route('core-assets.skills') }}" class="nav-link nav-link-custom"><i class="bi bi-book"></i>Learn</a></li>
                     <li class="nav-item"><a href="{{ route('assessment.test.index') }}" class="nav-link nav-link-custom"><i class="bi bi-pencil-square"></i>Quiz</a></li>
+                    <li class="nav-item"><a href="{{ route('core-assets.index') }}" class="nav-link nav-link-custom"><i class="bi bi-bullseye"></i>Goals & Habits</a></li>
                 </ul>
                 <div class="d-flex align-items-center gap-3">
                     @include('partials.theme-toggle', [
@@ -270,7 +272,7 @@
 
 <!-- Learning Steps -->
                         @if(!empty($learningSteps))
-                            <hr class="my-5">
+                            <hr class="section-divider">
                             <div id="steps">
                                 <div class="d-flex align-items-center gap-2 mb-3">
                                     <i class="bi bi-list-steps fs-4" style="color: #6366f1;"></i>
@@ -325,7 +327,7 @@
                         @endphp
 
                         @if(!empty($resourceLinks))
-                            <hr class="my-5">
+                            <hr class="section-divider">
                             <div id="resources">
 <h5 class="fw-bold mb-3" style="color: #0f172a;"><i class="bi bi-link-45deg me-2"></i>Premium Resources</h5>
                                 <div class="callout info">
@@ -344,8 +346,8 @@
                             </div>
                         @endif
 
-@if(!empty($projectSuggestion))
-                            <hr class="my-5">
+                    @if(!empty($projectSuggestion))
+                            <hr class="section-divider">
                             <div id="project">
                                 <div class="project-suggestion p-4">
                                     <h5 class="fw-bold mb-2" style="color: #0f172a;"><i class="bi bi-rocket-takeoff me-2"></i>Put It Into Practice</h5>
@@ -354,7 +356,7 @@
                             </div>
                         @endif
 
-                            <hr class="my-5">
+                            <hr class="section-divider">
                             <div id="assessment">
                                 <div class="d-flex align-items-center gap-2 mb-3">
                                     <i class="bi bi-pencil-square fs-4" style="color: #7c3aed;"></i>

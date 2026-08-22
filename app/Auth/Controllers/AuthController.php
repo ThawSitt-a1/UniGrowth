@@ -119,9 +119,30 @@ public function register(RegisterRequest $request): JsonResponse|RedirectRespons
             password: $request->string('password')->toString(),
         );
 
-        $result = $this->resetPasswordUseCase->execute($dto);
+        try {
+            $result = $this->resetPasswordUseCase->execute($dto);
+        } catch (\RuntimeException $e) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => $e->getMessage(),
+                ], 400);
+            }
 
-        // If the request expects JSON (API client), return structured response
+            return redirect()->back()
+                ->with('error', $e->getMessage())
+                ->withInput($request->only('email'));
+        } catch (\Exception $e) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'An unexpected error occurred. Please try again later.',
+                ], 500);
+            }
+
+            return redirect()->back()
+                ->with('error', 'An unexpected error occurred. Please try again later.')
+                ->withInput($request->only('email'));
+        }
+
         if ($request->expectsJson()) {
             $statusCode = $result['success'] ? 200 : 400;
             return response()->json([
@@ -129,7 +150,6 @@ public function register(RegisterRequest $request): JsonResponse|RedirectRespons
             ], $statusCode);
         }
 
-        // Web flow: redirect with flash messages
         if ($result['success']) {
             return redirect()->intended('/dashboard')
                 ->with('status', $result['message']);

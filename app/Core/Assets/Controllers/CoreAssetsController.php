@@ -103,7 +103,7 @@ $isEnrolled = false;
                 ? ContentBlockParser::extractHeadings($skill->content)
                 : [];
 
-            // Parse structured learning steps (e.g. "## Step 1: ...")
+            // Parse structured learning steps from content (legacy markdown format)
             $learningSteps = !empty($skill->content)
                 ? ContentBlockParser::parseSteps($skill->content)
                 : [];

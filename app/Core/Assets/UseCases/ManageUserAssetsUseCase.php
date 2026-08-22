@@ -116,10 +116,15 @@ final class ManageUserAssetsUseCase
             throw new \InvalidArgumentException('goal_id is required.');
         }
 
-        $deleted = $this->goalRepository->delete($goalId);
+        $goal = \App\Core\Assets\Models\Goal::query()
+            ->where('user_id', $userId)
+            ->where('id', $goalId)
+            ->firstOrFail();
+
+        $goal->delete();
 
         return [
-            'deleted' => $deleted,
+            'deleted' => true,
         ];
     }
 

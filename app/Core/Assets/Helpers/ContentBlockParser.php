@@ -25,11 +25,18 @@ final class ContentBlockParser
         $lines = explode("\n", $content);
         $i = 0;
         $total = count($lines);
+        $iterations = 0;
+        $maxIterations = max($total * 10, 100000);
 
         while ($i < $total) {
+            $iterations++;
+            if ($iterations > $maxIterations) {
+                break;
+            }
+
             $line = $lines[$i];
 
-// Skip empty lines
+            // Skip empty lines
             if (trim($line) === '') {
                 $i++;
                 continue;
@@ -136,7 +143,7 @@ final class ContentBlockParser
             // Paragraph (collect consecutive non-special lines)
             $paragraphLines = [];
             while ($i < $total && trim($lines[$i]) !== '' &&
-                   !preg_match('/^(##|###|>|```|!\[@)/', $lines[$i])) {
+                   !preg_match('/^(##|###|```)/', $lines[$i])) {
                 $paragraphLines[] = $lines[$i];
                 $i++;
             }
@@ -198,11 +205,18 @@ final class ContentBlockParser
         $lines = explode("\n", $content);
         $total = count($lines);
         $i = 0;
+        $iterations = 0;
+        $maxIterations = max($total * 10, 100000);
 
         while ($i < $total) {
+            $iterations++;
+            if ($iterations > $maxIterations) {
+                break;
+            }
+
             $line = $lines[$i];
 
-// Detect a step header: "## Step 1: ...", "Step 3: ...", "Step: ...", "## Step 2 - ..."
+            // Detect a step header: "## Step 1: ...", "Step 3: ...", "Step: ...", "## Step 2 - ..."
             if (preg_match('/^(?:#+\s*)?Step(?:\s+\d+)?[:\-]\s*(.*)$/i', trim($line), $matches)) {
                 $title = trim($matches[1]);
                 $i++;

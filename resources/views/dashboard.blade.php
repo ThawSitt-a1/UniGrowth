@@ -485,8 +485,13 @@
             <div class="collapse navbar-collapse" id="navMenu">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0 gap-1">
                     <li class="nav-item">
+                        <a href="{{ route('dashboard') }}" class="nav-link nav-link-custom">
+                            <i class="bi bi-house-door"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a href="{{ route('core-assets.skills') }}" class="nav-link nav-link-custom">
-                            <i class="bi bi-book"></i>Skills
+                            <i class="bi bi-book"></i>Learn
                         </a>
                     </li>
                     <li class="nav-item">
@@ -495,13 +500,8 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ route('core-assets.index') }}#goals" class="nav-link nav-link-custom">
-                            <i class="bi bi-bullseye"></i>Goals
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ route('core-assets.index') }}#pane-habits" class="nav-link nav-link-custom">
-                            <i class="bi bi-calendar2-check"></i>Habits
+                        <a href="{{ route('core-assets.index') }}" class="nav-link nav-link-custom">
+                            <i class="bi bi-bullseye"></i>Goals & Habits
                         </a>
                     </li>
                 </ul>

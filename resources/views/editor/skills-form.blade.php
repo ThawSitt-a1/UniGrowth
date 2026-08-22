@@ -15,7 +15,7 @@
 
     <div class="content-card">
         <div class="card-body-custom">
-            <form method="POST" action="{{ route('editor.skills.save') }}">
+            <form method="POST" action="{{ route('editor.skills.save') }}" id="editor-skills-form">
                 @csrf
 
                 @if($skill)
@@ -72,7 +72,7 @@
                                   class="form-control form-control-editor @error('content') is-invalid @enderror"
                                   placeholder="Write the full lesson content here. Supports paragraphs, code snippets, and structured text. This content is only visible to enrolled users.">{{ old('content', $skill->content ?? '') }}</textarea>
                         @error('content') <div class="invalid-feedback">{{ $message }}</div> @enderror
-<div class="form-text small text-muted">
+ <div class="form-text small text-muted">
                             <i class="bi bi-lock me-1"></i> Hidden from non-enrolled users. Use clear headings and structured text for the best reading experience.
                             <span class="d-block mt-1">
                                 <i class="bi bi-list-steps me-1"></i>

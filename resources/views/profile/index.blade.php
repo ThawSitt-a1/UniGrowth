@@ -873,7 +873,7 @@ TOP NAVIGATION BAR (Same as Dashboard)
                 </li>
                 <li class="nav-item">
                     <a href="{{ route('core-assets.skills') }}" class="nav-link nav-link-custom">
-                        <i class="bi bi-book"></i>Skills
+                        <i class="bi bi-book"></i>Learn
                     </a>
                 </li>
                 <li class="nav-item">
@@ -883,7 +883,7 @@ TOP NAVIGATION BAR (Same as Dashboard)
                 </li>
                 <li class="nav-item">
                     <a href="{{ route('core-assets.index') }}" class="nav-link nav-link-custom">
-                        <i class="bi bi-bullseye"></i>Goals
+                        <i class="bi bi-bullseye"></i>Goals & Habits
                     </a>
                 </li>
             </ul>

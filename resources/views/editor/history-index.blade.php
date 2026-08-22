@@ -10,16 +10,17 @@
             </h2>
             <p class="small text-muted mb-0">Audit log of all skills you've created</p>
         </div>
-        <form method="GET" action="{{ route('editor.history.index') }}" class="search-input-group d-flex">
-            <input type="text" name="search" class="form-control" placeholder="Search by title, slug, or ID..." value="{{ $search ?? '' }}">
-            <button type="submit" class="btn-search"><i class="bi bi-search"></i></button>
+        <form method="GET" action="{{ route('editor.history.index') }}" class="search-input-group d-flex position-relative">
+            <i class="bi bi-search search-icon"></i>
+            <input type="text" name="search" class="form-control pe-5" placeholder="Search by title, slug, or ID..." value="{{ $search ?? '' }}">
+            <button type="submit" class="btn-search">Search</button>
         </form>
     </div>
 
     @if(count($skills) > 0)
         <div class="content-card overflow-hidden">
-            <div class="table-responsive">
-                <table class="table table-editor">
+                <div class="table-responsive">
+                    <table class="table table-editor" style="min-width: 750px;">
                     <thead>
                         <tr>
                             <th class="px-4">ID</th>

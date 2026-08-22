@@ -67,7 +67,7 @@
         .badge-role.user { background: #e0f2fe; color: #0369a1; }
         .badge-role.editor { background: #fef3c7; color: #b45309; }
         .badge-role.admin { background: #ede9fe; color: #6d28d9; }
-        .badge-status { font-size: 0.7rem; font-weight: 600; padding: 0.25em 0.65em; border-radius: 20px; }
+        .badge-status { font-size: 0.7rem; font-weight: 600; padding: 0.25em 0.65em; border-radius: 20px; white-space: nowrap; }
         .badge-status.active { background: #d1fae5; color: #065f46; }
         .badge-status.locked { background: #fee2e2; color: #991b1b; }
         .badge-status.suspended { background: #fef3c7; color: #92400e; }
@@ -89,9 +89,16 @@
         .form-control-editor { font-size: 0.85rem; border-radius: 8px; padding: 0.45rem 0.75rem; }
         .form-label-editor { font-size: 0.8rem; font-weight: 600; margin-bottom: 0.3rem; }
         .alert-editor { border-radius: 10px; border: none; font-size: 0.85rem; padding: 0.75rem 1rem; }
-        .search-input-group { max-width: 320px; }
-        .search-input-group .form-control { font-size: 0.8rem; border-radius: 8px 0 0 8px; }
-        .search-input-group .btn-search { font-size: 0.8rem; border-radius: 0 8px 8px 0; }
+        .search-input-group { position: relative; max-width: 360px; }
+        .search-input-group .search-icon { position: absolute; left: 0.85rem; top: 50%; transform: translateY(-50%); color: #9ca3af; pointer-events: none; font-size: 0.9rem; }
+        .search-input-group .form-control { font-size: 0.85rem; border-radius: 999px !important; padding-left: 2.5rem !important; border: 1px solid #e5e7eb; background: #f9fafb; transition: all 0.2s; }
+        .search-input-group .form-control:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,0.12); background: #fff; }
+        .search-input-group .btn-search { position: absolute; right: 0.35rem; top: 50%; transform: translateY(-50%); border-radius: 999px !important; border: none; background: linear-gradient(135deg, #6366f1, #7c3aed); color: #fff; padding: 0.35rem 1rem; font-size: 0.8rem; font-weight: 600; transition: all 0.2s; }
+        .search-input-group .btn-search:hover { background: linear-gradient(135deg, #4f46e5, #6d28d9); color: #fff; transform: translateY(-50%) translateY(-1px); box-shadow: 0 4px 12px rgba(99,102,241,0.3); }
+        .step-builder-card { border: 1px solid var(--bs-border-color); border-radius: 12px; background: var(--bs-body-bg); box-shadow: 0 1px 3px rgba(0,0,0,0.04); transition: all 0.2s; }
+        .step-builder-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.06); border-color: rgba(99,102,241,0.25); }
+        .step-builder-card .card-body-custom { padding: 1rem 1.25rem; }
+        .step-resource-item { background: var(--bs-body-bg); border-radius: 8px; padding: 0.5rem; border: 1px dashed var(--bs-border-color); }
         .empty-state { padding: 2.5rem 1rem; text-align: center; }
         .empty-state i { font-size: 2.5rem; margin-bottom: 0.75rem; }
         .empty-state p { font-size: 0.9rem; margin-bottom: 0; }
@@ -112,7 +119,7 @@
         <nav class="editor-sidebar-nav">
             <div class="nav-section-label">Main</div>
             <a href="{{ route('editor.dashboard') }}" class="nav-link {{ request()->routeIs('editor.dashboard') ? 'active' : '' }}"><i class="bi bi-speedometer2"></i>Dashboard</a>
-            <a href="{{ route('editor.skills.index') }}" class="nav-link {{ request()->routeIs('editor.skills.*') ? 'active' : '' }}"><i class="bi bi-book"></i>Skills</a>
+            <a href="{{ route('editor.skills.index') }}" class="nav-link {{ request()->routeIs('editor.skills.*') ? 'active' : '' }}"><i class="bi bi-book"></i>Learn</a>
             <a href="{{ route('editor.questions.index') }}" class="nav-link {{ request()->routeIs('editor.questions.*') ? 'active' : '' }}"><i class="bi bi-question-circle"></i>Questions</a>
             <a href="{{ route('editor.history.index') }}" class="nav-link {{ request()->routeIs('editor.history.*') ? 'active' : '' }}"><i class="bi bi-clock-history"></i>History</a>
             <a href="{{ route('editor.settings.index') }}" class="nav-link {{ request()->routeIs('editor.settings.*') ? 'active' : '' }}"><i class="bi bi-gear"></i>Settings</a>

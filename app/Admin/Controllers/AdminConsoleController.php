@@ -90,6 +90,14 @@ final class AdminConsoleController
             'role' => ['required', 'string', 'in:user,editor'],
         ]);
 
+        $currentUserId = (int) $request->user()->id;
+
+        if ($id === $currentUserId) {
+            return redirect()
+                ->back()
+                ->with('error', 'You cannot change your own role.');
+        }
+
         try {
             $dto = new RoleAssignmentDTO(
                 userId: $id,
@@ -195,6 +203,10 @@ $dto = new ContentActionDTO(
     {
         $screenshotPath = $this->adminService->getBugReportScreenshotPath($id);
 
+        if (!$screenshotPath || !Storage::disk('public')->exists($screenshotPath)) {
+            abort(404, 'Screenshot not found.');
+        }
+
         return Storage::disk('public')->response($screenshotPath);
     }
 
@@ -258,6 +270,14 @@ public function updateBugReport(Request $request, int $id): RedirectResponse
 
     public function demoteEditor(int $id): RedirectResponse
     {
+        $currentUserId = (int) request()->user()->id;
+
+        if ($id === $currentUserId) {
+            return redirect()
+                ->back()
+                ->with('error', 'You cannot change your own role.');
+        }
+
         try {
             $this->adminService->demoteEditor($id);
 
@@ -273,6 +293,14 @@ public function updateBugReport(Request $request, int $id): RedirectResponse
 
     public function deleteEditor(int $id): RedirectResponse
     {
+        $currentUserId = (int) request()->user()->id;
+
+        if ($id === $currentUserId) {
+            return redirect()
+                ->back()
+                ->with('error', 'You cannot delete your own account.');
+        }
+
         try {
             $this->adminService->deleteEditor($id);
 
@@ -286,8 +314,16 @@ public function updateBugReport(Request $request, int $id): RedirectResponse
         }
     }
 
-public function deleteUser(int $id): RedirectResponse
+ public function deleteUser(int $id): RedirectResponse
     {
+        $currentUserId = (int) request()->user()->id;
+
+        if ($id === $currentUserId) {
+            return redirect()
+                ->back()
+                ->with('error', 'You cannot delete your own account.');
+        }
+
         try {
             $this->adminService->deleteUser($id);
 
