@@ -32,6 +32,7 @@ final class SkillRepository implements SkillRepositoryInterface
             }
 
             $skill->update($updateData);
+
             return true;
         }
 
@@ -48,6 +49,7 @@ final class SkillRepository implements SkillRepositoryInterface
             'is_active' => $data->isActive ?? true,
             'locked_by_admin' => false,
         ]);
+
         return true;
     }
 
@@ -59,11 +61,12 @@ final class SkillRepository implements SkillRepositoryInterface
             ->where('locked_by_admin', false)
             ->first();
 
-        if (!$skill) {
+        if (! $skill) {
             return false;
         }
 
         $skill->questions()->delete();
+
         return (bool) $skill->delete();
     }
 

@@ -5,8 +5,6 @@ namespace App\Auth\Repositories;
 use App\Auth\Models\PasswordReset;
 use App\Auth\Models\User;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 
 final class EloquentUserRepository implements UserRepositoryInterface
 {
@@ -28,24 +26,25 @@ final class EloquentUserRepository implements UserRepositoryInterface
 
     public function create(array $data): array
     {
-$user = User::query()->create([
-        'username'        => $data['username'],
-        'email'           => $data['email'],
-        'role'            => $data['role'] ?? 'user',
-        // The 'hashed' cast on the User model handles hashing automatically
-        'password'        => $data['password'],
-        'remember_token'  => $data['remember_token'] ?? null,
-        'academic_year'   => $data['academic_year'] ?? null,
-        'major'           => $data['major'] ?? null,
-        'university_name' => $data['university_name'] ?? null,
-        'agreed_to_terms' => $data['agreed_to_terms'] ?? false,
+        $user = User::query()->create([
+            'username' => $data['username'],
+            'email' => $data['email'],
+            'role' => $data['role'] ?? 'user',
+            'password' => $data['password'],
+            'remember_token' => $data['remember_token'] ?? null,
+            'academic_year' => $data['academic_year'] ?? null,
+            'major' => $data['major'] ?? null,
+            'university_name' => $data['university_name'] ?? null,
+            'terms_version' => $data['terms_version'] ?? null,
+            'privacy_policy_version' => $data['privacy_policy_version'] ?? null,
+            'consented_at' => $data['consented_at'] ?? null,
         ]);
 
-    return [
-        'id'         => $user->id,
-        'email'      => $user->email,
-        'role'       => $user->role,
-        'session_id' => null,
+        return [
+            'id' => $user->id,
+            'email' => $user->email,
+            'role' => $user->role,
+            'session_id' => null,
         ];
     }
 
@@ -85,4 +84,3 @@ $user = User::query()->create([
         ])->save();
     }
 }
-

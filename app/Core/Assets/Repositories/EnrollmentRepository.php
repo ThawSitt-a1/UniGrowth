@@ -27,4 +27,3 @@ final class EnrollmentRepository implements EnrollmentRepositoryInterface
             ->delete();
     }
 }
-

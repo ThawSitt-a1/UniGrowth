@@ -3,10 +3,11 @@
 namespace Tests\Unit;
 
 use App\Auth\DTOs\ResetPasswordDTO;
-use App\Auth\UseCases\ResetPasswordUseCase;
 use App\Auth\Models\PasswordReset;
 use App\Auth\Models\User;
+use App\Auth\UseCases\ResetPasswordUseCase;
 use App\Services\AuthSessionService;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Mockery;
@@ -33,7 +34,7 @@ class ResetPasswordUseCaseTest extends TestCase
 
             $mock->shouldReceive('login')
                 ->once()
-                ->with(Mockery::type(\Illuminate\Contracts\Auth\Authenticatable::class), false);
+                ->with(Mockery::type(Authenticatable::class), false);
         }
 
         return $mock;
@@ -51,7 +52,7 @@ class ResetPasswordUseCaseTest extends TestCase
             'role' => 'user',
         ]);
 
-        $useCase = new ResetPasswordUseCase(new User(), new PasswordReset(), $this->createMockAuthSession());
+        $useCase = new ResetPasswordUseCase(new User, new PasswordReset, $this->createMockAuthSession());
 
         $token = $useCase->requestReset($email);
 
@@ -66,7 +67,7 @@ class ResetPasswordUseCaseTest extends TestCase
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('User not found.');
 
-        $useCase = new ResetPasswordUseCase(new User(), new PasswordReset(), $this->createMockAuthSession());
+        $useCase = new ResetPasswordUseCase(new User, new PasswordReset, $this->createMockAuthSession());
         $useCase->requestReset('does-not-exist@example.com');
     }
 
@@ -84,10 +85,10 @@ class ResetPasswordUseCaseTest extends TestCase
         ]);
 
         // Generate a reset token
-        $useCase = new ResetPasswordUseCase(new User(), new PasswordReset(), $this->createMockAuthSession());
+        $useCase = new ResetPasswordUseCase(new User, new PasswordReset, $this->createMockAuthSession());
         $token = $useCase->requestReset($email);
 
-        $useCase2 = new ResetPasswordUseCase(new User(), new PasswordReset(), $this->createMockAuthSession(
+        $useCase2 = new ResetPasswordUseCase(new User, new PasswordReset, $this->createMockAuthSession(
             expectInvalidate: true,
             userId: $user->id,
         ));
@@ -114,7 +115,7 @@ class ResetPasswordUseCaseTest extends TestCase
 
     public function test_it_returns_error_when_user_not_found(): void
     {
-        $useCase = new ResetPasswordUseCase(new User(), new PasswordReset(), $this->createMockAuthSession());
+        $useCase = new ResetPasswordUseCase(new User, new PasswordReset, $this->createMockAuthSession());
 
         $result = $useCase->execute(new ResetPasswordDTO(
             token: 'some-token',
@@ -138,7 +139,7 @@ class ResetPasswordUseCaseTest extends TestCase
             'role' => 'user',
         ]);
 
-        $useCase = new ResetPasswordUseCase(new User(), new PasswordReset(), $this->createMockAuthSession());
+        $useCase = new ResetPasswordUseCase(new User, new PasswordReset, $this->createMockAuthSession());
 
         $result = $useCase->execute(new ResetPasswordDTO(
             token: 'invalid-token',
@@ -163,7 +164,7 @@ class ResetPasswordUseCaseTest extends TestCase
         ]);
 
         // Generate a token via use case
-        $useCase = new ResetPasswordUseCase(new User(), new PasswordReset(), $this->createMockAuthSession());
+        $useCase = new ResetPasswordUseCase(new User, new PasswordReset, $this->createMockAuthSession());
         $useCase->requestReset($email); // This creates a real token
 
         // Now try with a different token
@@ -190,7 +191,7 @@ class ResetPasswordUseCaseTest extends TestCase
         ]);
 
         // Generate a reset token
-        $useCase = new ResetPasswordUseCase(new User(), new PasswordReset(), $this->createMockAuthSession());
+        $useCase = new ResetPasswordUseCase(new User, new PasswordReset, $this->createMockAuthSession());
         $token = $useCase->requestReset($email);
 
         // Manually expire the token by setting expires_at to 1 minute ago
@@ -228,7 +229,7 @@ class ResetPasswordUseCaseTest extends TestCase
         ]);
 
         // Generate a reset token
-        $useCase = new ResetPasswordUseCase(new User(), new PasswordReset(), $this->createMockAuthSession());
+        $useCase = new ResetPasswordUseCase(new User, new PasswordReset, $this->createMockAuthSession());
         $token = $useCase->requestReset($email);
 
         // Manually expire the token
@@ -266,7 +267,7 @@ class ResetPasswordUseCaseTest extends TestCase
         ]);
 
         // Generate a token and expire it
-        $useCase = new ResetPasswordUseCase(new User(), new PasswordReset(), $this->createMockAuthSession());
+        $useCase = new ResetPasswordUseCase(new User, new PasswordReset, $this->createMockAuthSession());
         $firstToken = $useCase->requestReset($email);
 
         PasswordReset::query()
@@ -285,7 +286,7 @@ class ResetPasswordUseCaseTest extends TestCase
         $this->assertTrue($record->expires_at->greaterThan(now())); // fresh 20-min expiry
 
         // Use renewed token — should succeed
-        $useCase2 = new ResetPasswordUseCase(new User(), new PasswordReset(), $this->createMockAuthSession(
+        $useCase2 = new ResetPasswordUseCase(new User, new PasswordReset, $this->createMockAuthSession(
             expectInvalidate: true,
             userId: $user->id,
         ));

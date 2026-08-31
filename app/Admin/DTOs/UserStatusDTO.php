@@ -10,8 +10,7 @@ final class UserStatusDTO
         public readonly int $targetUserId,
         public readonly string $status,        // allowed, banned
         public readonly string $reason = '',
-    ) {
-    }
+    ) {}
 
     /**
      * @return array<string, mixed>
@@ -25,4 +24,3 @@ final class UserStatusDTO
         ];
     }
 }
-

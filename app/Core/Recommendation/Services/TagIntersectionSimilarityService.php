@@ -14,8 +14,8 @@ final class TagIntersectionSimilarityService
      *
      * Cold-start path: if user has no tags, return a randomized fallback.
      *
-     * @param string[] $userTags
-     * @param Collection<int, Skill> $candidates
+     * @param  string[]  $userTags
+     * @param  Collection<int, Skill>  $candidates
      * @return array<int, array{skill: Skill, matching_tags_count: int, matching_tags: string[], score: float}>
      */
     public function rank(array $userTags, Collection $candidates, int $limit = 5): array

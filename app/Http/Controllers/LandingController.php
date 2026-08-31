@@ -20,4 +20,3 @@ class LandingController
         return view('landing');
     }
 }
-

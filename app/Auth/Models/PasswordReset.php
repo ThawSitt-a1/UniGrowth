@@ -67,4 +67,3 @@ class PasswordReset extends Model
         return now()->greaterThan($this->expires_at);
     }
 }
-

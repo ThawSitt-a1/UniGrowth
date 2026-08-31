@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core\Assets\Models;
 
+use App\Auth\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -25,7 +26,7 @@ final class Habit extends Model
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(\App\Auth\Models\User::class);
+        return $this->belongsTo(User::class);
     }
 
     public function completions(): HasMany
@@ -33,4 +34,3 @@ final class Habit extends Model
         return $this->hasMany(HabitCompletion::class, 'habit_id');
     }
 }
-

@@ -5,22 +5,28 @@ namespace App\Livewire;
 use App\Profile\UseCases\ManageProfileUseCase;
 use App\Profile\UseCases\UploadProfileAssetUseCase;
 use Livewire\Component;
+use Livewire\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
 
 class ProfileUpdateManager extends Component
 {
     use WithFileUploads;
 
-    /** @var \Livewire\TemporaryUploadedFile|null */
+    /** @var TemporaryUploadedFile|null */
     public $profile_photo = null;
 
     public string $username = '';
+
     public string $major = '';
+
     public string $academic_year = '';
+
     public string $university_name = '';
+
     public string $description = '';
 
     public bool $photo_preview_visible = false;
+
     public string $photo_preview_url = '';
 
     protected function rules(): array

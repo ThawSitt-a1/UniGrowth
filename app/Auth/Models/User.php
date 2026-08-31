@@ -2,20 +2,26 @@
 
 namespace App\Auth\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Core\Assets\Models\Enrollment;
+use App\Core\Assets\Models\Goal;
+use App\Core\Assets\Models\Habit;
+use App\Profile\Models\BugReport;
+use App\Profile\Models\UserSocialAccount;
+use Database\Factories\UserFactory;
 use Illuminate\Auth\MustVerifyEmail as MustVerifyEmailTrait;
+use Illuminate\Auth\Notifications\ResetPassword as ResetPasswordNotification;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Auth\Notifications\ResetPassword as ResetPasswordNotification;
-use Database\Factories\UserFactory;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
     use HasFactory;
-    use Notifiable;
     use MustVerifyEmailTrait;
+    use Notifiable;
 
     /**
      * Create a new factory instance for the model.
@@ -26,8 +32,10 @@ class User extends Authenticatable implements MustVerifyEmail
     }
     // Note: The 'CanResetPassword' trait is already included inside Authenticatable by default!
 
-public const ROLE_ADMIN = 'admin';
+    public const ROLE_ADMIN = 'admin';
+
     public const ROLE_EDITOR = 'editor';
+
     public const ROLE_USER = 'user';
 
     /**
@@ -63,7 +71,7 @@ public const ROLE_ADMIN = 'admin';
         return 'Beginner';
     }
 
-protected $fillable = [
+    protected $fillable = [
         'username',
         'email',
         'password',
@@ -76,10 +84,15 @@ protected $fillable = [
         'university_name',
         'description',
         'preferences',
-        'agreed_to_terms',
+        'avatar_path',
         'email_verified_at',
         'remember_token',
         'remember_token_expires_at',
+        'terms_version',
+        'privacy_policy_version',
+        'consented_at',
+        'is_anonymized',
+        'anonymized_at',
     ];
 
     protected $hidden = [
@@ -87,15 +100,17 @@ protected $fillable = [
         'remember_token',
     ];
 
-protected function casts(): array
+    protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'preferences' => 'array',
             'remember_token_expires_at' => 'datetime',
-            'agreed_to_terms' => 'boolean',
             'suspended_until' => 'datetime',
+            'is_anonymized' => 'boolean',
+            'consented_at' => 'datetime',
+            'anonymized_at' => 'datetime',
         ];
     }
 
@@ -115,13 +130,12 @@ protected function casts(): array
      * Send the password reset notification.
      *
      * @param  string  $token
-     * @return void
      */
     public function sendPasswordResetNotification($token): void
     {
-    // Simply call the notify method; Laravel's default ResetPassword
-    // notification will use your 'password.reset' route automatically.
-      $this->notify(new ResetPasswordNotification($token));
+        // Simply call the notify method; Laravel's default ResetPassword
+        // notification will use your 'password.reset' route automatically.
+        $this->notify(new ResetPasswordNotification($token));
     }
 
     /*
@@ -130,22 +144,22 @@ protected function casts(): array
     |--------------------------------------------------------------------------
     */
 
-    /** @return \Illuminate\Database\Eloquent\Relations\HasMany */
+    /** @return HasMany */
     public function enrolledSkills()
     {
-        return $this->hasMany(\App\Core\Assets\Models\Enrollment::class, 'user_id');
+        return $this->hasMany(Enrollment::class, 'user_id');
     }
 
-    /** @return \Illuminate\Database\Eloquent\Relations\HasMany */
+    /** @return HasMany */
     public function goals()
     {
-        return $this->hasMany(\App\Core\Assets\Models\Goal::class, 'user_id');
+        return $this->hasMany(Goal::class, 'user_id');
     }
 
-    /** @return \Illuminate\Database\Eloquent\Relations\HasMany */
+    /** @return HasMany */
     public function habits()
     {
-        return $this->hasMany(\App\Core\Assets\Models\Habit::class, 'user_id');
+        return $this->hasMany(Habit::class, 'user_id');
     }
 
     /*
@@ -154,15 +168,15 @@ protected function casts(): array
     |--------------------------------------------------------------------------
     */
 
-    /** @return \Illuminate\Database\Eloquent\Relations\HasMany */
+    /** @return HasMany */
     public function socialAccounts()
     {
-        return $this->hasMany(\App\Profile\Models\UserSocialAccount::class, 'user_id');
+        return $this->hasMany(UserSocialAccount::class, 'user_id');
     }
 
-    /** @return \Illuminate\Database\Eloquent\Relations\HasMany */
+    /** @return HasMany */
     public function bugReports()
     {
-        return $this->hasMany(\App\Profile\Models\BugReport::class, 'user_id');
+        return $this->hasMany(BugReport::class, 'user_id');
     }
 }

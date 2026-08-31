@@ -21,4 +21,3 @@ final class BugReportRepository implements BugReportRepositoryInterface
         return $report->id;
     }
 }
-

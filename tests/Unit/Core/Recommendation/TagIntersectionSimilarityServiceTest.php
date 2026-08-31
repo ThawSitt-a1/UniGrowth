@@ -17,13 +17,13 @@ final class TagIntersectionSimilarityServiceTest extends TestCase
     {
         parent::setUp();
 
-        $this->service = new TagIntersectionSimilarityService();
+        $this->service = new TagIntersectionSimilarityService;
     }
 
     /** @test */
     public function it_returns_empty_array_when_no_candidates(): void
     {
-        $result = $this->service->rank(['php'], new Collection(), 5);
+        $result = $this->service->rank(['php'], new Collection, 5);
 
         $this->assertEmpty($result);
     }

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services\Analytics\Calculators;
 
-use App\Core\Assets\Models\Goal;
 use App\Auth\Models\User;
+use App\Core\Assets\Models\Goal;
 use App\Services\Analytics\MetricCalculatorInterface;
 use Illuminate\Database\Query\Builder;
 
@@ -34,7 +34,6 @@ final class ActivationRateCalculator implements MetricCalculatorInterface
             })
             ->count();
 
-
         return ($numerator / $denominator) * 100.0;
     }
 }
@@ -48,4 +47,3 @@ function DB_DATE_ADD_48HOURS_SQL(): string
     // users.created_at + INTERVAL 48 HOUR
     return 'DATE_ADD(users.created_at, INTERVAL 48 HOUR)';
 }
-

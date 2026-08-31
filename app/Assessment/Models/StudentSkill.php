@@ -35,4 +35,3 @@ final class StudentSkill extends Model
         return $this->belongsTo(Skill::class);
     }
 }
-

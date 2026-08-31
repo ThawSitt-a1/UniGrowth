@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Cache;
 final class SettingsRepository implements SettingsRepositoryInterface
 {
     private const CACHE_KEY = 'system_settings';
+
     private const CACHE_TTL = 3600; // 1 hour
 
     public function get(string $key, ?string $default = null): ?string
@@ -44,4 +45,3 @@ final class SettingsRepository implements SettingsRepositoryInterface
         });
     }
 }
-

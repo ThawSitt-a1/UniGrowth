@@ -10,8 +10,7 @@ final class GetUserActivityUseCase
 {
     public function __construct(
         private readonly UserRepositoryInterface $userRepository,
-    ) {
-    }
+    ) {}
 
     /** @return array<string, mixed> */
     public function execute(int $userId): array
@@ -19,4 +18,3 @@ final class GetUserActivityUseCase
         return $this->userRepository->fetchActivityProfile($userId);
     }
 }
-

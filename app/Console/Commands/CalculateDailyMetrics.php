@@ -41,4 +41,3 @@ final class CalculateDailyMetrics extends Command
         return self::SUCCESS;
     }
 }
-

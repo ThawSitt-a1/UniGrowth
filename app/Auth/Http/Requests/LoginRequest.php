@@ -24,14 +24,14 @@ final class LoginRequest extends FormRequest
         return true;
     }
 
-    //Validation layer
+    // Validation layer
     public function rules(): array
     {
         return [
             'email' => ['required', 'string', 'email',
-                        'max:254', 'exists:users,email'],
+                'max:254', 'exists:users,email'],
             'password' => ['required', 'string'],
-            'g-recaptcha-response' => ['required', new Recaptcha()],
+            'g-recaptcha-response' => ['required', new Recaptcha],
         ];
     }
 
@@ -39,17 +39,17 @@ final class LoginRequest extends FormRequest
     {
         return [
             // Email messages
-            'email.required'    => 'An email address is required.',
-            'email.email'       => 'Please enter a valid email format.',
-            'email.max'         => 'The email address is too long.',
-            'email.exists'      => 'Invalid credentials.',
+            'email.required' => 'An email address is required.',
+            'email.email' => 'Please enter a valid email format.',
+            'email.max' => 'The email address is too long.',
+            'email.exists' => 'Invalid credentials.',
 
             // Password messages
             'password.required' => 'A password is required.',
 
             // Recaptcha messages
             'g-recaptcha-response.required' => 'Please complete the verification.',
-            'g-recaptcha-response'          => 'Invalid verification. Please try again.',
+            'g-recaptcha-response' => 'Invalid verification. Please try again.',
         ];
     }
 }

@@ -3,12 +3,10 @@
 namespace App\Profile\Repositories;
 
 use App\Auth\Models\User;
-use App\Profile\Models\UserSocialAccount;
-use Illuminate\Support\Facades\DB;
 
 final class ProfileRepository implements ProfileRepositoryInterface
 {
-public function findByUserId(int $userId): ?array
+    public function findByUserId(int $userId): ?array
     {
         $user = User::query()->with('socialAccounts')->find($userId);
 
@@ -49,4 +47,3 @@ public function findByUserId(int $userId): ?array
         return User::query()->where('id', $userId)->update(['avatar_path' => $path]) > 0;
     }
 }
-

@@ -10,6 +10,4 @@ interface AssetRepositoryInterface
 {
     /** @return array<string, mixed> */
     public function execute(AssetActionDTO $action, int $userId): array;
-
 }
-

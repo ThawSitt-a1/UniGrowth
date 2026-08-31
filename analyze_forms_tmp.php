@@ -6,7 +6,7 @@ $html = file_get_contents(__DIR__.'/storage/app/goals_render_test.html');
 preg_match_all('/<form[\s>]|<\/form>/i', $html, $matches, PREG_OFFSET_CAPTURE);
 
 $stack = [];
-echo "Tags found: ".count($matches[0])."\n";
+echo 'Tags found: '.count($matches[0])."\n";
 foreach ($matches[0] as $i => $m) {
     $tag = $m[0];
     $pos = $m[1];
@@ -47,4 +47,3 @@ foreach ($lines as $ln => $line) {
     }
 }
 echo "Max depth observed: nested conditions: $nested\n";
-

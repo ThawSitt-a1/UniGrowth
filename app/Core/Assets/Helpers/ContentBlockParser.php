@@ -39,6 +39,7 @@ final class ContentBlockParser
             // Skip empty lines
             if (trim($line) === '') {
                 $i++;
+
                 continue;
             }
 
@@ -54,6 +55,7 @@ final class ContentBlockParser
                     }
                     $i++;
                 }
+
                 continue;
             }
 
@@ -65,6 +67,7 @@ final class ContentBlockParser
                     'id' => self::slugify(trim($matches[1])),
                 ];
                 $i++;
+
                 continue;
             }
 
@@ -76,6 +79,7 @@ final class ContentBlockParser
                     'id' => self::slugify(trim($matches[1])),
                 ];
                 $i++;
+
                 continue;
             }
 
@@ -87,7 +91,7 @@ final class ContentBlockParser
 
                 // Collect continuation lines (lines starting with >)
                 while ($i < $total && preg_match('/^>\s*(.*)$/', $lines[$i], $contMatches)) {
-                    $calloutText .= ' ' . trim($contMatches[1]);
+                    $calloutText .= ' '.trim($contMatches[1]);
                     $i++;
                 }
 
@@ -96,6 +100,7 @@ final class ContentBlockParser
                     'calloutType' => $calloutType,
                     'content' => trim($calloutText),
                 ];
+
                 continue;
             }
 
@@ -116,6 +121,7 @@ final class ContentBlockParser
                     'content' => implode("\n", $codeLines),
                 ];
                 $i++;
+
                 continue;
             }
 
@@ -127,6 +133,7 @@ final class ContentBlockParser
                     'url' => $matches[2],
                 ];
                 $i++;
+
                 continue;
             }
 
@@ -137,18 +144,19 @@ final class ContentBlockParser
                     'url' => $matches[1],
                 ];
                 $i++;
+
                 continue;
             }
 
             // Paragraph (collect consecutive non-special lines)
             $paragraphLines = [];
             while ($i < $total && trim($lines[$i]) !== '' &&
-                   !preg_match('/^(##|###|```)/', $lines[$i])) {
+                   ! preg_match('/^(##|###|```)/', $lines[$i])) {
                 $paragraphLines[] = $lines[$i];
                 $i++;
             }
 
-            if (!empty($paragraphLines)) {
+            if (! empty($paragraphLines)) {
                 $blocks[] = [
                     'type' => 'paragraph',
                     'content' => implode("\n", $paragraphLines),
@@ -159,7 +167,7 @@ final class ContentBlockParser
         return $blocks;
     }
 
-/**
+    /**
      * Extract headings for TOC generation.
      */
     public static function extractHeadings(string $content): array
@@ -248,6 +256,7 @@ final class ContentBlockParser
                             'url' => trim($linkMatches[2]),
                         ];
                         $i++;
+
                         continue;
                     }
 
@@ -257,6 +266,7 @@ final class ContentBlockParser
                             'url' => $current,
                         ];
                         $i++;
+
                         continue;
                     }
 

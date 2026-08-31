@@ -17,13 +17,14 @@ class EnsureIsEditor
             if ($request->expectsJson()) {
                 return response()->json(['error' => 'Unauthenticated.'], 401);
             }
+
             return redirect()->route('login');
         }
 
         $role = (string) ($user->role ?? '');
 
         // Editors and Admins both have access to editor-protected paths
-        if (!in_array($role, ['editor', 'admin'], true)) {
+        if (! in_array($role, ['editor', 'admin'], true)) {
             if ($request->expectsJson()) {
                 return response()->json(['error' => 'Forbidden. Editor or admin access required.'], 403);
             }
@@ -33,4 +34,3 @@ class EnsureIsEditor
         return $next($request);
     }
 }
-

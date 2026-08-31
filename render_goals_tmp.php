@@ -4,11 +4,13 @@
 require __DIR__.'/vendor/autoload.php';
 
 $app = require_once __DIR__.'/bootstrap/app.php';
-$app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
+$app->make(Kernel::class)->bootstrap();
 
+use App\Auth\Models\User;
+use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Support\Facades\Auth;
 
-$user = App\Auth\Models\User::first();
+$user = User::first();
 if ($user) {
     Auth::login($user);
 }
@@ -53,4 +55,3 @@ echo 'Form open tags: '.substr_count($html, '<form')."\n";
 echo 'Form close tags: '.substr_count($html, '</form>')."\n";
 echo 'Completed Today text count: '.substr_count($html, 'Done Today')."\n";
 echo "written to storage/app/goals_render_test.html\n";
-

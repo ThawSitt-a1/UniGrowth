@@ -17,6 +17,7 @@ class EnsureIsAdmin
             if ($request->expectsJson()) {
                 return response()->json(['error' => 'Unauthenticated.'], 401);
             }
+
             return redirect()->route('login');
         }
 
@@ -32,4 +33,3 @@ class EnsureIsAdmin
         return $next($request);
     }
 }
-

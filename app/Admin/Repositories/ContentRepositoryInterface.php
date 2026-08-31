@@ -55,4 +55,3 @@ interface ContentRepositoryInterface
      */
     public function fetchAllEditorContent(): array;
 }
-

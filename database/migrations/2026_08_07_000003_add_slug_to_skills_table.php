@@ -10,7 +10,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (!Schema::hasColumn('skills', 'slug')) {
+        if (! Schema::hasColumn('skills', 'slug')) {
             Schema::table('skills', function (Blueprint $table) {
                 $table->string('slug', 255)
                     ->nullable()
@@ -18,7 +18,7 @@ return new class extends Migration
             });
         }
 
-        if (!Schema::hasIndex('skills', 'skills_slug_unique')) {
+        if (! Schema::hasIndex('skills', 'skills_slug_unique')) {
             Schema::table('skills', function (Blueprint $table) {
                 $table->unique('slug', 'skills_slug_unique');
             });

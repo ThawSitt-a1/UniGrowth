@@ -33,4 +33,3 @@ final class StudentAnsweredQuestion extends Model
         return $this->belongsTo(Attempt::class);
     }
 }
-

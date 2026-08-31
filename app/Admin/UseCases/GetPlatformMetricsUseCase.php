@@ -12,8 +12,7 @@ final class GetPlatformMetricsUseCase
 {
     public function __construct(
         private readonly MetricsRepositoryInterface $metricsRepository,
-    ) {
-    }
+    ) {}
 
     /**
      * Execute the use case to gather platform telemetry data.
@@ -23,4 +22,3 @@ final class GetPlatformMetricsUseCase
         return $this->metricsRepository->fetchAdminMetrics($filters->timeFrame);
     }
 }
-

@@ -9,8 +9,7 @@ final class UpdateAccountUseCase
 {
     public function __construct(
         private readonly User $userModel,
-    ) {
-    }
+    ) {}
 
     public function changePassword(int $userId, string $newPassword): bool
     {
@@ -25,7 +24,7 @@ final class UpdateAccountUseCase
         ])->save();
     }
 
-/**
+    /**
      * Permanently delete the user's account and all associated data.
      *
      * Hard delete (immediate purge) — ensures compliance with the "Right to
@@ -34,7 +33,7 @@ final class UpdateAccountUseCase
      * therefore keep their report content but detach from the user.
      *
      * @param  string|null  $feedbackReason  Optional dropdown reason for leaving.
-     * @param  string|null  $feedback        Optional free-text feedback.
+     * @param  string|null  $feedback  Optional free-text feedback.
      */
     public function deactivateAccount(int $userId, ?string $feedbackReason = null, ?string $feedback = null): bool
     {
@@ -50,4 +49,3 @@ final class UpdateAccountUseCase
         return (bool) $user->delete();
     }
 }
-

@@ -6,7 +6,6 @@ namespace App\Services\Analytics\Calculators;
 
 use App\Core\Assets\Models\Goal;
 use App\Services\Analytics\MetricCalculatorInterface;
-use Illuminate\Support\Facades\DB;
 
 final class ProgressVelocityCalculator implements MetricCalculatorInterface
 {
@@ -29,4 +28,3 @@ final class ProgressVelocityCalculator implements MetricCalculatorInterface
         return $avgSeconds / 3600.0;
     }
 }
-

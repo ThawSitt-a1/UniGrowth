@@ -6,7 +6,6 @@ namespace App\Admin\Services;
 
 use App\Admin\DTOs\ContentActionDTO;
 use App\Admin\DTOs\MetricsFilterDTO;
-use App\Admin\DTOs\PlatformMetricsDTO;
 use App\Admin\DTOs\RoleAssignmentDTO;
 use App\Admin\DTOs\SystemSettingsDTO;
 use App\Admin\DTOs\UserStatusDTO;
@@ -16,6 +15,7 @@ use App\Admin\UseCases\ManageContentUseCase;
 use App\Admin\UseCases\ManageSystemSettingsUseCase;
 use App\Admin\UseCases\ManageUserAccountUseCase;
 use App\Auth\Models\User;
+use App\Core\Assets\Models\Skill;
 use App\Overview\Services\SeasonService;
 use App\Profile\Models\BugReport;
 
@@ -28,8 +28,7 @@ final class AdminService
         private readonly ManageContentUseCase $manageContentUseCase,
         private readonly ManageSystemSettingsUseCase $manageSystemSettingsUseCase,
         private readonly SeasonService $seasonService,
-    ) {
-    }
+    ) {}
 
     /*
     |--------------------------------------------------------------------------
@@ -50,16 +49,16 @@ final class AdminService
         return $metrics->toArray();
     }
 
-/*
-    |--------------------------------------------------------------------------
-    | User Management
-    |--------------------------------------------------------------------------
-    */
+    /*
+        |--------------------------------------------------------------------------
+        | User Management
+        |--------------------------------------------------------------------------
+        */
 
     /**
      * Get all users for management (only role=user, editors hidden).
      *
-     * @param string|null $search Optional search query (by id, username, or email)
+     * @param  string|null  $search  Optional search query (by id, username, or email)
      * @return array<int, array<string, mixed>>
      */
     public function getAllUsers(?string $search = null): array
@@ -72,8 +71,8 @@ final class AdminService
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('id', (int) $search)
-                  ->orWhere('username', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%");
+                    ->orWhere('username', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
             });
         }
 
@@ -84,8 +83,8 @@ final class AdminService
      * Get all users AND editors in a unified list for the merged table.
      * Each entry includes a 'role_label' for display.
      *
-     * @param string|null $search Optional search query (by id, username, or email)
-     * @param string|null $roleFilter Optional role filter ('all', 'user', 'editor')
+     * @param  string|null  $search  Optional search query (by id, username, or email)
+     * @param  string|null  $roleFilter  Optional role filter ('all', 'user', 'editor')
      * @return array<int, array<string, mixed>>
      */
     public function getAllUsersAndEditors(?string $search = null, ?string $roleFilter = 'all'): array
@@ -101,8 +100,8 @@ final class AdminService
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('id', (int) $search)
-                  ->orWhere('username', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%");
+                    ->orWhere('username', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
             });
         }
 
@@ -111,7 +110,7 @@ final class AdminService
         // Enrich with editor skills count if role is editor
         foreach ($users as &$user) {
             if ($user['role'] === 'editor') {
-                $editorSkills = \App\Core\Assets\Models\Skill::query()
+                $editorSkills = Skill::query()
                     ->where('editor_id', $user['id'])
                     ->count();
                 $user['skills_count'] = $editorSkills;
@@ -258,7 +257,7 @@ final class AdminService
         return $report->screenshot_path;
     }
 
-/**
+    /**
      * Update a bug report's status.
      */
     public function updateBugReportStatus(int $reportId, string $status): void
@@ -283,11 +282,11 @@ final class AdminService
         $report->delete();
     }
 
-/*
-    |--------------------------------------------------------------------------
-    | User Management — Delete
-    |--------------------------------------------------------------------------
-    */
+    /*
+        |--------------------------------------------------------------------------
+        | User Management — Delete
+        |--------------------------------------------------------------------------
+        */
 
     /**
      * Delete a user account (soft-delete safe).
@@ -368,7 +367,7 @@ final class AdminService
             ->orderBy('created_at', 'desc')
             ->get()
             ->map(function ($editor) {
-                $editorSkills = \App\Core\Assets\Models\Skill::query()
+                $editorSkills = Skill::query()
                     ->where('editor_id', $editor->id)
                     ->select(['id', 'title'])
                     ->get();
@@ -435,21 +434,20 @@ final class AdminService
     */
 
     /**
-      * Start a new season.
-      */
-     public function startNewSeason(string $name, string $endsAt, ?string $image = null): array
-     {
-         $season = $this->seasonService->initializeNewSeason($name, $endsAt, $image);
- 
-         return [
-             'season_id' => $season->id,
-             'name' => $season->name,
-             'started_at' => $season->started_at?->toISOString(),
-             'ends_at' => $season->ends_at?->toISOString(),
-             'is_active' => $season->is_active,
-         ];
-     }
+     * Start a new season.
+     */
+    public function startNewSeason(string $name, string $endsAt, ?string $image = null): array
+    {
+        $season = $this->seasonService->initializeNewSeason($name, $endsAt, $image);
 
+        return [
+            'season_id' => $season->id,
+            'name' => $season->name,
+            'started_at' => $season->started_at?->toISOString(),
+            'ends_at' => $season->ends_at?->toISOString(),
+            'is_active' => $season->is_active,
+        ];
+    }
 
     /**
      * End the current season.
@@ -495,4 +493,3 @@ final class AdminService
         $this->seasonService->updateSeasonImage($seasonId, $imagePath);
     }
 }
-

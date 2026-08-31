@@ -25,4 +25,3 @@ interface SeasonRepositoryInterface
      */
     public function updateHighestScore(int $seasonId, float $highestScore): void;
 }
-

@@ -12,8 +12,7 @@ final class RecommendationController
 {
     public function __construct(
         private readonly GenerateRecommendationsUseCase $recommendationUseCase,
-    ) {
-    }
+    ) {}
 
     /**
      * Get personalized skill recommendations for the authenticated student.

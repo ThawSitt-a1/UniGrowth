@@ -13,8 +13,7 @@ final class ManageSkillUseCase
     public function __construct(
         private readonly SkillRepositoryInterface $skillRepository,
         private readonly SystemSettingsServiceInterface $systemSettings,
-    ) {
-    }
+    ) {}
 
     public function execute(SkillDataDTO $data): void
     {
@@ -22,7 +21,7 @@ final class ManageSkillUseCase
             if ($this->skillRepository->isLockedByAdmin($data->skillId)) {
                 throw new \RuntimeException('This skill is locked by admin and cannot be edited.');
             }
-            if (!$this->skillRepository->verifyOwnership($data->skillId, $data->editorId)) {
+            if (! $this->skillRepository->verifyOwnership($data->skillId, $data->editorId)) {
                 throw new \RuntimeException('You do not own this skill.');
             }
         }
@@ -47,7 +46,7 @@ final class ManageSkillUseCase
         );
 
         $saved = $this->skillRepository->save($data);
-        if (!$saved) {
+        if (! $saved) {
             throw new \RuntimeException('Failed to save skill.');
         }
     }
@@ -59,7 +58,7 @@ final class ManageSkillUseCase
         }
 
         $deleted = $this->skillRepository->deleteByOwner($targetId, $editorId);
-        if (!$deleted) {
+        if (! $deleted) {
             throw new \RuntimeException('Failed to delete skill or you do not own it.');
         }
     }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core\Assets\Models;
 
+use App\Auth\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -27,7 +28,7 @@ final class Enrollment extends Model
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(\App\Auth\Models\User::class);
+        return $this->belongsTo(User::class);
     }
 
     public function skill(): BelongsTo
@@ -35,4 +36,3 @@ final class Enrollment extends Model
         return $this->belongsTo(Skill::class, 'skill_id');
     }
 }
-

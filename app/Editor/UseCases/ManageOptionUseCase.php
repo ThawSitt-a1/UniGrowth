@@ -15,13 +15,12 @@ final class ManageOptionUseCase
     public function __construct(
         private readonly OptionRepositoryInterface $optionRepository,
         private readonly QuestionRepositoryInterface $questionRepository,
-    ) {
-    }
+    ) {}
 
     public function execute(QuestionOptionDTO $data): void
     {
         // Verify question ownership
-        if (!$this->questionRepository->verifyOwnership($data->questionId, $data->editorId)) {
+        if (! $this->questionRepository->verifyOwnership($data->questionId, $data->editorId)) {
             throw new \RuntimeException('You do not own the question associated with this option.');
         }
 
@@ -29,7 +28,7 @@ final class ManageOptionUseCase
             if ($this->optionRepository->isLockedByAdmin($data->optionId)) {
                 throw new \RuntimeException('This option is locked by admin and cannot be edited.');
             }
-            if (!$this->optionRepository->verifyOwnership($data->optionId, $data->editorId)) {
+            if (! $this->optionRepository->verifyOwnership($data->optionId, $data->editorId)) {
                 throw new \RuntimeException('You do not own this option.');
             }
         }
@@ -38,12 +37,12 @@ final class ManageOptionUseCase
         $existingOptionsCount = Option::query()->where('question_id', $data->questionId)->count();
         $maxOptions = $question->question_type === 'true_false' ? 2 : 5;
 
-        if (!$data->optionId && $existingOptionsCount >= $maxOptions) {
+        if (! $data->optionId && $existingOptionsCount >= $maxOptions) {
             throw new \RuntimeException(sprintf('You can only add up to %d options for a %s question.', $maxOptions, str_replace('_', ' ', $question->question_type)));
         }
 
         $saved = $this->optionRepository->save($data);
-        if (!$saved) {
+        if (! $saved) {
             throw new \RuntimeException('Failed to save option.');
         }
     }
@@ -55,7 +54,7 @@ final class ManageOptionUseCase
         }
 
         $deleted = $this->optionRepository->deleteByOwner($targetId, $editorId);
-        if (!$deleted) {
+        if (! $deleted) {
             throw new \RuntimeException('Failed to delete option or you do not own it.');
         }
     }

@@ -11,9 +11,7 @@ interface MetricsRepositoryInterface
     /**
      * Fetch platform-wide admin metrics using existing tables.
      *
-     * @param string $timeFrame '7d', '30d', or 'all'
-     * @return PlatformMetricsDTO
+     * @param  string  $timeFrame  '7d', '30d', or 'all'
      */
     public function fetchAdminMetrics(string $timeFrame = 'all'): PlatformMetricsDTO;
 }
-

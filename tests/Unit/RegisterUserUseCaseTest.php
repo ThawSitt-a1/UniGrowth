@@ -3,9 +3,11 @@
 namespace Tests\Unit;
 
 use App\Auth\DTOs\AuthCredentialsDTO;
+use App\Auth\Models\User;
 use App\Auth\Repositories\UserRepositoryInterface;
 use App\Auth\UseCases\RegisterUserUseCase;
-use App\Auth\Models\User;
+use App\Services\AuthSessionService;
+use App\Admin\Services\SystemSettingsServiceInterface;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery;
 use Mockery\MockInterface;
@@ -24,7 +26,7 @@ class RegisterUserUseCaseTest extends TestCase
     public function test_it_creates_user_auto_logins_and_returns_public_shape(): void
     {
         // Create an actual user in the database so the User query resolves the model
-        $existingUser = \App\Auth\Models\User::factory()->create([
+        $existingUser = User::factory()->create([
             'username' => 'johnny',
             'email' => 'john@example.com',
         ]);
@@ -47,8 +49,10 @@ class RegisterUserUseCaseTest extends TestCase
                 ]);
         });
 
-        $authSessionService = $this->app->make(\App\Services\AuthSessionService::class);
-        $useCase = new RegisterUserUseCase($repo, $authSessionService, new User());
+        $authSessionService = $this->app->make(AuthSessionService::class);
+        $settingsService = Mockery::mock(SystemSettingsServiceInterface::class);
+        $settingsService->shouldReceive('isRegistrationAllowed')->andReturn(true);
+        $useCase = new RegisterUserUseCase($repo, $authSessionService, new User, $settingsService);
 
         $dto = new AuthCredentialsDTO(
             email: 'john@example.com',
@@ -68,4 +72,3 @@ class RegisterUserUseCaseTest extends TestCase
         $this->assertArrayHasKey('id', $result);
     }
 }
-

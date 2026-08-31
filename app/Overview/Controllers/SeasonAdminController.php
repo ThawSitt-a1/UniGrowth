@@ -12,8 +12,7 @@ final class SeasonAdminController
 {
     public function __construct(
         private readonly SeasonService $seasonService,
-    ) {
-    }
+    ) {}
 
     /**
      * End the current season (snapshot scores, reset platform scores).
@@ -81,4 +80,3 @@ final class SeasonAdminController
         ], 201);
     }
 }
-

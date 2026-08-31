@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Editor\Controllers;
 
-use App\Editor\DTOs\ContentDeleteDTO;
+use App\Assessment\Models\Question;
+use App\Assessment\Services\QuestionScoringService;
+use App\Core\Assets\Models\Skill;
 use App\Editor\DTOs\ContentQueryFilterDTO;
 use App\Editor\DTOs\QuestionDataDTO;
 use App\Editor\DTOs\QuestionOptionDTO;
@@ -16,9 +18,6 @@ use App\Editor\UseCases\FetchEditorContentUseCase;
 use App\Editor\UseCases\ManageOptionUseCase;
 use App\Editor\UseCases\ManageQuestionUseCase;
 use App\Editor\UseCases\ManageSkillUseCase;
-use App\Core\Assets\Models\Skill;
-use App\Assessment\Models\Question;
-use App\Assessment\Services\QuestionScoringService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -31,8 +30,7 @@ final class EditorConsoleController
         private readonly ManageOptionUseCase $manageOptionUseCase,
         private readonly FetchEditorContentUseCase $fetchEditorContentUseCase,
         private readonly QuestionScoringService $scoringService,
-    ) {
-    }
+    ) {}
 
     /**
      * Editor dashboard listing all content.
@@ -111,6 +109,7 @@ final class EditorConsoleController
         if ($id) {
             $skill = Skill::query()->findOrFail($id);
         }
+
         return view('editor.skills-form', [
             'skill' => $skill,
         ]);
@@ -130,7 +129,7 @@ final class EditorConsoleController
             $resourceLinks = [];
             if ($request->has('resource_links')) {
                 foreach ($request->input('resource_links', []) as $link) {
-                    if (!empty($link['url'])) {
+                    if (! empty($link['url'])) {
                         $resourceLinks[] = [
                             'url' => $link['url'],
                             'label' => $link['label'] ?? '',
@@ -228,7 +227,7 @@ final class EditorConsoleController
         ]);
     }
 
-/**
+    /**
      * Save question (create or update) with inline options.
      *
      * POST /editor/questions
@@ -252,8 +251,8 @@ final class EditorConsoleController
                 }
                 $options[] = [
                     'option_text' => $optionText,
-                    'is_correct' => !empty($opt['is_correct']),
-                    'option_id' => !empty($opt['option_id']) ? (int) $opt['option_id'] : null,
+                    'is_correct' => ! empty($opt['is_correct']),
+                    'option_id' => ! empty($opt['option_id']) ? (int) $opt['option_id'] : null,
                 ];
             }
 
@@ -368,10 +367,10 @@ final class EditorConsoleController
             ->withCount('enrollments')
             ->when($search, function ($q) use ($search) {
                 $q->where(function ($query) use ($search) {
-                    $query->where('title', 'like', '%' . $search . '%')
-                        ->orWhere('slug', 'like', '%' . $search . '%')
+                    $query->where('title', 'like', '%'.$search.'%')
+                        ->orWhere('slug', 'like', '%'.$search.'%')
                         ->orWhere('id', (int) $search ?: '')
-                        ->orWhere('tags', 'like', '%' . $search . '%');
+                        ->orWhere('tags', 'like', '%'.$search.'%');
                 });
             })
             ->orderBy('created_at', 'desc')

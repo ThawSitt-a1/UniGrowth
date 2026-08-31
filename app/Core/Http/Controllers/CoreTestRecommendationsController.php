@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core\Http\Controllers;
 
+use App\Core\Recommendation\Repositories\TagRepositoryInterface;
 use App\Core\Recommendation\UseCases\GenerateRecommendationsUseCase;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -21,8 +22,7 @@ final class CoreTestRecommendationsController
 {
     public function __construct(
         private readonly GenerateRecommendationsUseCase $generateRecommendationsUseCase,
-    ) {
-    }
+    ) {}
 
     public function index(Request $request): View
     {
@@ -39,7 +39,7 @@ final class CoreTestRecommendationsController
             );
 
             // Extract enrolled stats
-            $repo = app(\App\Core\Recommendation\Repositories\TagRepositoryInterface::class);
+            $repo = app(TagRepositoryInterface::class);
             $userTags = $repo->fetchStudentSkillTags($userId);
             $enrolledCount = count($userTags);
             $totalCandidates = count($recommendations);

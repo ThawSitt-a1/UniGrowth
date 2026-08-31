@@ -375,6 +375,10 @@
                                     <label class="form-check-label small text-secondary" for="remember">Remember me</label>
                                 </div>
 
+                                <!-- GDPR Consent Fields -->
+                                <input type="hidden" name="terms_version" value="1.0">
+                                <input type="hidden" name="privacy_policy_version" value="1.0">
+
                                 <!-- Terms of Service Agreement -->
                                 <div class="form-check">
                                     <input type="checkbox" name="agreed_to_terms" id="agreed_to_terms" class="form-check-input @error('agreed_to_terms') is-invalid @enderror" value="1" {{ old('agreed_to_terms') ? 'checked' : '' }}>

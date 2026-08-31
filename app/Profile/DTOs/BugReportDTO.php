@@ -14,8 +14,7 @@ final class BugReportDTO
         public readonly ?string $screenshot_path,
         public readonly string $status,
         public readonly string $created_at,
-    ) {
-    }
+    ) {}
 
     public static function fromArray(array $data): self
     {
@@ -32,4 +31,3 @@ final class BugReportDTO
         );
     }
 }
-

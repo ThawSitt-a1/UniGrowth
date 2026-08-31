@@ -14,8 +14,7 @@ final class ResetPasswordUseCase
         private readonly User $userModel,
         private readonly PasswordReset $passwordResetModel,
         private readonly AuthSessionService $authSessionService,
-    ) {
-    }
+    ) {}
 
     public function requestReset(string $email): string
     {
@@ -68,7 +67,7 @@ final class ResetPasswordUseCase
         }
 
         // Check if token matches using hash_equals for timing-safe comparison
-        if (!hash_equals($resetRecord->token, $dto->token)) {
+        if (! hash_equals($resetRecord->token, $dto->token)) {
             return [
                 'success' => false,
                 'message' => 'Invalid or expired reset token.',
@@ -78,6 +77,7 @@ final class ResetPasswordUseCase
         // Check if token has expired using the model's method
         if ($resetRecord->isExpired()) {
             $resetRecord->delete();
+
             return [
                 'success' => false,
                 'message' => 'Reset token has expired. Please request a new one.',
@@ -102,10 +102,10 @@ final class ResetPasswordUseCase
             'success' => true,
             'message' => 'Password has been reset successfully. You are now logged in.',
             'user' => [
-                'id'       => $user->id,
+                'id' => $user->id,
                 'username' => $user->username,
-                'email'    => $user->email,
-                'role'     => $user->role,
+                'email' => $user->email,
+                'role' => $user->role,
             ],
         ];
     }

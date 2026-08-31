@@ -44,4 +44,3 @@ final class Attempt extends Model
         return $this->hasMany(StudentAnsweredQuestion::class, 'attempt_id');
     }
 }
-

@@ -23,4 +23,3 @@ interface SettingsRepositoryInterface
      */
     public function getAll(): array;
 }
-

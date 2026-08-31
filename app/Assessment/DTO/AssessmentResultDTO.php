@@ -7,7 +7,7 @@ namespace App\Assessment\DTO;
 final class AssessmentResultDTO
 {
     /**
-     * @param array<int, array{question_id: int, correct: bool, correct_option_ids: int[]}> $questionResults
+     * @param  array<int, array{question_id: int, correct: bool, correct_option_ids: int[]}>  $questionResults
      */
     public function __construct(
         public readonly int $attemptId,
@@ -19,8 +19,7 @@ final class AssessmentResultDTO
         public readonly bool $passed,
         public readonly array $questionResults,
         public readonly float $proficiencyScore,
-    ) {
-    }
+    ) {}
 
     /**
      * @return array<string, mixed>
@@ -40,4 +39,3 @@ final class AssessmentResultDTO
         ];
     }
 }
-

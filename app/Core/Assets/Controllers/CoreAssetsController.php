@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace App\Core\Assets\Controllers;
 
+use App\Assessment\Models\Question;
 use App\Core\Assets\DTO\AssetActionDTO;
 use App\Core\Assets\Helpers\ContentBlockParser;
 use App\Core\Assets\Http\Requests\AssetActionRequest;
+use App\Core\Assets\Models\Enrollment;
+use App\Core\Assets\Models\Skill;
 use App\Core\Assets\UseCases\GetUserActivityUseCase;
 use App\Core\Assets\UseCases\ListAvailableSkillsUseCase;
 use App\Core\Assets\UseCases\ManageUserAssetsUseCase;
 use App\Core\Recommendation\UseCases\GenerateRecommendationsUseCase;
-use App\Assessment\Models\Question;
-use App\Core\Assets\Models\Enrollment;
-use App\Core\Assets\Models\Skill;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -25,8 +25,7 @@ final class CoreAssetsController
         private readonly GetUserActivityUseCase $getUserActivityUseCase,
         private readonly ListAvailableSkillsUseCase $listAvailableSkillsUseCase,
         private readonly GenerateRecommendationsUseCase $recommendationUseCase,
-    ) {
-    }
+    ) {}
 
     public function index(Request $request): View
     {
@@ -73,10 +72,10 @@ final class CoreAssetsController
 
         $skill = $skillQuery->firstOrFail();
 
-        $isSuspended = !$skill->is_active;
+        $isSuspended = ! $skill->is_active;
         $suspensionReason = $skill->admin_comment ?: 'This skill has been suspended by our moderators and is currently unavailable.';
 
-$isEnrolled = false;
+        $isEnrolled = false;
         $questions = collect();
         $contentBlocks = [];
         $headings = [];
@@ -95,16 +94,16 @@ $isEnrolled = false;
                 ->get();
 
             // Parse content blocks for enhanced rendering
-            $contentBlocks = !empty($skill->content)
+            $contentBlocks = ! empty($skill->content)
                 ? ContentBlockParser::parse($skill->content)
                 : [];
 
-            $headings = !empty($skill->content)
+            $headings = ! empty($skill->content)
                 ? ContentBlockParser::extractHeadings($skill->content)
                 : [];
 
             // Parse structured learning steps from content (legacy markdown format)
-            $learningSteps = !empty($skill->content)
+            $learningSteps = ! empty($skill->content)
                 ? ContentBlockParser::parseSteps($skill->content)
                 : [];
         }
@@ -122,7 +121,7 @@ $isEnrolled = false;
         ]);
     }
 
-public function handleAssetAction(AssetActionRequest $request): RedirectResponse
+    public function handleAssetAction(AssetActionRequest $request): RedirectResponse
     {
         $dto = new AssetActionDTO(
             type: (string) $request->input('type'),

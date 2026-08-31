@@ -10,7 +10,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (!Schema::hasColumn('skills', 'resource_links')) {
+        if (! Schema::hasColumn('skills', 'resource_links')) {
             Schema::table('skills', function (Blueprint $table) {
                 $table->json('resource_links')
                     ->nullable()

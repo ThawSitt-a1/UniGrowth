@@ -8,6 +8,7 @@ use App\Assessment\Http\Requests\QuizSubmissionRequest;
 use App\Assessment\Services\QuizDeliveryService;
 use App\Assessment\UseCases\EvaluateQuizUseCase;
 use App\Overview\Services\SeasonService;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 
 final class AssessmentController
@@ -16,8 +17,7 @@ final class AssessmentController
         private readonly QuizDeliveryService $quizDeliveryService,
         private readonly EvaluateQuizUseCase $evaluateQuizUseCase,
         private readonly SeasonService $seasonService,
-    ) {
-    }
+    ) {}
 
     /**
      * Fetch an unseen quiz for a given skill.
@@ -26,7 +26,7 @@ final class AssessmentController
      */
     public function getQuiz(int $skillId): JsonResponse
     {
-        if (!$this->seasonService->hasActiveSeason()) {
+        if (! $this->seasonService->hasActiveSeason()) {
             return response()->json([
                 'error' => 'No active season is running. Quizzes are only available during an active season.',
             ], 403);
@@ -36,7 +36,7 @@ final class AssessmentController
 
         try {
             $quiz = $this->quizDeliveryService->generateUnseenQuiz($studentId, $skillId);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             return response()->json(['error' => 'Skill not found.'], 404);
         } catch (\RuntimeException $e) {
             return response()->json(['error' => $e->getMessage()], 422);
@@ -54,7 +54,7 @@ final class AssessmentController
      */
     public function submitQuiz(QuizSubmissionRequest $request, int $skillId): JsonResponse
     {
-        if (!$this->seasonService->hasActiveSeason()) {
+        if (! $this->seasonService->hasActiveSeason()) {
             return response()->json([
                 'error' => 'No active season is running. Quizzes are only available during an active season.',
             ], 403);
@@ -65,7 +65,7 @@ final class AssessmentController
 
         try {
             $result = $this->evaluateQuizUseCase->execute($studentId, $skillId, $answers);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             return response()->json(['error' => 'Skill not found.'], 404);
         } catch (\InvalidArgumentException $e) {
             return response()->json(['error' => $e->getMessage()], 422);
@@ -78,4 +78,3 @@ final class AssessmentController
         ]);
     }
 }
-

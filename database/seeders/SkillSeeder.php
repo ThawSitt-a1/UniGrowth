@@ -48,7 +48,7 @@ class SkillSeeder extends Seeder
             ['title' => 'Database Design Principles',     'tags' => ['sql', 'database', 'design', 'architecture'],   'description' => 'Entity-relationship modeling, normalization, and schema design.'],
             ['title' => 'Data Warehousing & ETL',         'tags' => ['data', 'etl', 'warehouse', 'analytics'],       'description' => 'Design data warehouses and build ETL pipelines for analytics.'],
             ['title' => 'SQLite for Mobile & Embedded',   'tags' => ['sql', 'sqlite', 'database', 'mobile'],         'description' => 'Lightweight embedded database for mobile and desktop applications.'],
-            ['title' => 'Cassandra Distributed DB',       'tags' => ['nosql', 'cassandra', 'database', 'scalability'],'description' => 'Wide-column NoSQL database designed for high-availability and scalability.'],
+            ['title' => 'Cassandra Distributed DB',       'tags' => ['nosql', 'cassandra', 'database', 'scalability'], 'description' => 'Wide-column NoSQL database designed for high-availability and scalability.'],
 
             // DevOps & Cloud (10)
             ['title' => 'Docker Containers',              'tags' => ['docker', 'devops', 'containers', 'cloud'],      'description' => 'Containerize your applications with Docker for consistent deployments.'],
@@ -58,7 +58,7 @@ class SkillSeeder extends Seeder
             ['title' => 'Google Cloud Platform',          'tags' => ['gcp', 'cloud', 'devops', 'infrastructure'],     'description' => 'GCP services: Compute Engine, Cloud Storage, BigQuery, and GKE.'],
             ['title' => 'CI/CD Pipelines (GitLab CI)',    'tags' => ['devops', 'cicd', 'automation', 'gitlab'],       'description' => 'Automate builds, tests, and deployments with GitLab CI/CD.'],
             ['title' => 'GitHub Actions',                 'tags' => ['devops', 'cicd', 'github', 'automation'],       'description' => 'Automate workflows directly from your GitHub repositories.'],
-            ['title' => 'Terraform Infrastructure as Code','tags' => ['devops', 'terraform', 'iac', 'cloud'],         'description' => 'Provision and manage cloud infrastructure declaratively with Terraform.'],
+            ['title' => 'Terraform Infrastructure as Code', 'tags' => ['devops', 'terraform', 'iac', 'cloud'],         'description' => 'Provision and manage cloud infrastructure declaratively with Terraform.'],
             ['title' => 'Linux System Administration',    'tags' => ['linux', 'sysadmin', 'devops', 'server'],        'description' => 'Manage Linux servers: shell scripting, permissions, and process management.'],
             ['title' => 'Nginx Web Server',               'tags' => ['nginx', 'web', 'devops', 'server'],             'description' => 'Configure Nginx as a reverse proxy, load balancer, and web server.'],
 
@@ -71,46 +71,46 @@ class SkillSeeder extends Seeder
 
             // Programming Languages (5)
             ['title' => 'Python for Everyone',            'tags' => ['python', 'programming', 'scripting', 'data'],   'description' => 'Learn Python programming from basics to advanced concepts.'],
-            ['title' => 'Rust Systems Programming',       'tags' => ['rust', 'systems', 'programming', 'performance'],'description' => 'Safe, concurrent, and performant systems programming with Rust.'],
+            ['title' => 'Rust Systems Programming',       'tags' => ['rust', 'systems', 'programming', 'performance'], 'description' => 'Safe, concurrent, and performant systems programming with Rust.'],
             ['title' => 'C++ Fundamentals',               'tags' => ['cpp', 'programming', 'systems', 'performance'], 'description' => 'Master C++ pointers, memory management, STL, and templates.'],
             ['title' => 'C Programming Language',         'tags' => ['c', 'programming', 'systems', 'embedded'],      'description' => 'Foundational systems programming language for operating systems and embedded.'],
             ['title' => 'Java for Beginners',             'tags' => ['java', 'programming', 'oop', 'enterprise'],     'description' => 'Object-oriented programming with Java collections, streams, and more.'],
 
             // Data Science & AI (10)
             ['title' => 'Python Data Analysis (Pandas)',  'tags' => ['python', 'data', 'pandas', 'analytics'],        'description' => 'Data manipulation and analysis using Pandas and NumPy.'],
-            ['title' => 'Machine Learning with Scikit-Learn','tags' => ['python', 'ml', 'scikit-learn', 'ai'],       'description' => 'Supervised and unsupervised learning algorithms with Scikit-Learn.'],
+            ['title' => 'Machine Learning with Scikit-Learn', 'tags' => ['python', 'ml', 'scikit-learn', 'ai'],       'description' => 'Supervised and unsupervised learning algorithms with Scikit-Learn.'],
             ['title' => 'Deep Learning (TensorFlow)',     'tags' => ['python', 'deep-learning', 'tensorflow', 'ai'],  'description' => 'Neural networks, CNNs, and RNNs with TensorFlow and Keras.'],
             ['title' => 'Natural Language Processing',    'tags' => ['python', 'nlp', 'ai', 'text'],                  'description' => 'Text processing, sentiment analysis, and language models.'],
             ['title' => 'Computer Vision (OpenCV)',       'tags' => ['python', 'computer-vision', 'opencv', 'ai'],    'description' => 'Image processing, object detection, and face recognition.'],
-            ['title' => 'Data Visualization (Matplotlib)','tags' => ['python', 'visualization', 'matplotlib', 'data'],'description' => 'Create compelling charts, plots, and dashboards with Matplotlib and Seaborn.'],
+            ['title' => 'Data Visualization (Matplotlib)', 'tags' => ['python', 'visualization', 'matplotlib', 'data'], 'description' => 'Create compelling charts, plots, and dashboards with Matplotlib and Seaborn.'],
             ['title' => 'Statistics for Data Science',    'tags' => ['statistics', 'data', 'analytics', 'math'],      'description' => 'Probability, hypothesis testing, regression, and Bayesian inference.'],
             ['title' => 'Big Data with Apache Spark',     'tags' => ['spark', 'bigdata', 'python', 'data'],           'description' => 'Distributed data processing and analytics with Apache Spark.'],
             ['title' => 'SQL for Data Analysis',          'tags' => ['sql', 'data', 'analytics', 'database'],         'description' => 'Write complex SQL queries for data exploration and reporting.'],
-            ['title' => 'Tableau Data Visualization',     'tags' => ['tableau', 'visualization', 'data', 'analytics'],'description' => 'Build interactive dashboards and visual analytics with Tableau.'],
+            ['title' => 'Tableau Data Visualization',     'tags' => ['tableau', 'visualization', 'data', 'analytics'], 'description' => 'Build interactive dashboards and visual analytics with Tableau.'],
 
             // Cybersecurity (5)
-            ['title' => 'Ethical Hacking & Pentesting',   'tags' => ['security', 'hacking', 'pentest', 'cybersecurity'],'description' => 'Learn ethical hacking techniques to identify and fix vulnerabilities.'],
-            ['title' => 'Network Security Fundamentals',  'tags' => ['security', 'network', 'cybersecurity', 'tcpip'],'description' => 'Secure network architectures, firewalls, and intrusion detection.'],
+            ['title' => 'Ethical Hacking & Pentesting',   'tags' => ['security', 'hacking', 'pentest', 'cybersecurity'], 'description' => 'Learn ethical hacking techniques to identify and fix vulnerabilities.'],
+            ['title' => 'Network Security Fundamentals',  'tags' => ['security', 'network', 'cybersecurity', 'tcpip'], 'description' => 'Secure network architectures, firewalls, and intrusion detection.'],
             ['title' => 'Web Application Security',       'tags' => ['security', 'web', 'owasp', 'cybersecurity'],    'description' => 'Protect web apps from OWASP Top 10 vulnerabilities.'],
-            ['title' => 'Cryptography Basics',            'tags' => ['security', 'cryptography', 'math', 'protocols'],'description' => 'Symmetric/asymmetric encryption, hashing, and digital signatures.'],
+            ['title' => 'Cryptography Basics',            'tags' => ['security', 'cryptography', 'math', 'protocols'], 'description' => 'Symmetric/asymmetric encryption, hashing, and digital signatures.'],
             ['title' => 'Cloud Security Best Practices',  'tags' => ['security', 'cloud', 'aws', 'compliance'],       'description' => 'Secure your cloud infrastructure: IAM, encryption, and monitoring.'],
 
             // Software Architecture (8)
-            ['title' => 'Microservices Architecture',     'tags' => ['architecture', 'microservices', 'backend', 'design'],'description' => 'Design and implement microservice-based systems.'],
+            ['title' => 'Microservices Architecture',     'tags' => ['architecture', 'microservices', 'backend', 'design'], 'description' => 'Design and implement microservice-based systems.'],
             ['title' => 'Domain-Driven Design (DDD)',     'tags' => ['architecture', 'ddd', 'design', 'backend'],     'description' => 'Model complex business domains using strategic and tactical DDD patterns.'],
-            ['title' => 'Clean Architecture & SOLID',     'tags' => ['architecture', 'solid', 'design', 'best-practices'],'description' => 'Build maintainable and testable software with Clean Architecture.'],
-            ['title' => 'Design Patterns in PHP',         'tags' => ['php', 'design-patterns', 'oop', 'architecture'],'description' => 'Implement Gang of Four design patterns in a PHP context.'],
-            ['title' => 'Event-Driven Architecture',      'tags' => ['architecture', 'events', 'messaging', 'backend'],'description' => 'Build loosely coupled systems using events and message brokers.'],
-            ['title' => 'API Gateway & Service Mesh',     'tags' => ['architecture', 'api', 'microservices', 'cloud'],'description' => 'Manage microservices traffic with API gateways and service meshes.'],
+            ['title' => 'Clean Architecture & SOLID',     'tags' => ['architecture', 'solid', 'design', 'best-practices'], 'description' => 'Build maintainable and testable software with Clean Architecture.'],
+            ['title' => 'Design Patterns in PHP',         'tags' => ['php', 'design-patterns', 'oop', 'architecture'], 'description' => 'Implement Gang of Four design patterns in a PHP context.'],
+            ['title' => 'Event-Driven Architecture',      'tags' => ['architecture', 'events', 'messaging', 'backend'], 'description' => 'Build loosely coupled systems using events and message brokers.'],
+            ['title' => 'API Gateway & Service Mesh',     'tags' => ['architecture', 'api', 'microservices', 'cloud'], 'description' => 'Manage microservices traffic with API gateways and service meshes.'],
             ['title' => 'CQRS & Event Sourcing',          'tags' => ['architecture', 'cqrs', 'events', 'database'],   'description' => 'Separate reads from writes and capture all changes as events.'],
-            ['title' => 'System Design Interview Prep',   'tags' => ['architecture', 'system-design', 'scalability', 'interview'],'description' => 'Learn to design large-scale distributed systems.'],
+            ['title' => 'System Design Interview Prep',   'tags' => ['architecture', 'system-design', 'scalability', 'interview'], 'description' => 'Learn to design large-scale distributed systems.'],
 
             // Testing & Quality (5)
             ['title' => 'PHPUnit Testing (Laravel)',      'tags' => ['php', 'testing', 'phpunit', 'laravel'],         'description' => 'Write unit, feature, and browser tests for Laravel applications.'],
             ['title' => 'Jest & React Testing Library',   'tags' => ['javascript', 'testing', 'jest', 'react'],       'description' => 'Test your React components with Jest and React Testing Library.'],
             ['title' => 'Behavior-Driven Development',    'tags' => ['testing', 'bdd', 'cucumber', 'quality'],        'description' => 'Collaborate on requirements using Gherkin and BDD frameworks.'],
             ['title' => 'Performance Testing (JMeter)',   'tags' => ['testing', 'performance', 'jmeter', 'devops'],   'description' => 'Load test and benchmark your applications with Apache JMeter.'],
-            ['title' => 'Code Reviews & Quality Metrics', 'tags' => ['quality', 'code-review', 'best-practices', 'team'],'description' => 'Effective code review techniques and code quality measurements.'],
+            ['title' => 'Code Reviews & Quality Metrics', 'tags' => ['quality', 'code-review', 'best-practices', 'team'], 'description' => 'Effective code review techniques and code quality measurements.'],
 
             // Version Control (2)
             ['title' => 'Git & GitHub Advanced',          'tags' => ['git', 'github', 'version-control', 'devops'],   'description' => 'Advanced Git: branching strategies, rebase, hooks, and workflows.'],
@@ -132,19 +132,19 @@ class SkillSeeder extends Seeder
             ['title' => 'Quantum Computing Basics',       'tags' => ['quantum', 'computing', 'physics', 'math'],      'description' => 'Introduction to quantum computing principles and algorithms.'],
 
             // Additional Backend & Tools (6)
-            ['title' => 'RabbitMQ Message Queues',        'tags' => ['rabbitmq', 'messaging', 'backend', 'architecture'],'description' => 'Message brokering with RabbitMQ for async communication.'],
+            ['title' => 'RabbitMQ Message Queues',        'tags' => ['rabbitmq', 'messaging', 'backend', 'architecture'], 'description' => 'Message brokering with RabbitMQ for async communication.'],
             ['title' => 'API Documentation (Swagger)',    'tags' => ['api', 'swagger', 'openapi', 'documentation'],   'description' => 'Document your APIs with OpenAPI/Swagger specifications.'],
-            ['title' => 'WebSockets & Real-Time Apps',    'tags' => ['websockets', 'real-time', 'javascript', 'backend'],'description' => 'Build real-time features with WebSockets (Socket.io, Laravel Echo).'],
-            ['title' => 'SEO Fundamentals for Developers','tags' => ['seo', 'web', 'marketing', 'frontend'],          'description' => 'Optimize your web applications for search engines.'],
-            ['title' => 'Technical Writing & Docs',       'tags' => ['documentation', 'writing', 'technical', 'communication'],'description' => 'Write clear, concise technical documentation and API references.'],
+            ['title' => 'WebSockets & Real-Time Apps',    'tags' => ['websockets', 'real-time', 'javascript', 'backend'], 'description' => 'Build real-time features with WebSockets (Socket.io, Laravel Echo).'],
+            ['title' => 'SEO Fundamentals for Developers', 'tags' => ['seo', 'web', 'marketing', 'frontend'],          'description' => 'Optimize your web applications for search engines.'],
+            ['title' => 'Technical Writing & Docs',       'tags' => ['documentation', 'writing', 'technical', 'communication'], 'description' => 'Write clear, concise technical documentation and API references.'],
             ['title' => 'Bash Scripting & Automation',    'tags' => ['bash', 'shell', 'automation', 'linux'],         'description' => 'Automate tasks with Bash shell scripting on Linux/macOS.'],
 
             // Final batch (5) to reach 100
-            ['title' => 'Monitoring & Observability (Grafana)','tags' => ['monitoring', 'grafana', 'devops', 'observability'],'description' => 'Monitor applications and infrastructure with Grafana and Prometheus.'],
-            ['title' => 'Algorithms & Data Structures',   'tags' => ['algorithms', 'data-structures', 'programming', 'interview'],'description' => 'Master core algorithms, Big O notation, and data structure fundamentals.'],
-            ['title' => 'Functional Programming (Haskell)','tags' => ['haskell', 'functional', 'programming', 'math'],'description' => 'Pure functional programming with Haskell - monads, functors, and type classes.'],
-            ['title' => 'Command Line & PowerShell',      'tags' => ['powershell', 'shell', 'automation', 'windows'],'description' => 'Automate Windows administration tasks with PowerShell scripting.'],
-            ['title' => 'Software Licensing & Compliance', 'tags' => ['licensing', 'compliance', 'legal', 'business'],'description' => 'Understand open-source licenses, GPL, MIT, Apache, and compliance requirements.'],
+            ['title' => 'Monitoring & Observability (Grafana)', 'tags' => ['monitoring', 'grafana', 'devops', 'observability'], 'description' => 'Monitor applications and infrastructure with Grafana and Prometheus.'],
+            ['title' => 'Algorithms & Data Structures',   'tags' => ['algorithms', 'data-structures', 'programming', 'interview'], 'description' => 'Master core algorithms, Big O notation, and data structure fundamentals.'],
+            ['title' => 'Functional Programming (Haskell)', 'tags' => ['haskell', 'functional', 'programming', 'math'], 'description' => 'Pure functional programming with Haskell - monads, functors, and type classes.'],
+            ['title' => 'Command Line & PowerShell',      'tags' => ['powershell', 'shell', 'automation', 'windows'], 'description' => 'Automate Windows administration tasks with PowerShell scripting.'],
+            ['title' => 'Software Licensing & Compliance', 'tags' => ['licensing', 'compliance', 'legal', 'business'], 'description' => 'Understand open-source licenses, GPL, MIT, Apache, and compliance requirements.'],
         ];
 
         foreach ($skills as $skill) {
@@ -153,7 +153,7 @@ class SkillSeeder extends Seeder
                 [
                     'tags' => $skill['tags'],
                     'description' => $skill['description'],
-                    'content' => 'Full course content for ' . $skill['title'] . '. This covers beginner to advanced topics with hands-on exercises.',
+                    'content' => 'Full course content for '.$skill['title'].'. This covers beginner to advanced topics with hands-on exercises.',
                     'resource_link' => null,
                 ]
             );

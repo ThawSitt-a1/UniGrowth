@@ -38,17 +38,13 @@ final class QuestionRepository implements QuestionRepositoryInterface
         }
 
         // Sync options if provided
-        if (!empty($data->options)) {
+        if (! empty($data->options)) {
             $this->syncOptions($question, $data);
         }
 
         return true;
     }
 
-    /**
-     * @param Question $question
-     * @param QuestionDataDTO $data
-     */
     private function syncOptions(Question $question, QuestionDataDTO $data): void
     {
         $existingOptionIds = $question->options()->pluck('id')->toArray();
@@ -60,7 +56,7 @@ final class QuestionRepository implements QuestionRepositoryInterface
 
         foreach (array_slice($data->options, 0, $maxOptions) as $opt) {
             $optionId = $opt['option_id'] ?? null;
-            $isCorrect = !empty($opt['is_correct']);
+            $isCorrect = ! empty($opt['is_correct']);
 
             if ($optionId && in_array($optionId, $existingOptionIds)) {
                 // Update existing option
@@ -84,7 +80,7 @@ final class QuestionRepository implements QuestionRepositoryInterface
 
         // Delete options that were removed
         $toDelete = array_diff($existingOptionIds, $submittedOptionIds);
-        if (!empty($toDelete)) {
+        if (! empty($toDelete)) {
             Option::query()->whereIn('id', $toDelete)->where('locked_by_admin', false)->delete();
         }
     }
@@ -97,7 +93,7 @@ final class QuestionRepository implements QuestionRepositoryInterface
             ->where('locked_by_admin', false)
             ->first();
 
-        if (!$question) {
+        if (! $question) {
             return false;
         }
 

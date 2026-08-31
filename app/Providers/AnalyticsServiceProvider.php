@@ -13,4 +13,3 @@ class AnalyticsServiceProvider extends ServiceProvider
         // Intentionally left empty (constructor injection is used directly).
     }
 }
-

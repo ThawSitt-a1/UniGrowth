@@ -3,8 +3,8 @@
 namespace App\Auth\UseCases;
 
 use App\Auth\DTOs\AuthCredentialsDTO;
-use App\Auth\Repositories\UserRepositoryInterface;
 use App\Auth\Models\User;
+use App\Auth\Repositories\UserRepositoryInterface;
 use App\Services\AuthSessionService;
 use Illuminate\Support\Facades\Hash;
 
@@ -14,15 +14,14 @@ final class AuthenticateUserUseCase
         private readonly UserRepositoryInterface $userRepository,
         private readonly AuthSessionService $authSessionService,
         private readonly User $userModel,
-    ) {
-    }
+    ) {}
 
     public function execute(AuthCredentialsDTO $credentials): array
     {
         // Use the repository for credential check (keeps the interface contract)
         $userData = $this->userRepository->findByEmail($credentials->email);
 
-        if ($userData === null || !Hash::check($credentials->password, $userData['password_hash'] ?? '')) {
+        if ($userData === null || ! Hash::check($credentials->password, $userData['password_hash'] ?? '')) {
             throw new \RuntimeException('Invalid credentials');
         }
 
@@ -34,7 +33,7 @@ final class AuthenticateUserUseCase
         }
 
         // Enforce email verification: unverified users cannot log in
-        if (!$user->hasVerifiedEmail()) {
+        if (! $user->hasVerifiedEmail()) {
             throw new \RuntimeException('Email not verified.');
         }
 
@@ -66,4 +65,3 @@ final class AuthenticateUserUseCase
         ];
     }
 }
-

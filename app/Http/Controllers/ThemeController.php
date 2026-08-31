@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Auth;
 final class ThemeController
 {
     public const COOKIE_NAME = 'theme';
+
     public const COOKIE_MINUTES = 60 * 24 * 365; // 1 year
 
     public function toggle(Request $request): RedirectResponse
@@ -43,4 +44,3 @@ final class ThemeController
         return $redirect;
     }
 }
-

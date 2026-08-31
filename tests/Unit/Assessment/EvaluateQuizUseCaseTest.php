@@ -3,16 +3,12 @@
 namespace Tests\Unit\Assessment;
 
 use App\Assessment\DTO\AssessmentResultDTO;
-use App\Assessment\Models\Attempt;
-use App\Assessment\Models\Question;
 use App\Assessment\Models\Option;
-use App\Assessment\Models\StudentAnsweredQuestion;
-use App\Assessment\Models\StudentSkill;
-use App\Assessment\Repositories\AssessmentRepository;
-use App\Assessment\Services\RankingAggregatorService;
+use App\Assessment\Models\Question;
 use App\Assessment\UseCases\EvaluateQuizUseCase;
 use App\Auth\Models\User;
 use App\Core\Assets\Models\Skill;
+use App\Overview\Models\Season;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -21,8 +17,11 @@ class EvaluateQuizUseCaseTest extends TestCase
     use RefreshDatabase;
 
     private User $user;
+
     private Skill $skill;
+
     private EvaluateQuizUseCase $useCase;
+
     private array $questions = [];
 
     protected function setUp(): void
@@ -33,7 +32,7 @@ class EvaluateQuizUseCaseTest extends TestCase
         $this->skill = Skill::factory()->create(['title' => 'PHP']);
 
         // Create an active season so EvaluateQuizUseCase can record season scores
-        \App\Overview\Models\Season::query()->create([
+        Season::query()->create([
             'name' => 'Test Season',
             'started_at' => now()->subDays(10),
             'ends_at' => now()->addDays(10),

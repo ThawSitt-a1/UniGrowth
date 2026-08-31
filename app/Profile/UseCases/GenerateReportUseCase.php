@@ -8,8 +8,7 @@ final class GenerateReportUseCase
 {
     public function __construct(
         private readonly ProfileRepositoryInterface $profileRepository,
-    ) {
-    }
+    ) {}
 
     public function execute(int $userId, string $reportType): ?array
     {
@@ -61,4 +60,3 @@ final class GenerateReportUseCase
         ];
     }
 }
-

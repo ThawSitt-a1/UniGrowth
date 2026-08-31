@@ -58,7 +58,7 @@ final class ApplyUserTheme
         // every rendered page).
         $content = preg_replace_callback(
             '/<html\b([^>]*)>/i',
-            fn (array $matches): string => '<html data-bs-theme="' . $theme . '"' . ($matches[1] ?? '') . '>',
+            fn (array $matches): string => '<html data-bs-theme="'.$theme.'"'.($matches[1] ?? '').'>',
             $content,
             1,
             $replaced
@@ -66,22 +66,22 @@ final class ApplyUserTheme
 
         if ($replaced === 0) {
             // Fallback: no <html> tag found — inject a wrapper right at the top.
-            $content = '<html data-bs-theme="' . $theme . '">' . $content;
+            $content = '<html data-bs-theme="'.$theme.'">'.$content;
         }
 
         $injections = '';
 
         if ($theme === 'dark') {
-            $injections .= "\n" . '<link rel="stylesheet" href="' . asset('css/dark-mode.css') . '">';
+            $injections .= "\n".'<link rel="stylesheet" href="'.asset('css/dark-mode.css').'">';
         }
 
         // Expose the active theme to JS (used by the theme-toggle partial).
-        $injections .= "\n" . '<script>window.__unigrowthTheme = ' . json_encode($theme) . ';</script>' . "\n";
+        $injections .= "\n".'<script>window.__unigrowthTheme = '.json_encode($theme).';</script>'."\n";
 
         if (str_contains($content, '</head>')) {
-            $content = str_replace('</head>', $injections . '</head>', $content);
+            $content = str_replace('</head>', $injections.'</head>', $content);
         } elseif (str_contains($content, '</body>')) {
-            $content = str_replace('</body>', $injections . '</body>', $content);
+            $content = str_replace('</body>', $injections.'</body>', $content);
         }
 
         $response->setContent($content);
@@ -107,4 +107,3 @@ final class ApplyUserTheme
         return in_array($theme, ['light', 'dark'], true) ? $theme : 'light';
     }
 }
-

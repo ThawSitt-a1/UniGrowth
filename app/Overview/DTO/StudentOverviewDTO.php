@@ -7,9 +7,9 @@ namespace App\Overview\DTO;
 final class StudentOverviewDTO
 {
     /**
-     * @param array<int, array{id: int, text: string, created_at: string}> $activeGoals
-     * @param array<int, array{id: int, text: string, completed_at: string}> $completedGoals
-     * @param array<int, array{id: int, skill_id: int, skill_title: string, enrolled_at: string}> $enrolledSkills
+     * @param  array<int, array{id: int, text: string, created_at: string}>  $activeGoals
+     * @param  array<int, array{id: int, text: string, completed_at: string}>  $completedGoals
+     * @param  array<int, array{id: int, skill_id: int, skill_title: string, enrolled_at: string}>  $enrolledSkills
      */
     public function __construct(
         public readonly int $studentId,
@@ -21,8 +21,7 @@ final class StudentOverviewDTO
         public readonly array $quizStatistics,
         public readonly int $seasonRank,
         public readonly float $totalSeasonScore,
-    ) {
-    }
+    ) {}
 
     /**
      * @return array<string, mixed>
@@ -42,4 +41,3 @@ final class StudentOverviewDTO
         ];
     }
 }
-

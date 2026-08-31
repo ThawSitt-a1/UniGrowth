@@ -9,8 +9,7 @@ final class SystemSettingsDTO
     public function __construct(
         public readonly string $settingsKey,
         public readonly string $settingsValue,
-    ) {
-    }
+    ) {}
 
     /**
      * @return array<string, mixed>
@@ -23,4 +22,3 @@ final class SystemSettingsDTO
         ];
     }
 }
-

@@ -10,7 +10,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (!Schema::hasColumn('questions', 'editor_id')) {
+        if (! Schema::hasColumn('questions', 'editor_id')) {
             Schema::table('questions', function (Blueprint $table) {
                 $table->foreignId('editor_id')
                     ->nullable()
@@ -20,7 +20,7 @@ return new class extends Migration
             });
         }
 
-        if (!Schema::hasColumn('questions', 'locked_by_admin')) {
+        if (! Schema::hasColumn('questions', 'locked_by_admin')) {
             Schema::table('questions', function (Blueprint $table) {
                 $table->boolean('locked_by_admin')
                     ->default(false)
@@ -28,13 +28,13 @@ return new class extends Migration
             });
         }
 
-        if (!Schema::hasIndex('questions', 'questions_editor_id_index')) {
+        if (! Schema::hasIndex('questions', 'questions_editor_id_index')) {
             Schema::table('questions', function (Blueprint $table) {
                 $table->index('editor_id');
             });
         }
 
-        if (!Schema::hasIndex('questions', 'questions_locked_by_admin_index')) {
+        if (! Schema::hasIndex('questions', 'questions_locked_by_admin_index')) {
             Schema::table('questions', function (Blueprint $table) {
                 $table->index('locked_by_admin');
             });

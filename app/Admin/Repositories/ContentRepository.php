@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Admin\Repositories;
 
 use App\Assessment\Models\Question;
-use App\Core\Assets\Models\Goal;
 use App\Core\Assets\Models\Skill;
 
 final class ContentRepository implements ContentRepositoryInterface
@@ -27,6 +26,7 @@ final class ContentRepository implements ContentRepositoryInterface
     public function deleteQuestion(int $questionId): bool
     {
         $question = Question::query()->findOrFail($questionId);
+
         return (bool) $question->delete();
     }
 
@@ -47,6 +47,7 @@ final class ContentRepository implements ContentRepositoryInterface
     public function deleteSkill(int $skillId): bool
     {
         $skill = Skill::query()->findOrFail($skillId);
+
         return (bool) $skill->delete();
     }
 
@@ -105,4 +106,3 @@ final class ContentRepository implements ContentRepositoryInterface
             ->toArray();
     }
 }
-

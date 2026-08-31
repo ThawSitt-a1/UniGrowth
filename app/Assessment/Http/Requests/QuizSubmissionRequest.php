@@ -56,4 +56,3 @@ final class QuizSubmissionRequest extends FormRequest
         ];
     }
 }
-

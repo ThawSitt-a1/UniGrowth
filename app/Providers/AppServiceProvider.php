@@ -2,10 +2,49 @@
 
 namespace App\Providers;
 
+use App\Admin\Repositories\ContentRepository;
+use App\Admin\Repositories\ContentRepositoryInterface;
+use App\Admin\Repositories\MetricsRepository;
+use App\Admin\Repositories\MetricsRepositoryInterface;
+use App\Admin\Repositories\SettingsRepository;
+use App\Admin\Repositories\SettingsRepositoryInterface;
+use App\Admin\Services\SystemSettingsService;
+use App\Admin\Services\SystemSettingsServiceInterface;
+use App\Assessment\Repositories\AssessmentRepository;
+use App\Assessment\Repositories\AssessmentRepositoryInterface;
+use App\Auth\Repositories\EloquentUserRepository;
+use App\Auth\Repositories\UserRepositoryInterface;
+use App\Core\Assets\Repositories\EnrollmentRepository;
+use App\Core\Assets\Repositories\EnrollmentRepositoryInterface;
+use App\Core\Assets\Repositories\GoalRepository;
+use App\Core\Assets\Repositories\GoalRepositoryInterface;
+use App\Core\Assets\Repositories\HabitRepository;
+use App\Core\Assets\Repositories\HabitRepositoryInterface;
+use App\Core\Assets\Repositories\UserRepository;
+use App\Core\Recommendation\Repositories\TagRepository;
+use App\Core\Recommendation\Repositories\TagRepositoryInterface;
+use App\Editor\Repositories\EditorContentRepository;
+use App\Editor\Repositories\EditorContentRepositoryInterface;
+use App\Editor\Repositories\OptionRepository;
+use App\Editor\Repositories\OptionRepositoryInterface;
+use App\Editor\Repositories\QuestionRepository;
+use App\Editor\Repositories\QuestionRepositoryInterface;
+use App\Editor\Repositories\SkillRepository;
+use App\Editor\Repositories\SkillRepositoryInterface;
 use App\Events\Contracts\NotificationEventInterface;
 use App\Listeners\HandleNotification;
 use App\Notifications\Contracts\NotificationProviderInterface;
 use App\Notifications\Providers\DefaultNotificationProvider;
+use App\Overview\Repositories\SeasonRepository;
+use App\Overview\Repositories\SeasonRepositoryInterface;
+use App\Overview\Repositories\SeasonScoreRepository;
+use App\Overview\Repositories\SeasonScoreRepositoryInterface;
+use App\Overview\Repositories\StudentOverviewRepository;
+use App\Overview\Repositories\StudentOverviewRepositoryInterface;
+use App\Profile\Repositories\BugReportRepository;
+use App\Profile\Repositories\BugReportRepositoryInterface;
+use App\Profile\Repositories\ProfileRepository;
+use App\Profile\Repositories\ProfileRepositoryInterface;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 
@@ -18,26 +57,26 @@ class AppServiceProvider extends ServiceProvider
     {
         // Auth bindings
         $this->app->bind(
-            \App\Auth\Repositories\UserRepositoryInterface::class,
-            \App\Auth\Repositories\EloquentUserRepository::class
+            UserRepositoryInterface::class,
+            EloquentUserRepository::class
         );
 
         // Core Services bindings
         $this->app->bind(
-            \App\Core\Assets\Repositories\GoalRepositoryInterface::class,
-            \App\Core\Assets\Repositories\GoalRepository::class
+            GoalRepositoryInterface::class,
+            GoalRepository::class
         );
         $this->app->bind(
-            \App\Core\Assets\Repositories\HabitRepositoryInterface::class,
-            \App\Core\Assets\Repositories\HabitRepository::class
+            HabitRepositoryInterface::class,
+            HabitRepository::class
         );
         $this->app->bind(
-            \App\Core\Assets\Repositories\EnrollmentRepositoryInterface::class,
-            \App\Core\Assets\Repositories\EnrollmentRepository::class
+            EnrollmentRepositoryInterface::class,
+            EnrollmentRepository::class
         );
         $this->app->bind(
             \App\Core\Assets\Repositories\UserRepositoryInterface::class,
-            \App\Core\Assets\Repositories\UserRepository::class
+            UserRepository::class
         );
         $this->app->bind(
             \App\Core\Assets\Repositories\SkillRepositoryInterface::class,
@@ -50,74 +89,74 @@ class AppServiceProvider extends ServiceProvider
 
         // Recommendation Engine bindings
         $this->app->bind(
-            \App\Core\Recommendation\Repositories\TagRepositoryInterface::class,
-            \App\Core\Recommendation\Repositories\TagRepository::class
+            TagRepositoryInterface::class,
+            TagRepository::class
         );
 
         // Skill Assessment & Ranking System bindings
         $this->app->bind(
-            \App\Assessment\Repositories\AssessmentRepositoryInterface::class,
-            \App\Assessment\Repositories\AssessmentRepository::class
+            AssessmentRepositoryInterface::class,
+            AssessmentRepository::class
         );
 
         // Student Overview Service bindings
         $this->app->bind(
-            \App\Overview\Repositories\StudentOverviewRepositoryInterface::class,
-            \App\Overview\Repositories\StudentOverviewRepository::class
+            StudentOverviewRepositoryInterface::class,
+            StudentOverviewRepository::class
         );
         $this->app->bind(
-            \App\Overview\Repositories\SeasonRepositoryInterface::class,
-            \App\Overview\Repositories\SeasonRepository::class
+            SeasonRepositoryInterface::class,
+            SeasonRepository::class
         );
         $this->app->bind(
-            \App\Overview\Repositories\SeasonScoreRepositoryInterface::class,
-            \App\Overview\Repositories\SeasonScoreRepository::class
+            SeasonScoreRepositoryInterface::class,
+            SeasonScoreRepository::class
         );
 
         // Profile & Account Manager bindings
         $this->app->bind(
-            \App\Profile\Repositories\ProfileRepositoryInterface::class,
-            \App\Profile\Repositories\ProfileRepository::class
+            ProfileRepositoryInterface::class,
+            ProfileRepository::class
         );
         $this->app->bind(
-            \App\Profile\Repositories\BugReportRepositoryInterface::class,
-            \App\Profile\Repositories\BugReportRepository::class
+            BugReportRepositoryInterface::class,
+            BugReportRepository::class
         );
 
         // Admin Console bindings
         $this->app->bind(
-            \App\Admin\Repositories\MetricsRepositoryInterface::class,
-            \App\Admin\Repositories\MetricsRepository::class
+            MetricsRepositoryInterface::class,
+            MetricsRepository::class
         );
         $this->app->bind(
-            \App\Admin\Repositories\ContentRepositoryInterface::class,
-            \App\Admin\Repositories\ContentRepository::class
+            ContentRepositoryInterface::class,
+            ContentRepository::class
         );
         $this->app->bind(
-            \App\Admin\Repositories\SettingsRepositoryInterface::class,
-            \App\Admin\Repositories\SettingsRepository::class
+            SettingsRepositoryInterface::class,
+            SettingsRepository::class
         );
         $this->app->bind(
-            \App\Admin\Services\SystemSettingsServiceInterface::class,
-            \App\Admin\Services\SystemSettingsService::class
+            SystemSettingsServiceInterface::class,
+            SystemSettingsService::class
         );
 
         // Editor Console bindings
         $this->app->bind(
-            \App\Editor\Repositories\SkillRepositoryInterface::class,
-            \App\Editor\Repositories\SkillRepository::class
+            SkillRepositoryInterface::class,
+            SkillRepository::class
         );
         $this->app->bind(
-            \App\Editor\Repositories\QuestionRepositoryInterface::class,
-            \App\Editor\Repositories\QuestionRepository::class
+            QuestionRepositoryInterface::class,
+            QuestionRepository::class
         );
         $this->app->bind(
-            \App\Editor\Repositories\OptionRepositoryInterface::class,
-            \App\Editor\Repositories\OptionRepository::class
+            OptionRepositoryInterface::class,
+            OptionRepository::class
         );
         $this->app->bind(
-            \App\Editor\Repositories\EditorContentRepositoryInterface::class,
-            \App\Editor\Repositories\EditorContentRepository::class
+            EditorContentRepositoryInterface::class,
+            EditorContentRepository::class
         );
 
         // Notification bindings
@@ -130,13 +169,13 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-public function boot(): void
+    public function boot(): void
     {
         Event::listen(NotificationEventInterface::class, HandleNotification::class);
 
         // Gracefully handle missing system_settings table (e.g., during tests or first deploy)
         try {
-            $platformName = $this->app->make(\App\Admin\Services\SystemSettingsServiceInterface::class)->getPlatformName();
+            $platformName = $this->app->make(SystemSettingsServiceInterface::class)->getPlatformName();
         } catch (\Exception $e) {
             $platformName = 'UniGrowth';
         }

@@ -39,4 +39,3 @@ final class GetUserActivityUseCaseTest extends TestCase
         $this->assertSame($expectedProfile, $result);
     }
 }
-

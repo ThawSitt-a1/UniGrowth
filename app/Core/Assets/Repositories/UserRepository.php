@@ -122,4 +122,3 @@ final class UserRepository implements UserRepositoryInterface
         return max($longest, $run);
     }
 }
-

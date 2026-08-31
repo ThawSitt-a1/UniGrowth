@@ -22,4 +22,3 @@ interface SeasonScoreRepositoryInterface
 
     public function archiveScores(int $seasonId): void;
 }
-

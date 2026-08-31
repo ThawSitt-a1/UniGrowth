@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace App\Overview\Repositories;
 
-use App\Auth\Models\User;
-use App\Core\Assets\Models\Goal;
-use App\Core\Assets\Models\Enrollment;
-use App\Assessment\Models\StudentAnsweredQuestion;
 use App\Assessment\Models\Attempt;
+use App\Assessment\Models\StudentAnsweredQuestion;
+use App\Core\Assets\Models\Enrollment;
+use App\Core\Assets\Models\Goal;
 use App\Overview\Models\SeasonScore;
 use Illuminate\Support\Collection;
 
@@ -122,7 +121,7 @@ final class StudentOverviewRepository implements StudentOverviewRepositoryInterf
                 ->where('season_id', $seasonId)
                 ->first();
 
-            if (!$record || $record->total_attempts <= 0) {
+            if (! $record || $record->total_attempts <= 0) {
                 return 0.0;
             }
 
@@ -137,4 +136,3 @@ final class StudentOverviewRepository implements StudentOverviewRepositoryInterf
             ->avg('percentage') ?? 0.0);
     }
 }
-

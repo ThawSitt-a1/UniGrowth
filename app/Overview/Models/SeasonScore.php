@@ -12,7 +12,7 @@ final class SeasonScore extends Model
 {
     protected $table = 'season_scores';
 
-protected $fillable = [
+    protected $fillable = [
         'user_id',
         'season_id',
         'total_score',
@@ -38,4 +38,3 @@ protected $fillable = [
         return $this->belongsTo(Season::class);
     }
 }
-

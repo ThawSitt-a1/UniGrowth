@@ -13,4 +13,3 @@ interface MetricCalculatorInterface
      */
     public function calculate(?int $userId = null): float;
 }
-

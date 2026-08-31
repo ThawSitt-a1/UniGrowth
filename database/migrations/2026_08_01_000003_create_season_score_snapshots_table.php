@@ -28,4 +28,3 @@ return new class extends Migration
         Schema::dropIfExists('season_score_snapshots');
     }
 };
-

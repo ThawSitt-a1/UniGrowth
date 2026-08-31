@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Core\Recommendation\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Foundation\Http\FormRequest;
 
 final class RecommendationRequest extends FormRequest
 {

@@ -14,4 +14,3 @@ interface MetricsRepositoryInterface
     /** @return array<string, mixed> */
     public function getAnalytics(): array;
 }
-

@@ -13,8 +13,7 @@ final class StudentDashboardService
     public function __construct(
         private readonly AssessmentRepositoryInterface $assessmentRepository,
         private readonly SeasonService $seasonService,
-    ) {
-    }
+    ) {}
 
     /**
      * Aggregate progress metrics for a student.
@@ -60,7 +59,7 @@ final class StudentDashboardService
     {
         $currentSeason = $this->seasonService->getCurrentSeason();
 
-        if (!$currentSeason) {
+        if (! $currentSeason) {
             return [];
         }
 
@@ -85,4 +84,3 @@ final class StudentDashboardService
         return $rank + 1;
     }
 }
-

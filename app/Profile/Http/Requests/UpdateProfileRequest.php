@@ -11,7 +11,7 @@ class UpdateProfileRequest extends FormRequest
         return true;
     }
 
-protected function prepareForValidation(): void
+    protected function prepareForValidation(): void
     {
         $this->merge([
             'username' => strip_tags(trim((string) $this->username)),
@@ -42,4 +42,3 @@ protected function prepareForValidation(): void
         ];
     }
 }
-

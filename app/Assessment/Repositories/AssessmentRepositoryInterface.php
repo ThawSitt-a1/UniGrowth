@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Assessment\Repositories;
 
 use App\Assessment\Models\Attempt;
+use App\Assessment\Models\Question;
+use App\Assessment\Models\StudentSkill;
 use App\Auth\Models\User;
 use Illuminate\Support\Collection;
 
@@ -14,7 +16,7 @@ interface AssessmentRepositoryInterface
      * Fetch randomized active questions for a skill that the user has NOT answered before.
      * Returns up to 5 questions, but allows as few as 1 question to be available.
      *
-     * @return Collection<int, \App\Assessment\Models\Question>
+     * @return Collection<int, Question>
      *
      * @throws \RuntimeException if no unseen questions are available for the skill.
      */
@@ -23,8 +25,8 @@ interface AssessmentRepositoryInterface
     /**
      * Fetch correct option IDs for the given question IDs.
      *
-     * @param int[] $questionIds
-     * @return array<int, array<int, int>>  [question_id => [correct_option_id, ...]]
+     * @param  int[]  $questionIds
+     * @return array<int, array<int, int>> [question_id => [correct_option_id, ...]]
      */
     public function fetchCorrectOptions(array $questionIds): array;
 
@@ -39,7 +41,7 @@ interface AssessmentRepositoryInterface
      *     percentage: float,
      *     passed: bool,
      * } $attemptData
-     * @param array<int, int> $answeredQuestionIds  [question_id => selected_option_id]
+     * @param  array<int, int>  $answeredQuestionIds  [question_id => selected_option_id]
      */
     public function logAttemptAndAnsweredQuestions(
         int $userId,
@@ -52,7 +54,7 @@ interface AssessmentRepositoryInterface
      */
     public function upsertStudentSkillProficiency(int $userId, int $skillId, float $score): void;
 
-/**
+    /**
      * Update user's total platform score (sum of all skill proficiencies).
      */
     public function updateUserPlatformScore(int $userId): void;
@@ -82,8 +84,7 @@ interface AssessmentRepositoryInterface
     /**
      * Fetch all skill proficiency records for a user.
      *
-     * @return Collection<int, \App\Assessment\Models\StudentSkill>
+     * @return Collection<int, StudentSkill>
      */
     public function fetchStudentSkills(int $userId): Collection;
 }
-

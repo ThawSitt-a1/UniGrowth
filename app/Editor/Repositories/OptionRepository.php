@@ -25,6 +25,7 @@ final class OptionRepository implements OptionRepositoryInterface
                 'option_text' => $data->optionText,
                 'is_correct' => $data->isCorrect,
             ]);
+
             return true;
         }
 
@@ -35,6 +36,7 @@ final class OptionRepository implements OptionRepositoryInterface
             'is_correct' => $data->isCorrect,
             'locked_by_admin' => false,
         ]);
+
         return true;
     }
 
@@ -59,7 +61,7 @@ final class OptionRepository implements OptionRepositoryInterface
             ->where('locked_by_admin', false)
             ->first();
 
-        if (!$option) {
+        if (! $option) {
             return false;
         }
 

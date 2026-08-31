@@ -6,6 +6,7 @@ namespace App\Assessment\Controllers;
 
 use App\Assessment\Services\StudentDashboardService;
 use App\Overview\Services\SeasonService;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 
 final class DashboardController
@@ -13,8 +14,7 @@ final class DashboardController
     public function __construct(
         private readonly StudentDashboardService $dashboardService,
         private readonly SeasonService $seasonService,
-    ) {
-    }
+    ) {}
 
     /**
      * Get aggregated dashboard metrics for a student.
@@ -25,7 +25,7 @@ final class DashboardController
     {
         try {
             $metrics = $this->dashboardService->aggregateProgressMetrics($studentId);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             return response()->json(['error' => 'Student not found.'], 404);
         }
 
@@ -43,7 +43,7 @@ final class DashboardController
     {
         $currentSeason = $this->seasonService->getCurrentSeason();
 
-        if (!$currentSeason) {
+        if (! $currentSeason) {
             return response()->json([
                 'data' => [],
                 'meta' => [
@@ -66,4 +66,3 @@ final class DashboardController
         ]);
     }
 }
-

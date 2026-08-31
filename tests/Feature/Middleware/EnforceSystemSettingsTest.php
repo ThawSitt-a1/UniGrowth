@@ -12,7 +12,9 @@ use Tests\TestCase;
 final class EnforceSystemSettingsTest extends TestCase
 {
     private const SKILLS_HTML = '<html><body><h1>Skills Index</h1></body></html>';
+
     private const GOALS_HTML = '<html><body><h1>Goals & Habits</h1></body></html>';
+
     private const SKILL_DETAIL_HTML = '<html><body><h1>Skill Detail</h1></body></html>';
 
     // ---------------------------------------------------------------
@@ -37,7 +39,7 @@ final class EnforceSystemSettingsTest extends TestCase
             ->name($name);
     }
 
-/**
+    /**
      * Swap the SystemSettingsServiceInterface binding with a mock that
      * returns configured values, using Laravel's test helper.
      *
@@ -73,7 +75,7 @@ final class EnforceSystemSettingsTest extends TestCase
         $response->assertSee('Skills are temporarily disabled');
     }
 
-/** @test */
+    /** @test */
     public function skills_disabled_blocks_skill_detail_page(): void
     {
         $user = User::factory()->make();
@@ -107,7 +109,7 @@ final class EnforceSystemSettingsTest extends TestCase
 
         $response = $this->get('core-assets');
 
-$response->assertStatus(200);
+        $response->assertStatus(200);
         $response->assertSee('Goals');
         $response->assertSee('Habits');
         $response->assertDontSee('Skills are temporarily disabled');

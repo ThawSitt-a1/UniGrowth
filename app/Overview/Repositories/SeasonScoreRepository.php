@@ -8,11 +8,10 @@ use App\Auth\Models\User;
 use App\Overview\Models\SeasonScore;
 use App\Overview\Models\SeasonScoreSnapshot;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 
 final class SeasonScoreRepository implements SeasonScoreRepositoryInterface
 {
-public function upsertScore(int $userId, int $seasonId, float $score, int $questionsAnswered): void
+    public function upsertScore(int $userId, int $seasonId, float $score, int $questionsAnswered): void
     {
         $record = SeasonScore::query()->firstOrNew([
             'user_id' => $userId,
@@ -51,10 +50,10 @@ public function upsertScore(int $userId, int $seasonId, float $score, int $quest
             return 0;
         }
 
-$rank = SeasonScore::query()
+        $rank = SeasonScore::query()
             ->where('season_id', $seasonId)
-            // Exclude admin/editor users from rank computation so they don't
-            // influence student positions on the dashboard.
+                    // Exclude admin/editor users from rank computation so they don't
+                    // influence student positions on the dashboard.
             ->whereHas('user', fn ($q) => $q->whereNotIn('role', [User::ROLE_ADMIN, User::ROLE_EDITOR]))
             ->where('total_score', '>', $userScore->total_score)
             ->count();
@@ -62,7 +61,7 @@ $rank = SeasonScore::query()
         return $rank + 1;
     }
 
-public function getLeaderboard(int $seasonId, int $limit = 10): Collection
+    public function getLeaderboard(int $seasonId, int $limit = 10): Collection
     {
         return SeasonScore::query()
             ->where('season_id', $seasonId)
@@ -79,7 +78,7 @@ public function getLeaderboard(int $seasonId, int $limit = 10): Collection
             ->values();
     }
 
-public function getTotalParticipants(int $seasonId): int
+    public function getTotalParticipants(int $seasonId): int
     {
         return SeasonScore::query()
             ->where('season_id', $seasonId)
@@ -117,7 +116,7 @@ public function getTotalParticipants(int $seasonId): int
             ];
         }
 
-        if (!empty($snapshots)) {
+        if (! empty($snapshots)) {
             SeasonScoreSnapshot::query()->insert($snapshots);
         }
     }

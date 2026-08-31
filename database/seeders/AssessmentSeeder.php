@@ -19,6 +19,7 @@ class AssessmentSeeder extends Seeder
 
         if ($skills->isEmpty()) {
             $this->command->warn('No skills found. Run SkillSeeder first.');
+
             return;
         }
 
@@ -62,4 +63,3 @@ class AssessmentSeeder extends Seeder
         }
     }
 }
-

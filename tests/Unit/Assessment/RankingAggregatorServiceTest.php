@@ -2,7 +2,6 @@
 
 namespace Tests\Unit\Assessment;
 
-use App\Assessment\Models\StudentSkill;
 use App\Assessment\Repositories\AssessmentRepository;
 use App\Assessment\Services\RankingAggregatorService;
 use App\Auth\Models\User;
@@ -15,7 +14,9 @@ class RankingAggregatorServiceTest extends TestCase
     use RefreshDatabase;
 
     private User $user;
+
     private Skill $skill;
+
     private RankingAggregatorService $service;
 
     protected function setUp(): void

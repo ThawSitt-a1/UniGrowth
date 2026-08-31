@@ -12,8 +12,7 @@ final class ManageContentUseCase
 {
     public function __construct(
         private readonly ContentRepositoryInterface $contentRepository,
-    ) {
-    }
+    ) {}
 
     /**
      * Execute content moderation actions.
@@ -85,4 +84,3 @@ final class ManageContentUseCase
         return $this->contentRepository->addSkillAdminComment($skillId, $comment);
     }
 }
-

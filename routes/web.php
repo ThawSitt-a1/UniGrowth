@@ -1,11 +1,23 @@
 <?php
-
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\View;
+use App\Admin\Controllers\AdminConsoleController;
+use App\Assessment\Controllers\TestAssessmentController;
 use App\Auth\Controllers\AuthController;
-use Illuminate\Http\Request;
+use App\Auth\Models\User;
+use App\Core\Assets\Controllers\CoreAssetsController;
+use App\Core\Http\Controllers\CoreTestAssetsController;
+use App\Core\Http\Controllers\CoreTestRecommendationsController;
+use App\Editor\Controllers\EditorConsoleController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LandingController;
+use App\Http\Controllers\ThemeController;
+use App\Http\Middleware\EnsureIsAdmin;
+use App\Http\Middleware\EnsureIsEditor;
+use App\Overview\Controllers\StudentOverviewWebController;
+use App\Profile\Controllers\ProfileWebController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -76,7 +88,7 @@ Route::post('/register', [AuthController::class, 'register'])
 
 Route::get('/maintenance', function () {
     return view('maintenance', [
-        'platformName' => view()->shared('platformName') ?? 'UniGrowth',
+        'platformName' => View::shared('platformName', 'UniGrowth'),
         'message' => 'The platform is temporarily unavailable while we perform system updates.',
     ]);
 })->name('maintenance');
@@ -87,13 +99,13 @@ Route::get('/maintenance', function () {
 |--------------------------------------------------------------------------
 */
 Route::get('/email/verify/{id}/{hash}', function (Request $request, string $id, string $hash) {
-    $user = \App\Auth\Models\User::query()->findOrFail($id);
+    $user = User::query()->findOrFail($id);
 
-    if (!hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
+    if (! hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
         abort(403, 'Invalid verification link.');
     }
 
-    if (!$user->hasVerifiedEmail()) {
+    if (! $user->hasVerifiedEmail()) {
         $user->markEmailAsVerified();
     }
 
@@ -107,6 +119,7 @@ Route::get('/email/verify/{id}/{hash}', function (Request $request, string $id, 
 
 Route::post('/email/verification-notification', function (Request $request) {
     $request->user()->sendEmailVerificationNotification();
+
     return back()->with('message', 'Verification link sent!');
 })->middleware(['auth', 'auth.ensure', 'throttle:6,1'])->name('verification.send');
 
@@ -145,6 +158,7 @@ Route::post('/logout', function () {
     auth()->guard('web')->logout();
     request()->session()->invalidate();
     request()->session()->regenerateToken();
+
     return redirect('/login');
 })->name('logout');
 
@@ -156,7 +170,7 @@ Route::post('/logout', function () {
 | POST /theme — Switch light / dark mode. Persists to the authenticated
 | user's preferences, or stores a `theme` cookie for guests.
 */
-Route::post('/theme', [\App\Http\Controllers\ThemeController::class, 'toggle'])
+Route::post('/theme', [ThemeController::class, 'toggle'])
     ->name('theme.toggle');
 
 /*
@@ -171,10 +185,10 @@ Route::post('/theme', [\App\Http\Controllers\ThemeController::class, 'toggle'])
 */
 
 Route::middleware(['auth', 'auth.ensure'])->prefix('core-assets')->name('core-assets.')->group(function () {
-    Route::get('/', [\App\Core\Assets\Controllers\CoreAssetsController::class, 'index'])->name('index');
-    Route::get('/skills', [\App\Core\Assets\Controllers\CoreAssetsController::class, 'skills'])->name('skills');
-    Route::get('/skills/{identifier}', [\App\Core\Assets\Controllers\CoreAssetsController::class, 'skillDetail'])->name('skills.detail');
-    Route::post('/action', [\App\Core\Assets\Controllers\CoreAssetsController::class, 'handleAssetAction'])->name('action');
+    Route::get('/', [CoreAssetsController::class, 'index'])->name('index');
+    Route::get('/skills', [CoreAssetsController::class, 'skills'])->name('skills');
+    Route::get('/skills/{identifier}', [CoreAssetsController::class, 'skillDetail'])->name('skills.detail');
+    Route::post('/action', [CoreAssetsController::class, 'handleAssetAction'])->name('action');
 });
 
 /*
@@ -187,12 +201,12 @@ Route::middleware(['auth', 'auth.ensure'])->prefix('core-assets')->name('core-as
 |
 */
 Route::middleware(['auth', 'auth.ensure'])->prefix('core/test')->name('core.test-assets.')->group(function () {
-    Route::get('/', [\App\Core\Http\Controllers\CoreTestAssetsController::class, 'index'])->name('index');
-    Route::post('/goal/create', [\App\Core\Http\Controllers\CoreTestAssetsController::class, 'createGoal'])->name('goal.create');
-    Route::post('/goal/complete', [\App\Core\Http\Controllers\CoreTestAssetsController::class, 'completeGoal'])->name('goal.complete');
-    Route::post('/goal/delete', [\App\Core\Http\Controllers\CoreTestAssetsController::class, 'deleteGoal'])->name('goal.delete');
-    Route::post('/skill/enroll', [\App\Core\Http\Controllers\CoreTestAssetsController::class, 'enrollSkill'])->name('skill.enroll');
-    Route::post('/skill/unenroll', [\App\Core\Http\Controllers\CoreTestAssetsController::class, 'unenrollSkill'])->name('skill.unenroll');
+    Route::get('/', [CoreTestAssetsController::class, 'index'])->name('index');
+    Route::post('/goal/create', [CoreTestAssetsController::class, 'createGoal'])->name('goal.create');
+    Route::post('/goal/complete', [CoreTestAssetsController::class, 'completeGoal'])->name('goal.complete');
+    Route::post('/goal/delete', [CoreTestAssetsController::class, 'deleteGoal'])->name('goal.delete');
+    Route::post('/skill/enroll', [CoreTestAssetsController::class, 'enrollSkill'])->name('skill.enroll');
+    Route::post('/skill/unenroll', [CoreTestAssetsController::class, 'unenrollSkill'])->name('skill.unenroll');
 });
 
 /*
@@ -205,7 +219,7 @@ Route::middleware(['auth', 'auth.ensure'])->prefix('core/test')->name('core.test
 |
 */
 Route::middleware(['auth', 'auth.ensure'])->prefix('core/test/recommendations')->name('core.test-recommendations.')->group(function () {
-    Route::get('/', [\App\Core\Http\Controllers\CoreTestRecommendationsController::class, 'index'])->name('index');
+    Route::get('/', [CoreTestRecommendationsController::class, 'index'])->name('index');
 });
 
 /*
@@ -218,8 +232,8 @@ Route::middleware(['auth', 'auth.ensure'])->prefix('core/test/recommendations')-
 |
 */
 Route::middleware(['auth', 'auth.ensure'])->prefix('overview')->name('overview.')->group(function () {
-    Route::get('/', [\App\Overview\Controllers\StudentOverviewWebController::class, 'index'])->name('index');
-    Route::post('/season/end', [\App\Overview\Controllers\StudentOverviewWebController::class, 'endSeason'])->name('season.end');
+    Route::get('/', [StudentOverviewWebController::class, 'index'])->name('index');
+    Route::post('/season/end', [StudentOverviewWebController::class, 'endSeason'])->name('season.end');
 });
 
 /*
@@ -232,8 +246,8 @@ Route::middleware(['auth', 'auth.ensure'])->prefix('overview')->name('overview.'
 |
 */
 Route::middleware(['auth', 'auth.ensure'])->prefix('assessment/test')->name('assessment.test.')->group(function () {
-    Route::get('/', [\App\Assessment\Controllers\TestAssessmentController::class, 'index'])->name('index');
-    Route::post('/submit', [\App\Assessment\Controllers\TestAssessmentController::class, 'submit'])->name('submit');
+    Route::get('/', [TestAssessmentController::class, 'index'])->name('index');
+    Route::post('/submit', [TestAssessmentController::class, 'submit'])->name('submit');
 });
 
 /*
@@ -247,18 +261,18 @@ Route::middleware(['auth', 'auth.ensure'])->prefix('assessment/test')->name('ass
 |
 */
 Route::middleware(['auth', 'auth.ensure'])->prefix('profile')->name('profile.')->group(function () {
-    Route::get('/', [\App\Profile\Controllers\ProfileWebController::class, 'show'])->name('show');
-    Route::put('/', [\App\Profile\Controllers\ProfileWebController::class, 'update'])->name('update');
-    Route::post('/avatar', [\App\Profile\Controllers\ProfileWebController::class, 'uploadAvatar'])->name('avatar.upload');
-    Route::patch('/preferences', [\App\Profile\Controllers\ProfileWebController::class, 'updatePreferences'])->name('preferences.update');
-    Route::put('/privacy-social', [\App\Profile\Controllers\ProfileWebController::class, 'updatePrivacySocial'])->name('privacy-social.update');
-    Route::get('/report', [\App\Profile\Controllers\ProfileWebController::class, 'downloadReport'])->name('report');
-    Route::post('/bug-report', [\App\Profile\Controllers\ProfileWebController::class, 'submitBugReport'])->name('bug-report.submit');
-    Route::put('/account', [\App\Profile\Controllers\ProfileWebController::class, 'updateAccount'])->name('account.update');
-    Route::get('/security', [\App\Profile\Controllers\ProfileWebController::class, 'showSecurity'])->name('security');
-    Route::get('/delete-account', [\App\Profile\Controllers\ProfileWebController::class, 'showDeleteAccount'])->name('delete-account');
+    Route::get('/', [ProfileWebController::class, 'show'])->name('show');
+    Route::put('/', [ProfileWebController::class, 'update'])->name('update');
+    Route::post('/avatar', [ProfileWebController::class, 'uploadAvatar'])->name('avatar.upload');
+    Route::patch('/preferences', [ProfileWebController::class, 'updatePreferences'])->name('preferences.update');
+    Route::put('/privacy-social', [ProfileWebController::class, 'updatePrivacySocial'])->name('privacy-social.update');
+    Route::get('/report', [ProfileWebController::class, 'downloadReport'])->name('report');
+    Route::post('/bug-report', [ProfileWebController::class, 'submitBugReport'])->name('bug-report.submit');
+    Route::put('/account', [ProfileWebController::class, 'updateAccount'])->name('account.update');
+    Route::get('/security', [ProfileWebController::class, 'showSecurity'])->name('security');
+    Route::get('/delete-account', [ProfileWebController::class, 'showDeleteAccount'])->name('delete-account');
     // Public profile route must be last so it doesn't capture static paths above.
-    Route::get('/{user}', [\App\Profile\Controllers\ProfileWebController::class, 'showPublic'])->name('public');
+    Route::get('/{user}', [ProfileWebController::class, 'showPublic'])->name('public');
 });
 
 /*
@@ -270,37 +284,37 @@ Route::middleware(['auth', 'auth.ensure'])->prefix('profile')->name('profile.')-
 | user management, content moderation, system settings, and bug reports.
 |
 */
-Route::middleware(['auth', 'auth.ensure', \App\Http\Middleware\EnsureIsAdmin::class])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/', [\App\Admin\Controllers\AdminConsoleController::class, 'dashboard'])->name('dashboard');
-    Route::get('/users', [\App\Admin\Controllers\AdminConsoleController::class, 'users'])->name('users');
-Route::post('/users/{id}/status', [\App\Admin\Controllers\AdminConsoleController::class, 'updateAccountStatus'])->name('users.status');
-    Route::post('/users/{id}/role', [\App\Admin\Controllers\AdminConsoleController::class, 'assignRole'])->name('users.role');
-Route::post('/users/{id}/delete', [\App\Admin\Controllers\AdminConsoleController::class, 'deleteUser'])->name('users.delete');
-    Route::post('/users/delete-unverified', [\App\Admin\Controllers\AdminConsoleController::class, 'deleteUnverifiedUsers'])->name('users.delete-unverified');
-    Route::get('/content', [\App\Admin\Controllers\AdminConsoleController::class, 'content'])->name('content');
-    Route::post('/content/action', [\App\Admin\Controllers\AdminConsoleController::class, 'contentAction'])->name('content.action');
-    Route::post('/content/{skillId}/comment', [\App\Admin\Controllers\AdminConsoleController::class, 'addContentComment'])->name('content.comment');
-    Route::get('/settings', [\App\Admin\Controllers\AdminConsoleController::class, 'settings'])->name('settings');
-    Route::post('/settings/update', [\App\Admin\Controllers\AdminConsoleController::class, 'updateSettings'])->name('settings.update');
-    Route::get('/bug-reports', [\App\Admin\Controllers\AdminConsoleController::class, 'bugReports'])->name('bug-reports');
-    Route::get('/bug-reports/{id}', [\App\Admin\Controllers\AdminConsoleController::class, 'showBugReport'])->name('bug-reports.show');
-    Route::get('/bug-reports/{id}/screenshot', [\App\Admin\Controllers\AdminConsoleController::class, 'showBugReportScreenshot'])->name('bug-reports.screenshot');
+Route::middleware(['auth', 'auth.ensure', EnsureIsAdmin::class])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', [AdminConsoleController::class, 'dashboard'])->name('dashboard');
+    Route::get('/users', [AdminConsoleController::class, 'users'])->name('users');
+    Route::post('/users/{id}/status', [AdminConsoleController::class, 'updateAccountStatus'])->name('users.status');
+    Route::post('/users/{id}/role', [AdminConsoleController::class, 'assignRole'])->name('users.role');
+    Route::post('/users/{id}/delete', [AdminConsoleController::class, 'deleteUser'])->name('users.delete');
+    Route::post('/users/delete-unverified', [AdminConsoleController::class, 'deleteUnverifiedUsers'])->name('users.delete-unverified');
+    Route::get('/content', [AdminConsoleController::class, 'content'])->name('content');
+    Route::post('/content/action', [AdminConsoleController::class, 'contentAction'])->name('content.action');
+    Route::post('/content/{skillId}/comment', [AdminConsoleController::class, 'addContentComment'])->name('content.comment');
+    Route::get('/settings', [AdminConsoleController::class, 'settings'])->name('settings');
+    Route::post('/settings/update', [AdminConsoleController::class, 'updateSettings'])->name('settings.update');
+    Route::get('/bug-reports', [AdminConsoleController::class, 'bugReports'])->name('bug-reports');
+    Route::get('/bug-reports/{id}', [AdminConsoleController::class, 'showBugReport'])->name('bug-reports.show');
+    Route::get('/bug-reports/{id}/screenshot', [AdminConsoleController::class, 'showBugReportScreenshot'])->name('bug-reports.screenshot');
 
     // Editor Management
-    Route::get('/editors', [\App\Admin\Controllers\AdminConsoleController::class, 'editors'])->name('editors');
-    Route::post('/editors/{id}/suspend', [\App\Admin\Controllers\AdminConsoleController::class, 'suspendEditor'])->name('editors.suspend');
-    Route::post('/editors/{id}/demote', [\App\Admin\Controllers\AdminConsoleController::class, 'demoteEditor'])->name('editors.demote');
-    Route::post('/editors/{id}/delete', [\App\Admin\Controllers\AdminConsoleController::class, 'deleteEditor'])->name('editors.delete');
-    Route::post('/editors/{id}/clear-remember', [\App\Admin\Controllers\AdminConsoleController::class, 'clearEditorRememberToken'])->name('editors.clear-remember');
+    Route::get('/editors', [AdminConsoleController::class, 'editors'])->name('editors');
+    Route::post('/editors/{id}/suspend', [AdminConsoleController::class, 'suspendEditor'])->name('editors.suspend');
+    Route::post('/editors/{id}/demote', [AdminConsoleController::class, 'demoteEditor'])->name('editors.demote');
+    Route::post('/editors/{id}/delete', [AdminConsoleController::class, 'deleteEditor'])->name('editors.delete');
+    Route::post('/editors/{id}/clear-remember', [AdminConsoleController::class, 'clearEditorRememberToken'])->name('editors.clear-remember');
 
-// Bug Report Status & Delete
-    Route::post('/bug-reports/{id}/status', [\App\Admin\Controllers\AdminConsoleController::class, 'updateBugReport'])->name('bug-reports.status');
-    Route::post('/bug-reports/{id}/delete', [\App\Admin\Controllers\AdminConsoleController::class, 'deleteBugReport'])->name('bug-reports.delete');
+    // Bug Report Status & Delete
+    Route::post('/bug-reports/{id}/status', [AdminConsoleController::class, 'updateBugReport'])->name('bug-reports.status');
+    Route::post('/bug-reports/{id}/delete', [AdminConsoleController::class, 'deleteBugReport'])->name('bug-reports.delete');
 
     // Season Management
-    Route::post('/seasons/start', [\App\Admin\Controllers\AdminConsoleController::class, 'startSeason'])->name('seasons.start');
-    Route::post('/seasons/end', [\App\Admin\Controllers\AdminConsoleController::class, 'endSeason'])->name('seasons.end');
-    Route::post('/seasons/image', [\App\Admin\Controllers\AdminConsoleController::class, 'updateSeasonImage'])->name('seasons.image');
+    Route::post('/seasons/start', [AdminConsoleController::class, 'startSeason'])->name('seasons.start');
+    Route::post('/seasons/end', [AdminConsoleController::class, 'endSeason'])->name('seasons.end');
+    Route::post('/seasons/image', [AdminConsoleController::class, 'updateSeasonImage'])->name('seasons.image');
 });
 
 /*
@@ -312,20 +326,20 @@ Route::post('/users/{id}/delete', [\App\Admin\Controllers\AdminConsoleController
 | skills, questions, and options. Admins can also access these routes.
 |
 */
-Route::middleware(['auth', 'auth.ensure', \App\Http\Middleware\EnsureIsEditor::class])->prefix('editor')->name('editor.')->group(function () {
-    Route::get('/', [\App\Editor\Controllers\EditorConsoleController::class, 'dashboard'])->name('dashboard');
-    Route::get('/skills', [\App\Editor\Controllers\EditorConsoleController::class, 'skillsIndex'])->name('skills.index');
-    Route::get('/skills/create', [\App\Editor\Controllers\EditorConsoleController::class, 'editSkill'])->name('skills.create');
-    Route::get('/skills/{id}/edit', [\App\Editor\Controllers\EditorConsoleController::class, 'editSkill'])->name('skills.edit');
-    Route::post('/skills', [\App\Editor\Controllers\EditorConsoleController::class, 'saveSkill'])->name('skills.save');
-    Route::post('/skills/{id}/delete', [\App\Editor\Controllers\EditorConsoleController::class, 'deleteSkill'])->name('skills.delete');
-    Route::get('/questions', [\App\Editor\Controllers\EditorConsoleController::class, 'questionsIndex'])->name('questions.index');
-    Route::get('/questions/create', [\App\Editor\Controllers\EditorConsoleController::class, 'editQuestion'])->name('questions.create');
-    Route::get('/questions/{id}/edit', [\App\Editor\Controllers\EditorConsoleController::class, 'editQuestion'])->name('questions.edit');
-    Route::post('/questions', [\App\Editor\Controllers\EditorConsoleController::class, 'saveQuestion'])->name('questions.save');
-    Route::post('/questions/{id}/delete', [\App\Editor\Controllers\EditorConsoleController::class, 'deleteQuestion'])->name('questions.delete');
-    Route::post('/options', [\App\Editor\Controllers\EditorConsoleController::class, 'saveOption'])->name('options.save');
-    Route::post('/options/{id}/delete', [\App\Editor\Controllers\EditorConsoleController::class, 'deleteOption'])->name('options.delete');
-    Route::get('/history', [\App\Editor\Controllers\EditorConsoleController::class, 'history'])->name('history.index');
-    Route::get('/settings', [\App\Editor\Controllers\EditorConsoleController::class, 'settings'])->name('settings.index');
+Route::middleware(['auth', 'auth.ensure', EnsureIsEditor::class])->prefix('editor')->name('editor.')->group(function () {
+    Route::get('/', [EditorConsoleController::class, 'dashboard'])->name('dashboard');
+    Route::get('/skills', [EditorConsoleController::class, 'skillsIndex'])->name('skills.index');
+    Route::get('/skills/create', [EditorConsoleController::class, 'editSkill'])->name('skills.create');
+    Route::get('/skills/{id}/edit', [EditorConsoleController::class, 'editSkill'])->name('skills.edit');
+    Route::post('/skills', [EditorConsoleController::class, 'saveSkill'])->name('skills.save');
+    Route::post('/skills/{id}/delete', [EditorConsoleController::class, 'deleteSkill'])->name('skills.delete');
+    Route::get('/questions', [EditorConsoleController::class, 'questionsIndex'])->name('questions.index');
+    Route::get('/questions/create', [EditorConsoleController::class, 'editQuestion'])->name('questions.create');
+    Route::get('/questions/{id}/edit', [EditorConsoleController::class, 'editQuestion'])->name('questions.edit');
+    Route::post('/questions', [EditorConsoleController::class, 'saveQuestion'])->name('questions.save');
+    Route::post('/questions/{id}/delete', [EditorConsoleController::class, 'deleteQuestion'])->name('questions.delete');
+    Route::post('/options', [EditorConsoleController::class, 'saveOption'])->name('options.save');
+    Route::post('/options/{id}/delete', [EditorConsoleController::class, 'deleteOption'])->name('options.delete');
+    Route::get('/history', [EditorConsoleController::class, 'history'])->name('history.index');
+    Route::get('/settings', [EditorConsoleController::class, 'settings'])->name('settings.index');
 });

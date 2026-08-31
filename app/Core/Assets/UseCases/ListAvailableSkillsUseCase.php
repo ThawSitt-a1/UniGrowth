@@ -12,8 +12,7 @@ final class ListAvailableSkillsUseCase
 {
     public function __construct(
         private readonly SkillRepositoryInterface $skillRepository,
-    ) {
-    }
+    ) {}
 
     /**
      * @return array<string, mixed>

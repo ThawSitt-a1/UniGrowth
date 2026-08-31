@@ -21,8 +21,7 @@ final class PlatformMetricsDTO
         public readonly float $stickinessRatio = 0.0,
         public readonly string $popularSkill = 'N/A',
         public readonly int $popularSkillEnrollments = 0,
-    ) {
-    }
+    ) {}
 
     /**
      * @return array<string, mixed>
@@ -46,4 +45,3 @@ final class PlatformMetricsDTO
         ];
     }
 }
-

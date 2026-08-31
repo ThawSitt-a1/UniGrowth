@@ -11,7 +11,5 @@ final readonly class AssetActionDTO
         public string $action, // 'create'|'complete'|'delete'|'enroll'|'unenroll'
         /** @var array<string, mixed> */
         public array $payload = [],
-    ) {
-    }
+    ) {}
 }
-

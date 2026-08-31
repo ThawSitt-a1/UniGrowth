@@ -3,12 +3,12 @@
 namespace Tests\Feature\Assessment;
 
 use App\Assessment\Models\Attempt;
-use App\Assessment\Models\Question;
 use App\Assessment\Models\Option;
-use App\Assessment\Models\StudentAnsweredQuestion;
-use App\Assessment\Models\StudentSkill;
+use App\Assessment\Models\Question;
 use App\Auth\Models\User;
 use App\Core\Assets\Models\Skill;
+use App\Overview\Models\Season;
+use App\Overview\Models\SeasonScore;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -17,7 +17,9 @@ class AssessmentFlowTest extends TestCase
     use RefreshDatabase;
 
     private User $user;
+
     private Skill $skill;
+
     private array $questions = [];
 
     protected function setUp(): void
@@ -25,7 +27,7 @@ class AssessmentFlowTest extends TestCase
         parent::setUp();
 
         // Create an active season so the assessment flow works through season gating
-        \App\Overview\Models\Season::query()->create([
+        Season::query()->create([
             'name' => 'Test Season',
             'started_at' => now()->subDays(10),
             'ends_at' => now()->addDays(10),
@@ -301,7 +303,7 @@ class AssessmentFlowTest extends TestCase
         $firstResponse->assertStatus(200);
         $firstSet = $firstResponse->json('data.questions');
         $this->assertCount(5, $firstSet);
-        $firstIds = array_map(fn($q) => $q['id'], $firstSet);
+        $firstIds = array_map(fn ($q) => $q['id'], $firstSet);
 
         // Submit answers for those 5 questions
         $answers = [];
@@ -328,7 +330,7 @@ class AssessmentFlowTest extends TestCase
         $secondResponse->assertStatus(200);
         $secondSet = $secondResponse->json('data.questions');
         $this->assertCount(5, $secondSet);
-        $secondIds = array_map(fn($q) => $q['id'], $secondSet);
+        $secondIds = array_map(fn ($q) => $q['id'], $secondSet);
 
         // Ensure none of the second set IDs appear in the first set (no repetition)
         foreach ($secondIds as $id) {
@@ -360,7 +362,7 @@ class AssessmentFlowTest extends TestCase
             ]);
     }
 
-/** @test */
+    /** @test */
     public function it_can_fetch_leaderboard(): void
     {
         $response = $this->actingAs($this->user)
@@ -378,10 +380,10 @@ class AssessmentFlowTest extends TestCase
     /** @test */
     public function it_excludes_users_hiding_from_leaderboards(): void
     {
-        $season = \App\Overview\Models\Season::query()->get()->first();
+        $season = Season::query()->get()->first();
 
         // Give the authenticated user a season score so they appear on the board.
-        \App\Overview\Models\SeasonScore::query()->create([
+        SeasonScore::query()->create([
             'user_id' => $this->user->id,
             'season_id' => $season->id,
             'total_score' => 100,
@@ -397,7 +399,7 @@ class AssessmentFlowTest extends TestCase
             'preferences' => ['make_profile_private' => true],
         ]);
 
-        \App\Overview\Models\SeasonScore::query()->create([
+        SeasonScore::query()->create([
             'user_id' => $hiddenUser->id,
             'season_id' => $season->id,
             'total_score' => 200,
@@ -410,7 +412,7 @@ class AssessmentFlowTest extends TestCase
         // Create a normal user with a lower season score.
         $visibleUser = User::factory()->create();
 
-        \App\Overview\Models\SeasonScore::query()->create([
+        SeasonScore::query()->create([
             'user_id' => $visibleUser->id,
             'season_id' => $season->id,
             'total_score' => 50,
@@ -440,9 +442,9 @@ class AssessmentFlowTest extends TestCase
     /** @test */
     public function it_excludes_hidden_users_from_season_leaderboard(): void
     {
-        $season = \App\Overview\Models\Season::query()->get()->first();
+        $season = Season::query()->get()->first();
 
-// A user who opted out of leaderboards (via "Hide from leaderboards").
+        // A user who opted out of leaderboards (via "Hide from leaderboards").
         $hiddenUser = User::factory()->create([
             'preferences' => ['privacy_hide_leaderboards' => true],
         ]);
@@ -450,7 +452,7 @@ class AssessmentFlowTest extends TestCase
         // A visible user.
         $visibleUser = User::factory()->create();
 
-        \App\Overview\Models\SeasonScore::query()->create([
+        SeasonScore::query()->create([
             'user_id' => $hiddenUser->id,
             'season_id' => $season->id,
             'total_score' => 200,
@@ -460,7 +462,7 @@ class AssessmentFlowTest extends TestCase
             'last_active_at' => now(),
         ]);
 
-        \App\Overview\Models\SeasonScore::query()->create([
+        SeasonScore::query()->create([
             'user_id' => $visibleUser->id,
             'season_id' => $season->id,
             'total_score' => 100,
@@ -508,4 +510,3 @@ class AssessmentFlowTest extends TestCase
         $response->assertStatus(422);
     }
 }
-

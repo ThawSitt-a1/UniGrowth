@@ -19,4 +19,3 @@ final class SystemSetting extends Model
         'setting_value' => 'string',
     ];
 }
-

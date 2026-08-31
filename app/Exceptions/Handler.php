@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Exceptions;
 
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\Exceptions\PostTooLargeException;
 use Illuminate\Http\Exceptions\ThrottleRequestsException;
@@ -78,7 +80,7 @@ class Handler extends ExceptionHandler
             return redirect()->back()->with('error', 'The uploaded file exceeds the maximum allowed size.');
         }
 
-        if ($e instanceof \Illuminate\Auth\AuthenticationException) {
+        if ($e instanceof AuthenticationException) {
             if ($request->expectsJson()) {
                 return response()->json([
                     'error' => 'Unauthenticated.',
@@ -88,7 +90,7 @@ class Handler extends ExceptionHandler
             return redirect()->route('login');
         }
 
-        if ($e instanceof \Illuminate\Auth\Access\AuthorizationException) {
+        if ($e instanceof AuthorizationException) {
             if ($request->expectsJson()) {
                 return response()->json([
                     'error' => 'Forbidden. You do not have permission to perform this action.',

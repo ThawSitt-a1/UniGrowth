@@ -22,14 +22,14 @@ final class QuestionScoringService
      */
     public const MARKS_MATRIX = [
         'multiple_choice' => [
-            'easy'   => 10.00,
+            'easy' => 10.00,
             'medium' => 15.00,
-            'hard'   => 20.00,
+            'hard' => 20.00,
         ],
         'true_false' => [
-            'easy'   => 5.00,
+            'easy' => 5.00,
             'medium' => 7.50,
-            'hard'   => 10.00,
+            'hard' => 10.00,
         ],
     ];
 
@@ -50,7 +50,7 @@ final class QuestionScoringService
     /**
      * Calculate the total combined marks for a collection of questions.
      *
-     * @param iterable $questions  Each item must expose `question_type` and `difficulty` (or `marks`).
+     * @param  iterable  $questions  Each item must expose `question_type` and `difficulty` (or `marks`).
      */
     public function calculateTotalMarks(iterable $questions): float
     {
@@ -60,6 +60,7 @@ final class QuestionScoringService
             // Prefer the stored marks column when available
             if (isset($question->marks)) {
                 $total += (float) $question->marks;
+
                 continue;
             }
 

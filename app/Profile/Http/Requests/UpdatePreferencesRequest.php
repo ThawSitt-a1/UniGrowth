@@ -11,7 +11,7 @@ class UpdatePreferencesRequest extends FormRequest
         return true;
     }
 
-public function rules(): array
+    public function rules(): array
     {
         return [
             'theme' => ['nullable', 'string', 'in:light,dark'],
@@ -36,4 +36,3 @@ public function rules(): array
         ];
     }
 }
-

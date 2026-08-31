@@ -4,23 +4,23 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Auth;
+use App\Auth\Models\User;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class AuthSessionService
 {
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 
     public function login(Authenticatable $user, bool $remember): void
     {
         if ($remember) {
             // Only generate a new token+expiry if none exists or the existing one is expired.
             // This ensures the same token persists across logins until it naturally expires.
-            if (empty($user->getRememberToken()) || ($user instanceof \App\Auth\Models\User && $user->isRememberTokenExpired())) {
-                $token = \Illuminate\Support\Str::random(60);
+            if (empty($user->getRememberToken()) || ($user instanceof User && $user->isRememberTokenExpired())) {
+                $token = Str::random(60);
                 $user->forceFill([
                     'remember_token' => $token,
                     'remember_token_expires_at' => now()->addDays(30),
@@ -73,5 +73,3 @@ class AuthSessionService
         session()->regenerateToken();
     }
 }
-
-

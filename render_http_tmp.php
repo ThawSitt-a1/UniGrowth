@@ -3,14 +3,16 @@
 require __DIR__.'/vendor/autoload.php';
 
 $app = require_once __DIR__.'/bootstrap/app.php';
-$console = $app->make(Illuminate\Contracts\Console\Kernel::class);
+$console = $app->make(Kernel::class);
 $console->bootstrap();
 $app->make(Illuminate\Contracts\Http\Kernel::class);
 
+use App\Auth\Models\User;
+use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-$user = \App\Auth\Models\User::first();
+$user = User::first();
 if ($user) {
     Auth::login($user);
     echo 'Logged in as: '.$user->email."\n";
@@ -39,4 +41,3 @@ if ($response->isRedirect()) {
     echo 'REDIRECT to: '.$response->headers->get('Location')."\n";
     exit;
 }
-

@@ -1,26 +1,29 @@
 <?php
+
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Core\Assets\Models\Habit;
+use App\Core\Assets\Models\Skill;
 use App\Overview\Services\SeasonService;
 use App\Overview\Services\StudentOverviewService;
+use Carbon\CarbonImmutable;
+use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController
 {
-
     // Inject your services via constructor dependency injection
     public function __construct(
-        private readonly  SeasonService $seasonService,
+        private readonly SeasonService $seasonService,
         private readonly StudentOverviewService $overviewService,
-    ) {
-    }
+    ) {}
 
-public function index(Request $request)
+    public function index(Request $request)
     {
         $user = Auth::user();
 
-$leaderboard = [];
+        $leaderboard = [];
         $hasActiveSeason = false;
         $currentSeasonName = 'No active season';
         $recentGoals = collect();
@@ -45,11 +48,11 @@ $leaderboard = [];
 
         $overviewData = $this->overviewService->getStudentOverview($user->id)->toArray();
 
-$recentGoals = collect($overviewData['active_goals'] ?? []);
+        $recentGoals = collect($overviewData['active_goals'] ?? []);
         $recentEnrolledSkills = collect($overviewData['enrolled_skills'] ?? []);
 
         // Newly added skills (most recent, active only) for the dashboard
-        $newlyAddedSkills = \App\Core\Assets\Models\Skill::query()
+        $newlyAddedSkills = Skill::query()
             ->where('is_active', true)
             ->orderByDesc('created_at')
             ->limit(6)
@@ -67,7 +70,7 @@ $recentGoals = collect($overviewData['active_goals'] ?? []);
         $discordLink = config('services.discord.invite_url', 'https://discord.gg/unigrowth');
 
         // Habit summary card data (lightweight — counts only)
-        $habits = \App\Core\Assets\Models\Habit::query()
+        $habits = Habit::query()
             ->where('user_id', $user->id)
             ->with('completions')
             ->get();
@@ -93,7 +96,7 @@ $recentGoals = collect($overviewData['active_goals'] ?? []);
         $habitSummary['total'] = $habits->count();
         $habitSummary['best_streak'] = $bestStreak;
 
- return view('dashboard', [
+        return view('dashboard', [
             'leaderboard' => $leaderboard,
             'hasActiveSeason' => $hasActiveSeason,
             'currentSeasonName' => $currentSeasonName,
@@ -107,11 +110,10 @@ $recentGoals = collect($overviewData['active_goals'] ?? []);
         ]);
     }
 
-
     /**
      * Compute the longest consecutive-day run from a sorted collection of 'Y-m-d' date strings.
      *
-     * @param  \Illuminate\Support\Collection<int, string>  $dates
+     * @param  Collection<int, string>  $dates
      */
     private function longestStreakFromDates($dates): int
     {
@@ -123,8 +125,8 @@ $recentGoals = collect($overviewData['active_goals'] ?? []);
         $run = 1;
 
         for ($i = 1, $n = $dates->count(); $i < $n; $i++) {
-            $prev = \Carbon\CarbonImmutable::parse($dates[$i - 1]);
-            $curr = \Carbon\CarbonImmutable::parse($dates[$i]);
+            $prev = CarbonImmutable::parse($dates[$i - 1]);
+            $curr = CarbonImmutable::parse($dates[$i]);
 
             if ($prev->addDay()->eq($curr)) {
                 $run++;

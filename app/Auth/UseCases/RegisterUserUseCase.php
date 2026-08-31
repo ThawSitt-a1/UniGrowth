@@ -2,12 +2,13 @@
 
 namespace App\Auth\UseCases;
 
-use App\Auth\DTOs\AuthCredentialsDTO;
 use App\Admin\Services\SystemSettingsServiceInterface;
-use App\Auth\Repositories\UserRepositoryInterface;
+use App\Auth\DTOs\AuthCredentialsDTO;
 use App\Auth\Models\User;
+use App\Auth\Repositories\UserRepositoryInterface;
 use App\Services\AuthSessionService;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Support\Str;
 
 final class RegisterUserUseCase
 {
@@ -16,8 +17,7 @@ final class RegisterUserUseCase
         private readonly AuthSessionService $authSessionService,
         private readonly User $userModel,
         private readonly SystemSettingsServiceInterface $settingsService,
-    ) {
-    }
+    ) {}
 
     public function execute(AuthCredentialsDTO $credentials): array
     {
@@ -26,18 +26,20 @@ final class RegisterUserUseCase
         }
 
         $userData = [
-            'username'        => $credentials->username,
-            'email'           => $credentials->email,
-            'password'        => $credentials->password,
-            'academic_year'   => $credentials->academic_year,
-            'major'           => $credentials->major,
+            'username' => $credentials->username,
+            'email' => $credentials->email,
+            'password' => $credentials->password,
+            'academic_year' => $credentials->academic_year,
+            'major' => $credentials->major,
             'university_name' => $credentials->university_name,
-            'agreed_to_terms' => $credentials->agreedToTerms,
+            'terms_version' => $credentials->terms_version,
+            'privacy_policy_version' => $credentials->privacy_policy_version,
+            'consented_at' => $credentials->consented ? now() : null,
         ];
 
         // If "remember me" was checked, pre-generate remember_token with 30-day expiry
         if ($credentials->remember) {
-            $userData['remember_token'] = \Illuminate\Support\Str::random(60);
+            $userData['remember_token'] = Str::random(60);
             $userData['remember_token_expires_at'] = now()->addDays(30);
         }
 
@@ -52,10 +54,10 @@ final class RegisterUserUseCase
         // They must verify their email first before being allowed to log in.
 
         return [
-            'id'       => $eloquentUser->id,
+            'id' => $eloquentUser->id,
             'username' => $eloquentUser->username,
-            'email'    => $eloquentUser->email,
-            'role'     => $eloquentUser->role,
+            'email' => $eloquentUser->email,
+            'role' => $eloquentUser->role,
         ];
     }
 }

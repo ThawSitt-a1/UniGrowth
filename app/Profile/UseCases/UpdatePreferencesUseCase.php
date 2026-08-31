@@ -28,8 +28,7 @@ final class UpdatePreferencesUseCase
 
     public function __construct(
         private readonly User $userModel,
-    ) {
-    }
+    ) {}
 
     public function execute(int $userId, array $settings): bool
     {
@@ -56,4 +55,3 @@ final class UpdatePreferencesUseCase
         return $user->forceFill(['preferences' => $mergedPreferences])->save();
     }
 }
-

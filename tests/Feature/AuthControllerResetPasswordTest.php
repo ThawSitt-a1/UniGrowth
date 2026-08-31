@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Auth\Models\User;
 use App\Auth\Models\PasswordReset;
+use App\Auth\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
@@ -13,6 +13,7 @@ class AuthControllerResetPasswordTest extends TestCase
     use RefreshDatabase;
 
     private User $user;
+
     private string $token;
 
     protected function setUp(): void

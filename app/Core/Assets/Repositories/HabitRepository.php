@@ -18,4 +18,3 @@ final class HabitRepository implements HabitRepositoryInterface
         return (bool) Habit::query()->where('id', $id)->delete();
     }
 }
-

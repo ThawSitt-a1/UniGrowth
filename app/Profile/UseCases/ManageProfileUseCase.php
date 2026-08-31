@@ -9,8 +9,7 @@ final class ManageProfileUseCase
 {
     public function __construct(
         private readonly ProfileRepositoryInterface $profileRepository,
-    ) {
-    }
+    ) {}
 
     public function getProfile(int $userId): ?ProfileDTO
     {
@@ -23,7 +22,7 @@ final class ManageProfileUseCase
         return ProfileDTO::fromArray($data);
     }
 
-public function updateProfile(int $userId, array $data): bool
+    public function updateProfile(int $userId, array $data): bool
     {
         $allowedFields = ['username', 'academic_year', 'major', 'university_name', 'description'];
         $filteredData = array_intersect_key($data, array_flip($allowedFields));
@@ -36,4 +35,3 @@ public function updateProfile(int $userId, array $data): bool
         return $this->profileRepository->updateProfileData($userId, $filteredData);
     }
 }
-

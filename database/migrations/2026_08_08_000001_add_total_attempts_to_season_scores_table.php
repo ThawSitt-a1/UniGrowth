@@ -10,7 +10,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (!Schema::hasColumn('season_scores', 'total_attempts')) {
+        if (! Schema::hasColumn('season_scores', 'total_attempts')) {
             Schema::table('season_scores', function (Blueprint $table) {
                 $table->integer('total_attempts')
                     ->default(0)

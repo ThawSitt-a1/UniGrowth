@@ -9,9 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 final class EnforceSystemSettings
 {
-    public function __construct(private readonly SystemSettingsServiceInterface $systemSettings)
-    {
-    }
+    public function __construct(private readonly SystemSettingsServiceInterface $systemSettings) {}
 
     public function handle(Request $request, Closure $next): Response
     {
@@ -78,6 +76,7 @@ final class EnforceSystemSettings
 
         if ($request->is('admin*')) {
             $user = $request->user();
+
             return $user === null || ($user->role ?? '') !== 'admin';
         }
 
@@ -122,6 +121,7 @@ final class EnforceSystemSettings
         // Goal / habit actions via POST /core-assets/action (type=goal|habit)
         if ($request->isMethod('POST') && $request->is('core-assets/action')) {
             $type = $request->input('type');
+
             return $type === 'goal' || $type === 'habit';
         }
 

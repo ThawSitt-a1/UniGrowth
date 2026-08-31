@@ -13,13 +13,12 @@ final class ManageQuestionUseCase
     public function __construct(
         private readonly QuestionRepositoryInterface $questionRepository,
         private readonly SkillRepositoryInterface $skillRepository,
-    ) {
-    }
+    ) {}
 
     public function execute(QuestionDataDTO $data): void
     {
         // Verify skill ownership
-        if (!$this->skillRepository->verifyOwnership($data->skillId, $data->editorId)) {
+        if (! $this->skillRepository->verifyOwnership($data->skillId, $data->editorId)) {
             throw new \RuntimeException('You do not own the skill associated with this question.');
         }
 
@@ -32,13 +31,13 @@ final class ManageQuestionUseCase
             if ($this->questionRepository->isLockedByAdmin($data->questionId)) {
                 throw new \RuntimeException('This question is locked by admin and cannot be edited.');
             }
-            if (!$this->questionRepository->verifyOwnership($data->questionId, $data->editorId)) {
+            if (! $this->questionRepository->verifyOwnership($data->questionId, $data->editorId)) {
                 throw new \RuntimeException('You do not own this question.');
             }
         }
 
         // Validate options count based on question type
-        if (!empty($data->options)) {
+        if (! empty($data->options)) {
             $expectedCount = $data->questionType === 'true_false' ? 2 : 5;
             if (count($data->options) !== $expectedCount) {
                 throw new \RuntimeException(sprintf(
@@ -67,7 +66,7 @@ final class ManageQuestionUseCase
         );
 
         $saved = $this->questionRepository->save($data);
-        if (!$saved) {
+        if (! $saved) {
             throw new \RuntimeException('Failed to save question.');
         }
     }
@@ -79,7 +78,7 @@ final class ManageQuestionUseCase
         }
 
         $deleted = $this->questionRepository->deleteByOwner($targetId, $editorId);
-        if (!$deleted) {
+        if (! $deleted) {
             throw new \RuntimeException('Failed to delete question or you do not own it.');
         }
     }

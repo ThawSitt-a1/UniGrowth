@@ -27,4 +27,3 @@ final class DailyPlatformMetric extends Model
         'progress_velocity_avg_hours' => 'float',
     ];
 }
-

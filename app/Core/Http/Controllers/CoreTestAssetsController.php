@@ -25,8 +25,7 @@ final class CoreTestAssetsController
     public function __construct(
         private readonly ManageUserAssetsUseCase $manageUserAssetsUseCase,
         private readonly GetUserActivityUseCase $getUserActivityUseCase,
-    ) {
-    }
+    ) {}
 
     public function index(Request $request): View
     {
@@ -52,7 +51,7 @@ final class CoreTestAssetsController
 
         try {
             $this->manageUserAssetsUseCase->execute($dto);
-        } catch (\InvalidArgumentException | \RuntimeException $e) {
+        } catch (\InvalidArgumentException|\RuntimeException $e) {
             return redirect()->route('core.test-assets.index')
                 ->with('error', $e->getMessage());
         }
@@ -73,7 +72,7 @@ final class CoreTestAssetsController
 
         try {
             $this->manageUserAssetsUseCase->execute($dto);
-        } catch (\InvalidArgumentException | \RuntimeException $e) {
+        } catch (\InvalidArgumentException|\RuntimeException $e) {
             return redirect()->route('core.test-assets.index')
                 ->with('error', $e->getMessage());
         }
@@ -94,7 +93,7 @@ final class CoreTestAssetsController
 
         try {
             $this->manageUserAssetsUseCase->execute($dto);
-        } catch (\InvalidArgumentException | \RuntimeException $e) {
+        } catch (\InvalidArgumentException|\RuntimeException $e) {
             return redirect()->route('core.test-assets.index')
                 ->with('error', $e->getMessage());
         }
@@ -115,7 +114,7 @@ final class CoreTestAssetsController
 
         try {
             $this->manageUserAssetsUseCase->execute($dto);
-        } catch (\InvalidArgumentException | \RuntimeException $e) {
+        } catch (\InvalidArgumentException|\RuntimeException $e) {
             return redirect()->route('core.test-assets.index')
                 ->with('error', $e->getMessage());
         }
@@ -136,7 +135,7 @@ final class CoreTestAssetsController
 
         try {
             $this->manageUserAssetsUseCase->execute($dto);
-        } catch (\InvalidArgumentException | \RuntimeException $e) {
+        } catch (\InvalidArgumentException|\RuntimeException $e) {
             return redirect()->route('core.test-assets.index')
                 ->with('error', $e->getMessage());
         }
@@ -145,4 +144,3 @@ final class CoreTestAssetsController
             ->with('success', 'Unenrolled from skill.');
     }
 }
-

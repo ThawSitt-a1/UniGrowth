@@ -10,7 +10,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (!Schema::hasColumn('seasons', 'highest_score')) {
+        if (! Schema::hasColumn('seasons', 'highest_score')) {
             Schema::table('seasons', function (Blueprint $table) {
                 $table->decimal('highest_score', 12, 2)
                     ->default(0)

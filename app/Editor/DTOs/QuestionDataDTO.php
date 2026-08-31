@@ -7,7 +7,7 @@ namespace App\Editor\DTOs;
 final class QuestionDataDTO
 {
     /**
-     * @param array<int, array{option_text: string, is_correct: bool, option_id?: int|null}> $options
+     * @param  array<int, array{option_text: string, is_correct: bool, option_id?: int|null}>  $options
      */
     public function __construct(
         public readonly ?int $questionId,
@@ -19,6 +19,5 @@ final class QuestionDataDTO
         public readonly float $marks = 10.00,
         public readonly array $options = [],
         public readonly ?bool $isActive = null,
-    ) {
-    }
+    ) {}
 }

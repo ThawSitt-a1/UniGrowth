@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Assessment\UseCases;
 
 use App\Assessment\DTO\AssessmentResultDTO;
+use App\Assessment\Models\Attempt;
+use App\Assessment\Models\Question;
 use App\Assessment\Repositories\AssessmentRepositoryInterface;
 use App\Assessment\Services\QuestionScoringService;
 use App\Assessment\Services\RankingAggregatorService;
@@ -24,29 +26,25 @@ final class EvaluateQuizUseCase
         private readonly RankingAggregatorService $rankingService,
         private readonly SeasonService $seasonService,
         private readonly QuestionScoringService $scoringService,
-    ) {
-    }
+    ) {}
 
     /**
      * Orchestrate the transactional grading workflow.
      *
-     * @param int $studentId
-     * @param int $skillId
-     * @param array<int, array{question_id: int, selected_option_id: int}> $answers
-     * @return AssessmentResultDTO
+     * @param  array<int, array{question_id: int, selected_option_id: int}>  $answers
      */
     public function execute(int $studentId, int $skillId, array $answers): AssessmentResultDTO
     {
         $skill = Skill::query()->findOrFail($skillId);
 
         // Extract question IDs from answers
-        $questionIds = array_map(fn(array $answer): int => (int) $answer['question_id'], $answers);
+        $questionIds = array_map(fn (array $answer): int => (int) $answer['question_id'], $answers);
 
         // Fetch correct options from the server (never trust client-side)
         $correctOptionsMap = $this->assessmentRepository->fetchCorrectOptions($questionIds);
 
         // Fetch question marks from the database (marks are based on type + difficulty)
-        $questionsMap = \App\Assessment\Models\Question::query()
+        $questionsMap = Question::query()
             ->whereIn('id', $questionIds)
             ->get()
             ->keyBy('id');
@@ -108,7 +106,7 @@ final class EvaluateQuizUseCase
             'passed' => $passed,
         ];
 
-        $attempt = DB::transaction(function () use ($studentId, $attemptData, $answeredMap): \App\Assessment\Models\Attempt {
+        $attempt = DB::transaction(function () use ($studentId, $attemptData, $answeredMap): Attempt {
             return $this->assessmentRepository->logAttemptAndAnsweredQuestions(
                 $studentId,
                 $attemptData,
@@ -122,7 +120,7 @@ final class EvaluateQuizUseCase
             $percentage,
         );
 
-// Update proficiency (weighted) and lifetime platform score (raw marks earned)
+        // Update proficiency (weighted) and lifetime platform score (raw marks earned)
         $this->rankingService->updateProficiencyAndPlatformScore(
             $studentId,
             $skillId,
@@ -155,7 +153,7 @@ final class EvaluateQuizUseCase
      */
     private function getQuestionDifficulty(int $questionId): string
     {
-        $question = \App\Assessment\Models\Question::query()->find($questionId);
+        $question = Question::query()->find($questionId);
 
         return $question?->difficulty ?? 'medium';
     }
@@ -165,7 +163,7 @@ final class EvaluateQuizUseCase
      */
     private function getAverageDifficulty(array $questionIds): string
     {
-        $difficulties = \App\Assessment\Models\Question::query()
+        $difficulties = Question::query()
             ->whereIn('id', $questionIds)
             ->pluck('difficulty')
             ->toArray();
@@ -193,4 +191,3 @@ final class EvaluateQuizUseCase
         return 'hard';
     }
 }
-

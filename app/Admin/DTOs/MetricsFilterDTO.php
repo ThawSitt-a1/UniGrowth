@@ -8,8 +8,7 @@ final class MetricsFilterDTO
 {
     public function __construct(
         public readonly string $timeFrame = 'all',
-    ) {
-    }
+    ) {}
 
     /**
      * @return array<string, mixed>
@@ -21,4 +20,3 @@ final class MetricsFilterDTO
         ];
     }
 }
-

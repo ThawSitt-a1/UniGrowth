@@ -15,8 +15,7 @@ final class SeasonInfoDTO
         public readonly int $daysRemaining,
         public readonly float $highestScore = 0.0,
         public readonly ?string $image = null,
-    ) {
-    }
+    ) {}
 
     /**
      * @return array<string, mixed>
@@ -35,4 +34,3 @@ final class SeasonInfoDTO
         ];
     }
 }
-

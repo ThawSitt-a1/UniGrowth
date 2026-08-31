@@ -14,8 +14,7 @@ final class DailyMetricCalculatorService
         private readonly GoalCompletionRateCalculator $goalCompletionRateCalculator,
         private readonly ActivationRateCalculator $activationRateCalculator,
         private readonly ProgressVelocityCalculator $progressVelocityCalculator,
-    ) {
-    }
+    ) {}
 
     public function calculatePlatformMetrics(): array
     {
@@ -26,4 +25,3 @@ final class DailyMetricCalculatorService
         ];
     }
 }
-

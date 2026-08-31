@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Overview\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Builder;
 
 final class Season extends Model
 {
@@ -48,4 +48,3 @@ final class Season extends Model
         return $query->where('is_active', false)->orderBy('ends_at', 'desc');
     }
 }
-

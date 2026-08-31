@@ -1,9 +1,11 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Assessment\Controllers\AssessmentController;
 use App\Assessment\Controllers\DashboardController;
 use App\Core\Recommendation\Controllers\RecommendationController;
+use App\Overview\Controllers\SeasonAdminController;
+use App\Overview\Controllers\StudentOverviewController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -64,16 +66,16 @@ Route::middleware(['auth', 'auth.ensure', 'system.settings'])->group(function ()
 */
 
 Route::middleware(['auth', 'auth.ensure', 'system.settings'])->group(function () {
-    Route::get('/overview', [\App\Overview\Controllers\StudentOverviewController::class, 'getOverview'])
+    Route::get('/overview', [StudentOverviewController::class, 'getOverview'])
         ->name('api.overview');
 
-    Route::get('/seasons/current', [\App\Overview\Controllers\StudentOverviewController::class, 'getCurrentSeasonInfo'])
+    Route::get('/seasons/current', [StudentOverviewController::class, 'getCurrentSeasonInfo'])
         ->name('api.seasons.current');
 
-    Route::get('/seasons/history', [\App\Overview\Controllers\StudentOverviewController::class, 'getSeasonHistory'])
+    Route::get('/seasons/history', [StudentOverviewController::class, 'getSeasonHistory'])
         ->name('api.seasons.history');
 
-    Route::get('/seasons/{season_id}/leaderboard', [\App\Overview\Controllers\StudentOverviewController::class, 'getSeasonLeaderboard'])
+    Route::get('/seasons/{season_id}/leaderboard', [StudentOverviewController::class, 'getSeasonLeaderboard'])
         ->name('api.seasons.leaderboard')
         ->whereNumber('season_id');
 });
@@ -89,9 +91,9 @@ Route::middleware(['auth', 'auth.ensure', 'system.settings'])->group(function ()
 */
 
 Route::middleware(['auth', 'auth.ensure', 'system.settings'])->prefix('admin')->name('api.admin.')->group(function () {
-    Route::post('/seasons', [\App\Overview\Controllers\SeasonAdminController::class, 'createSeason'])
+    Route::post('/seasons', [SeasonAdminController::class, 'createSeason'])
         ->name('seasons.create');
 
-    Route::post('/seasons/end', [\App\Overview\Controllers\SeasonAdminController::class, 'endCurrentSeason'])
+    Route::post('/seasons/end', [SeasonAdminController::class, 'endCurrentSeason'])
         ->name('seasons.end');
 });

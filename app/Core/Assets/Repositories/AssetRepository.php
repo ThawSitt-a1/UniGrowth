@@ -8,14 +8,11 @@ use App\Core\Assets\DTO\AssetActionDTO;
 use App\Core\Assets\Models\Enrollment;
 use App\Core\Assets\Models\Goal;
 use App\Core\Assets\Models\Skill;
-
-
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 
 final class AssetRepository implements AssetRepositoryInterface
 {
-
     /**
      * @return array<string, mixed>
      */
@@ -133,4 +130,3 @@ final class AssetRepository implements AssetRepositoryInterface
         ];
     }
 }
-

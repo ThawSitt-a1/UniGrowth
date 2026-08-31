@@ -17,8 +17,7 @@ final class RecommendationDTO
         public readonly array $matching_tags,
         public readonly float $score,
         public readonly ?string $resource_link = null,
-    ) {
-    }
+    ) {}
 
     /**
      * @return array<string, mixed>

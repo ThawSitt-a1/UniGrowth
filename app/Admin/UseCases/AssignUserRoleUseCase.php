@@ -20,7 +20,7 @@ final class AssignUserRoleUseCase
     {
         $allowedRoles = ['user', 'editor'];
 
-        if (!in_array($assignment->newRole, $allowedRoles, true)) {
+        if (! in_array($assignment->newRole, $allowedRoles, true)) {
             throw new InvalidArgumentException(
                 "Role '{$assignment->newRole}' cannot be assigned. Only 'user' and 'editor' roles are assignable."
             );
@@ -36,4 +36,3 @@ final class AssignUserRoleUseCase
         $user->update(['role' => $assignment->newRole]);
     }
 }
-

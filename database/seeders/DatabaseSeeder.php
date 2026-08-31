@@ -30,7 +30,7 @@ class DatabaseSeeder extends Seeder
         User::factory()->create([
             'username' => 'testuser1',
             'email' => 'test1@example.com',
-            'password' => 'test123!'
+            'password' => 'test123!',
         ]);
 
         // Seed skills for core assets testing frontend

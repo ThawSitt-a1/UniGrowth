@@ -3,9 +3,9 @@
 namespace Tests\Unit;
 
 use App\Auth\DTOs\AuthCredentialsDTO;
+use App\Auth\Models\User;
 use App\Auth\Repositories\UserRepositoryInterface;
 use App\Auth\UseCases\AuthenticateUserUseCase;
-use App\Auth\Models\User;
 use App\Services\AuthSessionService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
@@ -43,7 +43,7 @@ class AuthenticateUserUseCaseTest extends TestCase
         });
 
         $authSessionService = $this->app->make(AuthSessionService::class);
-        $userModel = new User();
+        $userModel = new User;
 
         $useCase = new AuthenticateUserUseCase($repo, $authSessionService, $userModel);
 
@@ -87,7 +87,7 @@ class AuthenticateUserUseCaseTest extends TestCase
             ]);
 
         $authSessionService = $this->app->make(AuthSessionService::class);
-        $userModel = new User();
+        $userModel = new User;
 
         $useCase = new AuthenticateUserUseCase($repo, $authSessionService, $userModel);
 
@@ -126,7 +126,7 @@ class AuthenticateUserUseCaseTest extends TestCase
         });
 
         $authSessionService = $this->app->make(AuthSessionService::class);
-        $userModel = new User();
+        $userModel = new User;
 
         $useCase = new AuthenticateUserUseCase($repo, $authSessionService, $userModel);
 
@@ -140,4 +140,3 @@ class AuthenticateUserUseCaseTest extends TestCase
         ));
     }
 }
-

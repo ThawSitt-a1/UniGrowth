@@ -23,7 +23,7 @@ final class EditorContentRepository implements EditorContentRepositoryInterface
 
         if ($filters->searchQuery !== null) {
             $query->where(function ($q) use ($filters) {
-                $q->where('question_text', 'like', '%' . $filters->searchQuery . '%');
+                $q->where('question_text', 'like', '%'.$filters->searchQuery.'%');
             });
         }
 

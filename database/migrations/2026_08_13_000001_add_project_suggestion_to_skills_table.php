@@ -10,7 +10,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (!Schema::hasColumn('skills', 'project_suggestion')) {
+        if (! Schema::hasColumn('skills', 'project_suggestion')) {
             Schema::table('skills', function (Blueprint $table) {
                 $table->longText('project_suggestion')->nullable()->after('resource_links');
             });

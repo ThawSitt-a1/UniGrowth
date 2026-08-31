@@ -3,9 +3,7 @@
 declare(strict_types=1);
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -16,14 +14,14 @@ return new class extends Migration
      */
     private const MARKS_MATRIX = [
         'multiple_choice' => [
-            'easy'   => 10.00,
+            'easy' => 10.00,
             'medium' => 15.00,
-            'hard'   => 20.00,
+            'hard' => 20.00,
         ],
         'true_false' => [
-            'easy'   => 5.00,
+            'easy' => 5.00,
             'medium' => 7.50,
-            'hard'   => 10.00,
+            'hard' => 10.00,
         ],
     ];
 

@@ -11,6 +11,5 @@ final class ContentQueryFilterDTO
         public readonly ?string $searchQuery = null,
         public readonly ?int $skillId = null,
         public readonly int $perPage = 15,
-    ) {
-    }
+    ) {}
 }

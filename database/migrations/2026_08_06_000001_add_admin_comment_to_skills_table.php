@@ -10,7 +10,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (!Schema::hasColumn('skills', 'admin_comment')) {
+        if (! Schema::hasColumn('skills', 'admin_comment')) {
             Schema::table('skills', function (Blueprint $table) {
                 $table->text('admin_comment')->nullable()->after('locked_by_admin');
             });

@@ -11,8 +11,7 @@ final class ContentActionDTO
         public readonly string $targetType,  // QUESTION, SKILL
         public readonly string $action,      // SUSPEND, RESTORE, DELETE
         public readonly string $reason = '',
-    ) {
-    }
+    ) {}
 
     /**
      * @return array<string, mixed>

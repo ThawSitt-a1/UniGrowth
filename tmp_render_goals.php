@@ -3,12 +3,14 @@
 require __DIR__.'/vendor/autoload.php';
 
 $app = require_once __DIR__.'/bootstrap/app.php';
-$kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
+$kernel = $app->make(Kernel::class);
 $kernel->bootstrap();
 
+use App\Auth\Models\User;
+use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Support\Facades\Auth;
 
-$user = \App\Auth\Models\User::first();
+$user = User::first();
 if ($user) {
     Auth::login($user);
 }
@@ -52,4 +54,3 @@ echo 'Rendered bytes: '.strlen($html).PHP_EOL;
 echo 'Form open tags: '.substr_count($html, '<form').PHP_EOL;
 echo 'Form close tags: '.substr_count($html, '</form>').PHP_EOL;
 echo 'written to storage/app/goals_render_test.html'.PHP_EOL;
-

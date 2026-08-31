@@ -6,9 +6,9 @@ namespace App\Overview\Services;
 
 use App\Auth\Models\User;
 use App\Overview\DTO\StudentOverviewDTO;
-use App\Overview\Repositories\StudentOverviewRepositoryInterface;
 use App\Overview\Repositories\SeasonRepositoryInterface;
 use App\Overview\Repositories\SeasonScoreRepositoryInterface;
+use App\Overview\Repositories\StudentOverviewRepositoryInterface;
 
 final class StudentOverviewService
 {
@@ -17,8 +17,7 @@ final class StudentOverviewService
         private readonly SeasonRepositoryInterface $seasonRepo,
         private readonly SeasonScoreRepositoryInterface $seasonScoreRepo,
         private readonly SeasonService $seasonService,
-    ) {
-    }
+    ) {}
 
     /**
      * Get the full student overview dashboard data.
@@ -33,7 +32,7 @@ final class StudentOverviewService
 
         // Goals
         $activeGoals = $this->studentOverviewRepo->fetchActiveGoals($studentId)
-            ->map(fn($g) => [
+            ->map(fn ($g) => [
                 'id' => $g->id,
                 'text' => $g->text,
                 'created_at' => $g->created_at?->toISOString(),
@@ -41,7 +40,7 @@ final class StudentOverviewService
             ->toArray();
 
         $completedGoals = $this->studentOverviewRepo->fetchCompletedGoals($studentId)
-            ->map(fn($g) => [
+            ->map(fn ($g) => [
                 'id' => $g->id,
                 'text' => $g->text,
                 'completed_at' => $g->completed_at?->toISOString(),
@@ -50,7 +49,7 @@ final class StudentOverviewService
 
         // Enrolled skills
         $enrolledSkills = $this->studentOverviewRepo->fetchEnrolledSkills($studentId)
-            ->map(fn($e) => [
+            ->map(fn ($e) => [
                 'id' => $e->id,
                 'skill_id' => $e->skill_id,
                 'skill_title' => $e->skill?->title ?? 'Unknown',
@@ -58,7 +57,7 @@ final class StudentOverviewService
             ])
             ->toArray();
 
-// Quiz statistics (season-scoped: reset to 0 when season ends, rebuild when new one starts)
+        // Quiz statistics (season-scoped: reset to 0 when season ends, rebuild when new one starts)
         $seasonId = $currentSeason?->id;
         $quizStats = [
             'total_questions_answered' => $this->studentOverviewRepo->countTotalQuestionsAnswered($studentId, $seasonId),

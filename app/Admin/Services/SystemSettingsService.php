@@ -12,8 +12,7 @@ final class SystemSettingsService implements SystemSettingsServiceInterface
 
     public function __construct(
         private readonly SettingsRepositoryInterface $settingsRepository,
-    ) {
-    }
+    ) {}
 
     public function get(string $key, ?string $default = null): ?string
     {

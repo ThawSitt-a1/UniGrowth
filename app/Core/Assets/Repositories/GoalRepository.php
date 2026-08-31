@@ -23,4 +23,3 @@ final class GoalRepository implements GoalRepositoryInterface
         return (bool) Goal::query()->where('id', $id)->delete();
     }
 }
-

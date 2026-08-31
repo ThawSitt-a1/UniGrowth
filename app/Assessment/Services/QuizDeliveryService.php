@@ -14,8 +14,7 @@ final class QuizDeliveryService
     public function __construct(
         private readonly AssessmentRepositoryInterface $assessmentRepository,
         private readonly SeasonService $seasonService,
-    ) {
-    }
+    ) {}
 
     /**
      * Generate a quiz for the student containing only unseen questions.
@@ -26,7 +25,7 @@ final class QuizDeliveryService
     public function generateUnseenQuiz(int $studentId, int $skillId): QuizPayloadDTO
     {
         // Ensure an active season exists - users cannot answer questions outside a season
-        if (!$this->seasonService->hasActiveSeason()) {
+        if (! $this->seasonService->hasActiveSeason()) {
             throw new \RuntimeException(
                 'No active season is running. Quizzes are only available during an active season.'
             );
@@ -67,4 +66,3 @@ final class QuizDeliveryService
         );
     }
 }
-

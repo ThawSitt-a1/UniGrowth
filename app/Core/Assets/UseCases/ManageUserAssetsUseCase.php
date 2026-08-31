@@ -5,14 +5,16 @@ declare(strict_types=1);
 namespace App\Core\Assets\UseCases;
 
 use App\Core\Assets\DTO\AssetActionDTO;
+use App\Core\Assets\Models\Enrollment;
+use App\Core\Assets\Models\Goal;
+use App\Core\Assets\Models\Habit;
 use App\Core\Assets\Models\HabitCompletion;
+use App\Core\Assets\Models\Skill;
 use App\Core\Assets\Repositories\EnrollmentRepositoryInterface;
 use App\Core\Assets\Repositories\GoalRepositoryInterface;
 use App\Core\Assets\Repositories\HabitRepositoryInterface;
-use App\Core\Assets\Models\Enrollment;
-use App\Core\Assets\Models\Skill;
+use Carbon\Carbon;
 use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 
@@ -22,8 +24,7 @@ final class ManageUserAssetsUseCase
         private readonly GoalRepositoryInterface $goalRepository,
         private readonly EnrollmentRepositoryInterface $enrollmentRepository,
         private readonly HabitRepositoryInterface $habitRepository,
-    ) {
-    }
+    ) {}
 
     /**
      * @return array<string, mixed>
@@ -90,7 +91,7 @@ final class ManageUserAssetsUseCase
             throw new \InvalidArgumentException('goal_id is required.');
         }
 
-        $goal = \App\Core\Assets\Models\Goal::query()
+        $goal = Goal::query()
             ->where('user_id', $userId)
             ->where('id', $goalId)
             ->firstOrFail();
@@ -116,7 +117,7 @@ final class ManageUserAssetsUseCase
             throw new \InvalidArgumentException('goal_id is required.');
         }
 
-        $goal = \App\Core\Assets\Models\Goal::query()
+        $goal = Goal::query()
             ->where('user_id', $userId)
             ->where('id', $goalId)
             ->firstOrFail();
@@ -165,9 +166,9 @@ final class ManageUserAssetsUseCase
         }
 
         $date = trim((string) Arr::get($dto->payload, 'completed_date', ''));
-        $completedDate = $date !== '' ? \Carbon\Carbon::parse($date)->toDateString() : now()->toDateString();
+        $completedDate = $date !== '' ? Carbon::parse($date)->toDateString() : now()->toDateString();
 
-        $habit = \App\Core\Assets\Models\Habit::query()
+        $habit = Habit::query()
             ->where('user_id', $userId)
             ->where('id', $habitId)
             ->firstOrFail();
@@ -211,7 +212,7 @@ final class ManageUserAssetsUseCase
         }
 
         // Ensure the habit belongs to the authenticated user before deleting.
-        $owned = \App\Core\Assets\Models\Habit::query()
+        $owned = Habit::query()
             ->where('user_id', $userId)
             ->where('id', $habitId)
             ->exists();
@@ -305,6 +306,7 @@ final class ManageUserAssetsUseCase
                 if ($text === '') {
                     abort(422, 'Goal text is required.');
                 }
+
                 return;
             }
 
@@ -313,6 +315,7 @@ final class ManageUserAssetsUseCase
                 if ($goalId <= 0) {
                     abort(422, 'goal_id is required.');
                 }
+
                 return;
             }
 
@@ -321,6 +324,7 @@ final class ManageUserAssetsUseCase
                 if ($goalId <= 0) {
                     abort(422, 'goal_id is required.');
                 }
+
                 return;
             }
 
@@ -334,6 +338,7 @@ final class ManageUserAssetsUseCase
                 if ($name === '') {
                     abort(422, 'Habit name is required.');
                 }
+
                 return;
             }
 
@@ -342,6 +347,7 @@ final class ManageUserAssetsUseCase
                 if ($habitId <= 0) {
                     abort(422, 'habit_id is required.');
                 }
+
                 return;
             }
 
@@ -350,6 +356,7 @@ final class ManageUserAssetsUseCase
                 if ($habitId <= 0) {
                     abort(422, 'habit_id is required.');
                 }
+
                 return;
             }
 
@@ -359,4 +366,3 @@ final class ManageUserAssetsUseCase
         abort(400, 'Unsupported asset type/action.');
     }
 }
-

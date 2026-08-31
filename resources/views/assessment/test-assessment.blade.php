@@ -696,6 +696,222 @@ MAIN CONTENT
 
     {{--
     ================================================================
+    DASHBOARD CARDS: Season Score | Skill Proficiency | Leaderboard
+    (positioned above the skill selector, right under the quotes)
+    ================================================================
+    --}}
+    @if ($hasActiveSeason)
+    <div class="row g-4 mb-4">
+
+        {{-- SEASON SCORE (restored design) --}}
+        @if ($dashboard)
+        <div class="col-12 col-lg-4">
+            <div class="form-card overflow-hidden h-100 animate-fade-up">
+                <div class="card-header-gradient">
+                    <h3 class="h5 fw-bold text-white mb-0">
+                        <i class="bi bi-calendar-check-fill me-2"></i>Season Score
+                        <span class="badge ms-2" style="background: rgba(255,255,255,0.2); color: #fff; font-size: 0.7rem;">
+                            Rank #{{ $seasonRank }}
+                        </span>
+                    </h3>
+                </div>
+                <div class="p-4">
+                    <div class="text-center mb-4">
+                        <p class="display-4 fw-bold mb-0" style="color: var(--indigo);">
+                            {{ number_format((float) $seasonScore, 1) }}
+                        </p>
+                        <small class="text-muted fw-semibold">
+                            {{ $currentSeasonName ? $currentSeasonName . ' Score' : 'Season Score' }}
+                        </small>
+                    </div>
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <div class="stat-card text-center p-3">
+                                <p class="fs-4 fw-bold mb-0" style="color: var(--purple);">{{ (int) ($dashboard['stats']['total_attempts'] ?? 0) }}</p>
+                                <small class="text-muted">Attempts</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="stat-card text-center p-3">
+                                <p class="fs-4 fw-bold mb-0" style="color: var(--teal);">{{ number_format((float) ($dashboard['stats']['average_score'] ?? 0), 1) }}%</p>
+                                <small class="text-muted">Avg Score</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endif
+
+        {{-- SKILL PROFICIENCY (restored table design) --}}
+        @if ($dashboard && !empty($dashboard['skill_progress']))
+        <div class="col-12 col-lg-4">
+            <div class="form-card overflow-hidden h-100 animate-fade-up stagger-1">
+                <div class="card-header-gradient">
+                    <h3 class="h5 fw-bold text-white mb-0">
+                        <i class="bi bi-bar-chart-steps me-2"></i>Skill Proficiency
+                    </h3>
+                </div>
+                <div class="p-0">
+                    <table class="table table-custom table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="px-4">Skill</th>
+                                <th class="px-4 text-end">Score</th>
+                                <th class="px-4 text-end">Attempts</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($dashboard['skill_progress'] as $sp)
+                                <tr>
+                                    <td class="px-4">
+                                        <span class="fw-semibold" style="color: var(--gray-700); font-size: 0.85rem;">
+                                            {{ $sp['skill_title'] }}
+                                        </span>
+                                    </td>
+                                    <td class="px-4 text-end">
+                                        <span class="fw-bold" style="color: var(--indigo);">
+                                            {{ number_format((float) ($sp['proficiency_score'] ?? 0), 1) }}
+                                        </span>
+                                    </td>
+                                    <td class="px-4 text-end">
+                                        <span class="badge" style="background: #eef2ff; color: #4338ca; font-size: 0.75rem;">
+                                            {{ (int) ($sp['attempts_count'] ?? 0) }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        @endif
+
+        {{-- LEADERBOARD (restored design) --}}
+        @if (!empty($leaderboard))
+        <div class="col-12 col-lg-4">
+            <div class="form-card overflow-hidden h-100 animate-fade-up stagger-2">
+                <div class="card-header-gradient">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+                        <div>
+                            <h3 class="h5 fw-bold text-white mb-0">
+                                <i class="bi bi-trophy-fill me-2"></i>Top 10 Leaderboard
+                            </h3>
+                            <p class="text-white-50 small mb-0 mt-1">{{ $currentSeasonName }}</p>
+                        </div>
+                        <span class="badge" style="background: rgba(255,255,255,0.2); color: #fff; font-size: 0.7rem; padding: 4px 12px; border-radius: 8px;">
+                            <i class="bi bi-trophy-fill me-1"></i>Season Standings
+                        </span>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light small text-muted text-uppercase">
+                            <tr>
+                                <th class="px-4" style="width: 60px;">#</th>
+                                <th class="px-4">User</th>
+                                <th class="px-4 text-end">Score</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($leaderboard as $entry)
+                                <tr @if ($entry['rank'] === 1) style="background: linear-gradient(90deg, #fef3c7, #fde68a, #fef3c7);" @elseif ($entry['rank'] === 2) style="background: linear-gradient(90deg, #f1f5f9, #e2e8f0, #f1f5f9);" @elseif ($entry['rank'] === 3) style="background: linear-gradient(90deg, #fef3c7, #ffedd5, #fef3c7);" @endif>
+                                    <td class="px-4">
+                                        @if ($entry['rank'] === 1)
+                                            <span class="d-inline-flex align-items-center justify-content-center rounded-circle text-white fw-bold" style="width: 32px; height: 32px; background: #f59e0b; box-shadow: 0 0 20px rgba(245,158,11,0.2);">🥇</span>
+                                        @elseif ($entry['rank'] === 2)
+                                            <span class="d-inline-flex align-items-center justify-content-center rounded-circle text-white fw-bold" style="width: 32px; height: 32px; background: #9ca3af; box-shadow: 0 0 20px rgba(156,163,175,0.2);">🥈</span>
+                                        @elseif ($entry['rank'] === 3)
+                                            <span class="d-inline-flex align-items-center justify-content-center rounded-circle text-white fw-bold" style="width: 32px; height: 32px; background: #d97706; box-shadow: 0 0 20px rgba(217,119,6,0.2);">🥉</span>
+                                        @else
+                                            <span class="d-inline-flex align-items-center justify-content-center text-muted fw-bold" style="width: 32px; height: 32px;">{{ $entry['rank'] }}</span>
+                                        @endif
+                                    </td>
+                                    <td class="px-4">
+                                        @if ($entry['is_hidden_leaderboards'])
+                                            <div class="d-flex align-items-center gap-3">
+                                                <div class="rounded-circle d-flex align-items-center justify-content-center text-muted border" style="width: 36px; height: 36px; background: #f1f5f9;">
+                                                    <i class="bi bi-eye-slash"></i>
+                                                </div>
+                                                <div>
+                                                    <p class="mb-0 fst-italic text-muted small">This user decided to hide their presence.</p>
+                                                </div>
+                                            </div>
+                                        @else
+                                            <div class="d-flex align-items-center gap-3">
+                                                @if (!empty($entry['avatar_path']))
+                                                    <img src="{{ asset('storage/' . $entry['avatar_path']) }}" alt="avatar" class="rounded-circle object-fit-cover border" style="width: 36px; height: 36px;">
+                                                @else
+                                                    <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white" style="width: 36px; height: 36px; background: linear-gradient(135deg, #6366f1, #7c3aed); font-size: 0.85rem;">
+                                                        {{ strtoupper(substr($entry['username'], 0, 1)) }}
+                                                    </div>
+                                                @endif
+                                            <div>
+                                                    @if ($entry['is_profile_viewable'])
+                                                        <a href="{{ route('profile.public', $entry['user_id']) }}" class="fw-semibold mb-0 text-decoration-none" style="color: #1f2937;">{{ $entry['username'] }}
+                                                            @if (!empty($entry['rank_title']))
+                                                                <span data-bs-toggle="modal" data-bs-target="#rankTiersModal" style="cursor: pointer; color: #6366f1; font-weight: 600;" onclick="event.preventDefault(); event.stopPropagation();" title="View rank tiers">
+                                                                    [{{ $entry['rank_title'] }}]
+                                                                </span>
+                                                            @endif
+                                                        </a>
+                                                    @else
+                                                        <p class="fw-semibold mb-0" style="color: #1f2937;">
+                                                            {{ $entry['username'] }}
+                                                            @if (!empty($entry['rank_title']))
+                                                                <span data-bs-toggle="modal" data-bs-target="#rankTiersModal" style="cursor: pointer; color: #6366f1; font-weight: 600;" onclick="event.preventDefault(); event.stopPropagation();" title="View rank tiers">
+                                                                    [{{ $entry['rank_title'] }}]
+                                                                </span>
+                                                            @endif
+                                                            @if ($entry['is_profile_private'])
+                                                                <i class="bi bi-lock-fill ms-1" style="color: #94a3b8; font-size: 0.8rem;" title="Private profile"></i>
+                                                            @endif
+                                                        </p>
+                                                    @endif
+                                                    @if (!empty($entry['university_name']))
+                                                        <small class="text-muted">{{ $entry['university_name'] }}</small>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        @endif
+                                    </td>
+                                    <td class="px-4 text-end">
+                                        @if ($entry['is_hidden_leaderboards'])
+                                            <span class="text-muted fst-italic small">Hidden</span>
+                                        @else
+                                            <span class="fw-bold fs-5" style="color: {{ $entry['rank'] === 1 ? '#d97706' : ($entry['rank'] === 2 ? '#64748b' : ($entry['rank'] === 3 ? '#b45309' : '#4f46e5')) }};">
+                                                {{ number_format((float) ($entry['season_score'] ?? 0), 1) }}
+                                            </span>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        @else
+        <div class="col-12 col-lg-4">
+            <div class="form-card overflow-hidden h-100 animate-fade-up stagger-2">
+                <div class="card-header-gradient">
+                    <h3 class="h5 fw-bold text-white mb-0"><i class="bi bi-trophy-fill me-2"></i>Leaderboard</h3>
+                </div>
+                <div class="text-center py-5 text-muted">
+                    <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                    <p class="fw-semibold mb-1">No scores yet this season.</p>
+                    <p class="small mb-0">Take a quiz to get on the leaderboard!</p>
+                </div>
+            </div>
+        </div>
+        @endif
+
+    </div>
+    @endif
+
+    {{--
+    ================================================================
     HERO / HEADER — Skill Selector
     ================================================================
     --}}
@@ -754,7 +970,7 @@ MAIN CONTENT
     @if ($hasActiveSeason)
     {{--
     ================================================================
-    TWO-COLUMN LAYOUT: Quiz (Left) | Dashboard + Leaderboard (Right)
+    TWO-COLUMN LAYOUT: Quiz (full width)
     ================================================================
     --}}
     <div class="row g-4">
@@ -762,7 +978,7 @@ MAIN CONTENT
         {{-- ============================================================ --}}
 {{-- LEFT COLUMN: Quiz & Result Section --}}
         {{-- ============================================================ --}}
-        <div class="col-lg-7">
+        <div class="col-12">
 
             {{-- QUIZ SECTION --}}
             @if ($quiz)
@@ -975,212 +1191,6 @@ MAIN CONTENT
 
         </div>{{-- END left column --}}
 
-{{-- ============================================================ --}}
-        {{-- RIGHT COLUMN: Dashboard & Leaderboard --}}
-        {{-- ============================================================ --}}
-        <div class="col-lg-5">
-
-            {{-- DASHBOARD STATS --}}
-            @if ($dashboard)
-                <div class="form-card overflow-hidden mb-4 animate-fade-up stagger-2">
-                    <div class="card-header-gradient">
-<h3 class="h5 fw-bold text-white mb-0">
-                            <i class="bi bi-person-circle me-2"></i>{{ $dashboard['username'] }}
-                            <span class="badge ms-2" style="background: rgba(255,255,255,0.2); color: #fff; font-size: 0.7rem;">
-                                Rank #{{ $seasonRank }}
-                            </span>
-                        </h3>
-                    </div>
-
-                    <div class="p-4">
-                        {{-- Season Score (matches dashboard) --}}
-                        <div class="text-center mb-4">
-                            <p class="display-4 fw-bold mb-0" style="color: var(--indigo);">
-                                {{ number_format((float) $seasonScore, 1) }}
-                            </p>
-                            <small class="text-muted fw-semibold">
-                                {{ $currentSeasonName ? $currentSeasonName . ' Score' : 'Season Score' }}
-                            </small>
-                        </div>
-
-                        {{-- Stats Grid --}}
-                        <div class="row g-2">
-                            <div class="col-6">
-                                <div class="stat-card text-center p-3">
-                                    <p class="fs-4 fw-bold mb-0" style="color: var(--purple);">{{ (int) ($dashboard['stats']['total_attempts'] ?? 0) }}</p>
-                                    <small class="text-muted">Attempts</small>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="stat-card text-center p-3">
-                                    <p class="fs-4 fw-bold mb-0" style="color: var(--teal);">{{ number_format((float) ($dashboard['stats']['average_score'] ?? 0), 1) }}%</p>
-                                    <small class="text-muted">Avg Score</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            @endif
-
-            {{-- SKILL PROFICIENCY --}}
-            @if ($dashboard && !empty($dashboard['skill_progress']))
-                <div class="form-card overflow-hidden mb-4 animate-fade-up stagger-3">
-                    <div class="card-header-gradient">
-                        <h3 class="h5 fw-bold text-white mb-0">
-                            <i class="bi bi-bar-chart-steps me-2"></i>Skill Proficiency
-                        </h3>
-                    </div>
-                    <div class="p-0">
-                        <table class="table table-custom table-hover align-middle mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th class="px-4">Skill</th>
-                                    <th class="px-4 text-end">Score</th>
-                                    <th class="px-4 text-end">Attempts</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($dashboard['skill_progress'] as $sp)
-                                    <tr>
-                                        <td class="px-4">
-                                            <span class="fw-semibold" style="color: var(--gray-700); font-size: 0.85rem;">
-                                                {{ $sp['skill_title'] }}
-                                            </span>
-                                        </td>
-                                        <td class="px-4 text-end">
-                                            <span class="fw-bold" style="color: var(--indigo);">
-                                                {{ number_format((float) ($sp['proficiency_score'] ?? 0), 1) }}
-                                            </span>
-                                        </td>
-                                        <td class="px-4 text-end">
-                                            <span class="badge" style="background: #eef2ff; color: #4338ca; font-size: 0.75rem;">
-                                                {{ (int) ($sp['attempts_count'] ?? 0) }}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            @endif
-
-{{-- LEADERBOARD (season-based, matches /dashboard) --}}
-            @if (!empty($leaderboard))
-                <div class="form-card overflow-hidden mb-4 animate-fade-up stagger-4">
-                    <div class="card-header-gradient">
-                        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
-                            <div>
-                                <h3 class="h5 fw-bold text-white mb-0">
-                                    <i class="bi bi-trophy-fill me-2"></i>Top 10 Leaderboard
-                                </h3>
-                                <p class="text-white-50 small mb-0 mt-1">{{ $currentSeasonName }}</p>
-                            </div>
-                            <span class="badge" style="background: rgba(255,255,255,0.2); color: #fff; font-size: 0.7rem; padding: 4px 12px; border-radius: 8px;">
-                                <i class="bi bi-trophy-fill me-1"></i>Season Standings
-                            </span>
-                        </div>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead class="table-light small text-muted text-uppercase">
-                                <tr>
-                                    <th class="px-4" style="width: 60px;">#</th>
-                                    <th class="px-4">User</th>
-                                    <th class="px-4 text-end">Score</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($leaderboard as $entry)
-                                    <tr @if ($entry['rank'] === 1) style="background: linear-gradient(90deg, #fef3c7, #fde68a, #fef3c7);" @elseif ($entry['rank'] === 2) style="background: linear-gradient(90deg, #f1f5f9, #e2e8f0, #f1f5f9);" @elseif ($entry['rank'] === 3) style="background: linear-gradient(90deg, #fef3c7, #ffedd5, #fef3c7);" @endif>
-                                        <td class="px-4">
-                                            @if ($entry['rank'] === 1)
-                                                <span class="d-inline-flex align-items-center justify-content-center rounded-circle text-white fw-bold" style="width: 32px; height: 32px; background: #f59e0b; box-shadow: 0 0 20px rgba(245,158,11,0.2);">🥇</span>
-                                            @elseif ($entry['rank'] === 2)
-                                                <span class="d-inline-flex align-items-center justify-content-center rounded-circle text-white fw-bold" style="width: 32px; height: 32px; background: #9ca3af; box-shadow: 0 0 20px rgba(156,163,175,0.2);">🥈</span>
-                                            @elseif ($entry['rank'] === 3)
-                                                <span class="d-inline-flex align-items-center justify-content-center rounded-circle text-white fw-bold" style="width: 32px; height: 32px; background: #d97706; box-shadow: 0 0 20px rgba(217,119,6,0.2);">🥉</span>
-                                            @else
-                                                <span class="d-inline-flex align-items-center justify-content-center text-muted fw-bold" style="width: 32px; height: 32px;">{{ $entry['rank'] }}</span>
-                                            @endif
-                                        </td>
-                                        <td class="px-4">
-                                            @if ($entry['is_hidden_leaderboards'])
-                                                <div class="d-flex align-items-center gap-3">
-                                                    <div class="rounded-circle d-flex align-items-center justify-content-center text-muted border" style="width: 36px; height: 36px; background: #f1f5f9;">
-                                                        <i class="bi bi-eye-slash"></i>
-                                                    </div>
-                                                    <div>
-                                                        <p class="mb-0 fst-italic text-muted small">This user decided to hide their presence.</p>
-                                                    </div>
-                                                </div>
-                                            @else
-                                                <div class="d-flex align-items-center gap-3">
-                                                    @if (!empty($entry['avatar_path']))
-                                                        <img src="{{ asset('storage/' . $entry['avatar_path']) }}" alt="avatar" class="rounded-circle object-fit-cover border" style="width: 36px; height: 36px;">
-                                                    @else
-                                                        <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white" style="width: 36px; height: 36px; background: linear-gradient(135deg, #6366f1, #7c3aed); font-size: 0.85rem;">
-                                                            {{ strtoupper(substr($entry['username'], 0, 1)) }}
-                                                        </div>
-                                                    @endif
-                                                <div>
-                                                        @if ($entry['is_profile_viewable'])
-                                                            <a href="{{ route('profile.public', $entry['user_id']) }}" class="fw-semibold mb-0 text-decoration-none" style="color: #1f2937;">{{ $entry['username'] }}
-                                                                @if (!empty($entry['rank_title']))
-                                                                    <span data-bs-toggle="modal" data-bs-target="#rankTiersModal" style="cursor: pointer; color: #6366f1; font-weight: 600;" onclick="event.preventDefault(); event.stopPropagation();" title="View rank tiers">
-                                                                        [{{ $entry['rank_title'] }}]
-                                                                    </span>
-                                                                @endif
-                                                            </a>
-                                                        @else
-                                                            <p class="fw-semibold mb-0" style="color: #1f2937;">
-                                                                {{ $entry['username'] }}
-                                                                @if (!empty($entry['rank_title']))
-                                                                    <span data-bs-toggle="modal" data-bs-target="#rankTiersModal" style="cursor: pointer; color: #6366f1; font-weight: 600;" onclick="event.preventDefault(); event.stopPropagation();" title="View rank tiers">
-                                                                        [{{ $entry['rank_title'] }}]
-                                                                    </span>
-                                                                @endif
-                                                                @if ($entry['is_profile_private'])
-                                                                    <i class="bi bi-lock-fill ms-1" style="color: #94a3b8; font-size: 0.8rem;" title="Private profile"></i>
-                                                                @endif
-                                                            </p>
-                                                        @endif
-                                                        @if (!empty($entry['university_name']))
-                                                            <small class="text-muted">{{ $entry['university_name'] }}</small>
-                                                        @endif
-                                                    </div>
-                                                </div>
-                                            @endif
-                                        </td>
-                                        <td class="px-4 text-end">
-                                            @if ($entry['is_hidden_leaderboards'])
-                                                <span class="text-muted fst-italic small">Hidden</span>
-                                            @else
-                                                <span class="fw-bold fs-5" style="color: {{ $entry['rank'] === 1 ? '#d97706' : ($entry['rank'] === 2 ? '#64748b' : ($entry['rank'] === 3 ? '#b45309' : '#4f46e5')) }};">
-                                                    {{ number_format((float) ($entry['season_score'] ?? 0), 1) }}
-                                                </span>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            @else
-                <div class="form-card overflow-hidden mb-4 animate-fade-up stagger-4">
-                    <div class="card-header-gradient">
-                        <h3 class="h5 fw-bold text-white mb-0"><i class="bi bi-trophy-fill me-2"></i>Leaderboard</h3>
-                    </div>
-                    <div class="text-center py-5 text-muted">
-                        <i class="bi bi-inbox fs-1 d-block mb-2"></i>
-                        <p class="fw-semibold mb-1">No scores yet this season.</p>
-                        <p class="small mb-0">Take a quiz to get on the leaderboard!</p>
-                    </div>
-                </div>
-            @endif
-
-        </div>{{-- END right column --}}
     </div>{{-- END row --}}
     @endif
 </div>

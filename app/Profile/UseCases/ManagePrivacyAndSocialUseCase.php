@@ -11,8 +11,7 @@ final class ManagePrivacyAndSocialUseCase
     public function __construct(
         private readonly User $userModel,
         private readonly UserSocialAccount $socialAccountModel,
-    ) {
-    }
+    ) {}
 
     public function execute(int $userId, string $visibility, array $socialLinks): bool
     {
@@ -29,7 +28,7 @@ final class ManagePrivacyAndSocialUseCase
             $user->forceFill(['preferences' => $currentPreferences])->save();
 
             // Sync social links
-            if (!empty($socialLinks)) {
+            if (! empty($socialLinks)) {
                 $this->socialAccountModel->newQuery()
                     ->where('user_id', $userId)
                     ->delete();
@@ -47,4 +46,3 @@ final class ManagePrivacyAndSocialUseCase
         });
     }
 }
-

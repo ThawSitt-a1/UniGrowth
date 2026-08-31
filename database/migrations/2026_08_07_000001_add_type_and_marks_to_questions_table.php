@@ -10,7 +10,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (!Schema::hasColumn('questions', 'question_type')) {
+        if (! Schema::hasColumn('questions', 'question_type')) {
             Schema::table('questions', function (Blueprint $table) {
                 $table->enum('question_type', ['multiple_choice', 'true_false'])
                     ->default('multiple_choice')
@@ -18,7 +18,7 @@ return new class extends Migration
             });
         }
 
-        if (!Schema::hasColumn('questions', 'marks')) {
+        if (! Schema::hasColumn('questions', 'marks')) {
             Schema::table('questions', function (Blueprint $table) {
                 $table->decimal('marks', 6, 2)
                     ->default(10.00)
@@ -26,7 +26,7 @@ return new class extends Migration
             });
         }
 
-        if (!Schema::hasIndex('questions', 'questions_question_type_index')) {
+        if (! Schema::hasIndex('questions', 'questions_question_type_index')) {
             Schema::table('questions', function (Blueprint $table) {
                 $table->index('question_type');
             });

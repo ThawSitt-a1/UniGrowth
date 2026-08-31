@@ -6,7 +6,6 @@ namespace App\Core\Assets\Repositories;
 
 use App\Core\Assets\Models\Skill;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 
 /**
  * Skeleton implementation — opened for later admin component.
@@ -50,11 +49,11 @@ final class SkillRepository implements SkillRepositoryInterface
         if ($sortBy === 'most_enrolled') {
             // Sort by active skills first, then enrollments count
             $query->withCount('enrollments')
-                  ->orderByDesc('is_active')
-                  ->orderBy('enrollments_count', 'desc');
+                ->orderByDesc('is_active')
+                ->orderBy('enrollments_count', 'desc');
         } else {
             $query->orderByDesc('is_active')
-                  ->orderBy('created_at', 'desc');
+                ->orderBy('created_at', 'desc');
         }
 
         return $query->get();

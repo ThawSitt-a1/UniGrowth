@@ -13,6 +13,7 @@ use App\Core\Assets\UseCases\ManageUserAssetsUseCase;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Auth;
 use Mockery;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Tests\TestCase;
 
 final class ManageUserAssetsUseCaseTest extends TestCase
@@ -37,7 +38,7 @@ final class ManageUserAssetsUseCaseTest extends TestCase
             ->once()
             ->andReturn($user);
 
-        $goalModel = new Goal();
+        $goalModel = new Goal;
         $goalModel->id = 1;
         $goalModel->status = 'active';
 
@@ -52,7 +53,7 @@ final class ManageUserAssetsUseCaseTest extends TestCase
             ])
             ->andReturn($goalModel);
 
-$enrollmentRepo = Mockery::mock(EnrollmentRepositoryInterface::class);
+        $enrollmentRepo = Mockery::mock(EnrollmentRepositoryInterface::class);
         $habitRepo = Mockery::mock(HabitRepositoryInterface::class);
 
         $useCase = new ManageUserAssetsUseCase($goalRepo, $enrollmentRepo, $habitRepo);
@@ -112,10 +113,9 @@ $enrollmentRepo = Mockery::mock(EnrollmentRepositoryInterface::class);
 
         $dto = new AssetActionDTO('goal', 'update', ['text' => 'Test']);
 
-        $this->expectException(\Symfony\Component\HttpKernel\Exception\HttpException::class);
+        $this->expectException(HttpException::class);
         $this->expectExceptionMessage('Forbidden action for goals.');
 
         $useCase->execute($dto);
     }
 }
-

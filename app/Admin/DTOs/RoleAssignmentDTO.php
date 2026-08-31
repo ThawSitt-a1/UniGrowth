@@ -9,8 +9,7 @@ final class RoleAssignmentDTO
     public function __construct(
         public readonly int $userId,
         public readonly string $newRole,   // user, editor  (only admins can promote to editor)
-    ) {
-    }
+    ) {}
 
     /**
      * @return array<string, mixed>
@@ -23,4 +22,3 @@ final class RoleAssignmentDTO
         ];
     }
 }
-

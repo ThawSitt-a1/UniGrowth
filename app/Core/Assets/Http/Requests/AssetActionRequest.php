@@ -84,4 +84,3 @@ final class AssetActionRequest extends FormRequest
         return $this->input('type') === 'habit' && $this->input('action') === $action;
     }
 }
-

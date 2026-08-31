@@ -35,15 +35,14 @@ final class ManageSystemSettingsUseCase
 
     public function __construct(
         private readonly SettingsRepositoryInterface $settingsRepository,
-    ) {
-    }
+    ) {}
 
     /**
      * Update a system setting.
      */
     public function execute(SystemSettingsDTO $settings): void
     {
-        if (!in_array($settings->settingsKey, self::ALLOWED_KEYS, true)) {
+        if (! in_array($settings->settingsKey, self::ALLOWED_KEYS, true)) {
             throw new InvalidArgumentException(
                 "Unknown or disallowed setting key: '{$settings->settingsKey}'"
             );
@@ -62,4 +61,3 @@ final class ManageSystemSettingsUseCase
         return $this->settingsRepository->getAll();
     }
 }
-

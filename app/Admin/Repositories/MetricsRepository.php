@@ -119,4 +119,3 @@ final class MetricsRepository implements MetricsRepositoryInterface
         );
     }
 }
-

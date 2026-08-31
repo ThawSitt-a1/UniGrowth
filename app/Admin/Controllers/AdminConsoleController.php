@@ -10,6 +10,7 @@ use App\Admin\DTOs\UserStatusDTO;
 use App\Admin\Http\Requests\ContentActionRequest;
 use App\Admin\Http\Requests\UpdateSystemSettingsRequest;
 use App\Admin\Services\AdminService;
+use App\Overview\Models\Season;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -19,8 +20,7 @@ final class AdminConsoleController
 {
     public function __construct(
         private readonly AdminService $adminService,
-    ) {
-    }
+    ) {}
 
     /**
      * @return array<string, mixed>
@@ -37,7 +37,7 @@ final class AdminConsoleController
             'users' => $this->adminService->getAllUsers($search),
             'search' => $search,
             'roleFilter' => $roleFilter,
-'allUsersAndEditors' => $this->adminService->getAllUsersAndEditors($search, $roleFilter),
+            'allUsersAndEditors' => $this->adminService->getAllUsersAndEditors($search, $roleFilter),
             'unverifiedUsersCount' => $this->adminService->getUnverifiedUsersCount(),
             'editors' => $this->adminService->getAllEditors(),
             'allContent' => $this->adminService->getAllEditorContent(),
@@ -80,7 +80,7 @@ final class AdminConsoleController
         } catch (\Exception $e) {
             return redirect()
                 ->back()
-                ->with('error', 'Failed to update user status: ' . $e->getMessage());
+                ->with('error', 'Failed to update user status: '.$e->getMessage());
         }
     }
 
@@ -112,7 +112,7 @@ final class AdminConsoleController
         } catch (\Exception $e) {
             return redirect()
                 ->back()
-                ->with('error', 'Failed to assign role: ' . $e->getMessage());
+                ->with('error', 'Failed to assign role: '.$e->getMessage());
         }
     }
 
@@ -124,7 +124,7 @@ final class AdminConsoleController
     public function contentAction(ContentActionRequest $request): RedirectResponse
     {
         try {
-$dto = new ContentActionDTO(
+            $dto = new ContentActionDTO(
                 targetId: (int) $request->input('target_id'),
                 targetType: $request->input('target_type'),
                 action: $request->input('action'),
@@ -139,7 +139,7 @@ $dto = new ContentActionDTO(
         } catch (\Exception $e) {
             return redirect()
                 ->back()
-                ->with('error', 'Failed to execute content action: ' . $e->getMessage());
+                ->with('error', 'Failed to execute content action: '.$e->getMessage());
         }
     }
 
@@ -158,7 +158,7 @@ $dto = new ContentActionDTO(
         } catch (\Exception $e) {
             return redirect()
                 ->back()
-                ->with('error', 'Failed to add comment: ' . $e->getMessage());
+                ->with('error', 'Failed to add comment: '.$e->getMessage());
         }
     }
 
@@ -181,7 +181,7 @@ $dto = new ContentActionDTO(
         } catch (\Exception $e) {
             return redirect()
                 ->back()
-                ->with('error', 'Failed to update setting: ' . $e->getMessage());
+                ->with('error', 'Failed to update setting: '.$e->getMessage());
         }
     }
 
@@ -203,14 +203,14 @@ $dto = new ContentActionDTO(
     {
         $screenshotPath = $this->adminService->getBugReportScreenshotPath($id);
 
-        if (!$screenshotPath || !Storage::disk('public')->exists($screenshotPath)) {
+        if (! $screenshotPath || ! Storage::disk('public')->exists($screenshotPath)) {
             abort(404, 'Screenshot not found.');
         }
 
         return Storage::disk('public')->response($screenshotPath);
     }
 
-public function updateBugReport(Request $request, int $id): RedirectResponse
+    public function updateBugReport(Request $request, int $id): RedirectResponse
     {
         $request->validate([
             'status' => ['required', 'string', 'in:pending,reviewed,in_progress,resolved'],
@@ -225,7 +225,7 @@ public function updateBugReport(Request $request, int $id): RedirectResponse
         } catch (\Exception $e) {
             return redirect()
                 ->back()
-                ->with('error', 'Failed to update bug report: ' . $e->getMessage());
+                ->with('error', 'Failed to update bug report: '.$e->getMessage());
         }
     }
 
@@ -240,7 +240,7 @@ public function updateBugReport(Request $request, int $id): RedirectResponse
         } catch (\Exception $e) {
             return redirect()
                 ->back()
-                ->with('error', 'Failed to delete bug report: ' . $e->getMessage());
+                ->with('error', 'Failed to delete bug report: '.$e->getMessage());
         }
     }
 
@@ -264,7 +264,7 @@ public function updateBugReport(Request $request, int $id): RedirectResponse
         } catch (\Exception $e) {
             return redirect()
                 ->back()
-                ->with('error', 'Failed to suspend editor: ' . $e->getMessage());
+                ->with('error', 'Failed to suspend editor: '.$e->getMessage());
         }
     }
 
@@ -287,7 +287,7 @@ public function updateBugReport(Request $request, int $id): RedirectResponse
         } catch (\Exception $e) {
             return redirect()
                 ->back()
-                ->with('error', 'Failed to demote editor: ' . $e->getMessage());
+                ->with('error', 'Failed to demote editor: '.$e->getMessage());
         }
     }
 
@@ -310,11 +310,11 @@ public function updateBugReport(Request $request, int $id): RedirectResponse
         } catch (\Exception $e) {
             return redirect()
                 ->back()
-                ->with('error', 'Failed to delete editor: ' . $e->getMessage());
+                ->with('error', 'Failed to delete editor: '.$e->getMessage());
         }
     }
 
- public function deleteUser(int $id): RedirectResponse
+    public function deleteUser(int $id): RedirectResponse
     {
         $currentUserId = (int) request()->user()->id;
 
@@ -333,7 +333,7 @@ public function updateBugReport(Request $request, int $id): RedirectResponse
         } catch (\Exception $e) {
             return redirect()
                 ->back()
-                ->with('error', 'Failed to delete user: ' . $e->getMessage());
+                ->with('error', 'Failed to delete user: '.$e->getMessage());
         }
     }
 
@@ -348,11 +348,11 @@ public function updateBugReport(Request $request, int $id): RedirectResponse
         } catch (\Exception $e) {
             return redirect()
                 ->back()
-                ->with('error', 'Failed to delete unverified users: ' . $e->getMessage());
+                ->with('error', 'Failed to delete unverified users: '.$e->getMessage());
         }
     }
 
-public function clearEditorRememberToken(int $id): RedirectResponse
+    public function clearEditorRememberToken(int $id): RedirectResponse
     {
         try {
             $this->adminService->clearEditorRememberToken($id);
@@ -363,7 +363,7 @@ public function clearEditorRememberToken(int $id): RedirectResponse
         } catch (\Exception $e) {
             return redirect()
                 ->back()
-                ->with('error', 'Failed to clear remember token: ' . $e->getMessage());
+                ->with('error', 'Failed to clear remember token: '.$e->getMessage());
         }
     }
 
@@ -395,7 +395,7 @@ public function clearEditorRememberToken(int $id): RedirectResponse
         } catch (\Exception $e) {
             return redirect()
                 ->back()
-                ->with('error', 'Failed to start season: ' . $e->getMessage());
+                ->with('error', 'Failed to start season: '.$e->getMessage());
         }
     }
 
@@ -410,7 +410,7 @@ public function clearEditorRememberToken(int $id): RedirectResponse
         } catch (\Exception $e) {
             return redirect()
                 ->back()
-                ->with('error', 'Failed to end season: ' . $e->getMessage());
+                ->with('error', 'Failed to end season: '.$e->getMessage());
         }
     }
 
@@ -425,7 +425,7 @@ public function clearEditorRememberToken(int $id): RedirectResponse
             $seasonId = (int) $request->input('season_id');
             $file = $request->file('season_image');
 
-            $season = \App\Overview\Models\Season::query()->find($seasonId);
+            $season = Season::query()->find($seasonId);
             $oldImage = $season?->image;
 
             if ($file) {
@@ -450,7 +450,7 @@ public function clearEditorRememberToken(int $id): RedirectResponse
         } catch (\Exception $e) {
             return redirect()
                 ->back()
-                ->with('error', 'Failed to update season image: ' . $e->getMessage());
+                ->with('error', 'Failed to update season image: '.$e->getMessage());
         }
     }
 }

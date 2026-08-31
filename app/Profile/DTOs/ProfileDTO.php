@@ -19,8 +19,7 @@ final class ProfileDTO
         public readonly ?array $social_links,
         public readonly string $email_verified_at,
         public readonly string $created_at,
-    ) {
-    }
+    ) {}
 
     public static function fromArray(array $data): self
     {
@@ -62,4 +61,3 @@ final class ProfileDTO
         ];
     }
 }
-

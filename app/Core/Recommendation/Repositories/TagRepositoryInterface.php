@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core\Recommendation\Repositories;
 
+use App\Core\Assets\Models\Skill;
 use Illuminate\Support\Collection;
 
 interface TagRepositoryInterface
@@ -21,7 +22,7 @@ interface TagRepositoryInterface
     /**
      * Fetch all skills the student is NOT enrolled in as candidates.
      *
-     * @return Collection<int, \App\Core\Assets\Models\Skill>
+     * @return Collection<int, Skill>
      */
     public function fetchCandidateSkills(int $userId): Collection;
 }

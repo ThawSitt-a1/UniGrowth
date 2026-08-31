@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Tests\Feature\CoreAssets;
 
 use App\Auth\Models\User;
+use App\Core\Assets\Models\Enrollment;
+use App\Core\Assets\Models\Goal;
+use App\Core\Assets\Models\Skill;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -27,9 +30,9 @@ final class ManageUserAssetsTest extends TestCase
     /** @test */
     public function user_can_create_complete_and_delete_own_goals(): void
     {
-       /** @var \App\Auth\Models\User $user */
-       $user = User::factory()->create(['account_status' => 'allowed']);
-       $this->actingAs($user);
+        /** @var User $user */
+        $user = User::factory()->create(['account_status' => 'allowed']);
+        $this->actingAs($user);
 
         // Create
         $this->post('/core-assets/action', [
@@ -38,7 +41,7 @@ final class ManageUserAssetsTest extends TestCase
             'payload' => ['text' => 'Ship core-service'],
         ])->assertStatus(302)->assertSessionHas('success');
 
-        $goal = \App\Core\Assets\Models\Goal::query()->where('user_id', $user->id)->first();
+        $goal = Goal::query()->where('user_id', $user->id)->first();
         $this->assertNotNull($goal);
         $this->assertSame('active', $goal->status);
 
@@ -66,7 +69,7 @@ final class ManageUserAssetsTest extends TestCase
     /** @test */
     public function user_cannot_create_skill_via_asset_action(): void
     {
-        /** @var \App\Auth\Models\User $user */
+        /** @var User $user */
         $user = User::factory()->create(['account_status' => 'allowed']);
         $this->actingAs($user);
 
@@ -80,12 +83,12 @@ final class ManageUserAssetsTest extends TestCase
     /** @test */
     public function user_can_enroll_in_a_skill(): void
     {
-        /** @var \App\Auth\Models\User $user */
+        /** @var User $user */
         $user = User::factory()->create(['account_status' => 'allowed']);
         $this->actingAs($user);
 
         // Admin pre-seeds skills. In tests we create one directly.
-        $skill = \App\Core\Assets\Models\Skill::query()->create([
+        $skill = Skill::query()->create([
             'title' => 'PHP 8.2 Mastery',
             'tags' => ['php'],
             'description' => 'Learn and master PHP 8.2.',
@@ -108,18 +111,18 @@ final class ManageUserAssetsTest extends TestCase
     /** @test */
     public function user_can_view_own_activity_profile_on_index(): void
     {
-        /** @var \App\Auth\Models\User $user */
+        /** @var User $user */
         $user = User::factory()->create(['account_status' => 'allowed']);
         $this->actingAs($user);
 
         // Create a goal and enrollment to populate the profile
-        \App\Core\Assets\Models\Goal::query()->create([
+        Goal::query()->create([
             'user_id' => $user->id,
             'text' => 'My test goal',
             'status' => 'active',
         ]);
 
-        $skill = \App\Core\Assets\Models\Skill::query()->create([
+        $skill = Skill::query()->create([
             'title' => 'Laravel Testing',
             'tags' => ['php', 'testing'],
             'description' => 'Master Laravel testing.',
@@ -127,7 +130,7 @@ final class ManageUserAssetsTest extends TestCase
             'resource_link' => null,
         ]);
 
-        \App\Core\Assets\Models\Enrollment::query()->create([
+        Enrollment::query()->create([
             'user_id' => $user->id,
             'skill_id' => $skill->id,
             'status' => 'active',
@@ -141,4 +144,3 @@ final class ManageUserAssetsTest extends TestCase
         $response->assertSee('Laravel Testing');
     }
 }
-

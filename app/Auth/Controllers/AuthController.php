@@ -4,8 +4,8 @@ namespace App\Auth\Controllers;
 
 use App\Auth\DTOs\AuthCredentialsDTO;
 use App\Auth\DTOs\ResetPasswordDTO;
-use App\Auth\Http\Requests\RegisterRequest;
 use App\Auth\Http\Requests\LoginRequest;
+use App\Auth\Http\Requests\RegisterRequest;
 use App\Auth\Http\Requests\RequestResetRequest;
 use App\Auth\Http\Requests\ResetPasswordRequest;
 use App\Auth\UseCases\AuthenticateUserUseCase;
@@ -16,14 +16,12 @@ use Illuminate\Http\RedirectResponse;
 
 class AuthController
 {
-    //Constructor Property Promotion
+    // Constructor Property Promotion
     public function __construct(
         private readonly AuthenticateUserUseCase $authenticateUserUseCase,
         private readonly RegisterUserUseCase $registerUserUseCase,
         private readonly ResetPasswordUseCase $resetPasswordUseCase,
-    ) {
-    }
-
+    ) {}
 
     public function login(LoginRequest $request): JsonResponse|RedirectResponse
     {
@@ -59,36 +57,41 @@ class AuthController
         return redirect()->intended('/dashboard');
     }
 
-public function register(RegisterRequest $request): JsonResponse|RedirectResponse
+    public function register(RegisterRequest $request): JsonResponse|RedirectResponse
     {
         $dto = new AuthCredentialsDTO(
             email: $request->string('email')->toString(),
             password: $request->string('password')->toString(),
             username: $request->string('username')->toString(),
             remember: $request->boolean('remember'),
-            agreedToTerms: $request->boolean('agreed_to_terms'),
+            academic_year: $request->string('academic_year')->toString(),
+            major: $request->string('major')->toString(),
+            university_name: $request->string('university_name')->toString(),
+            terms_version: $request->string('terms_version')->toString(),
+            privacy_policy_version: $request->string('privacy_policy_version')->toString(),
+            consented: $request->boolean('agreed_to_terms'),
         );
 
-    try {
-        $user = $this->registerUserUseCase->execute($dto);
-    } catch (\RuntimeException $e) {
-        if ($request->expectsJson()) {
-            return response()->json([
-                'message' => $e->getMessage(),
-            ], 403);
+        try {
+            $user = $this->registerUserUseCase->execute($dto);
+        } catch (\RuntimeException $e) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => $e->getMessage(),
+                ], 403);
+            }
+
+            return redirect()->back()
+                ->withInput($request->except('password'))
+                ->with('error', $e->getMessage());
         }
 
-        return redirect()->back()
-            ->withInput($request->except('password'))
-            ->with('error', $e->getMessage());
-    }
-
-    if ($request->expectsJson()) {
-        return response()->json([
-           'message' => 'User registered successfully. Please verify your email.',
-           'user' => $user,
-        ], 201); // 201 Created
-    }
+        if ($request->expectsJson()) {
+            return response()->json([
+                'message' => 'User registered successfully. Please verify your email.',
+                'user' => $user,
+            ], 201); // 201 Created
+        }
 
         // Web flow: redirect to login page with verification message (no auto-login)
         return redirect()->route('login')
@@ -145,6 +148,7 @@ public function register(RegisterRequest $request): JsonResponse|RedirectRespons
 
         if ($request->expectsJson()) {
             $statusCode = $result['success'] ? 200 : 400;
+
             return response()->json([
                 'message' => $result['message'],
             ], $statusCode);

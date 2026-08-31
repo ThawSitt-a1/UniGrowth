@@ -20,7 +20,7 @@ final class Skill extends Model
         'tags',
         'description',
         'content',
-'resource_link',
+        'resource_link',
         'resource_links',
         'project_suggestion',
         'is_active',
@@ -40,4 +40,3 @@ final class Skill extends Model
         return $this->hasMany(Enrollment::class, 'skill_id');
     }
 }
-

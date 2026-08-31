@@ -4,17 +4,19 @@ declare(strict_types=1);
 
 namespace App\Overview\Repositories;
 
+use App\Core\Assets\Models\Enrollment;
+use App\Core\Assets\Models\Goal;
 use Illuminate\Support\Collection;
 
 interface StudentOverviewRepositoryInterface
 {
     /**
-     * @return Collection<int, \App\Core\Assets\Models\Goal>
+     * @return Collection<int, Goal>
      */
     public function fetchActiveGoals(int $userId): Collection;
 
     /**
-     * @return Collection<int, \App\Core\Assets\Models\Goal>
+     * @return Collection<int, Goal>
      */
     public function fetchCompletedGoals(int $userId): Collection;
 
@@ -23,13 +25,13 @@ interface StudentOverviewRepositoryInterface
     public function countCompletedGoals(int $userId): int;
 
     /**
-     * @return Collection<int, \App\Core\Assets\Models\Enrollment>
+     * @return Collection<int, Enrollment>
      */
     public function fetchEnrolledSkills(int $userId): Collection;
 
     public function countEnrolledSkills(int $userId): int;
 
-public function countTotalQuestionsAnswered(int $userId, ?int $seasonId = null): int;
+    public function countTotalQuestionsAnswered(int $userId, ?int $seasonId = null): int;
 
     public function countTotalAttempts(int $userId, ?int $seasonId = null): int;
 

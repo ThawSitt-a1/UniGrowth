@@ -19,8 +19,7 @@ final class RankingAggregatorService
 
     public function __construct(
         private readonly AssessmentRepositoryInterface $assessmentRepository,
-    ) {
-    }
+    ) {}
 
     /**
      * Calculate weighted score based on difficulty multiplier.
@@ -32,7 +31,7 @@ final class RankingAggregatorService
         return $rawScore * $multiplier;
     }
 
-/**
+    /**
      * Update student proficiency after an attempt.
      *
      * The lifetime `platform_score` is incremented by the marks earned from
@@ -50,4 +49,3 @@ final class RankingAggregatorService
         $this->assessmentRepository->incrementUserPlatformScore($studentId, $marksEarned);
     }
 }
-

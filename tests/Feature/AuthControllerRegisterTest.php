@@ -21,6 +21,9 @@ class AuthControllerRegisterTest extends TestCase
             'academic_year' => '',
             'major' => '',
             'university_name' => '',
+            'terms_version' => '1.0',
+            'privacy_policy_version' => '1.0',
+            'agreed_to_terms' => true,
             // missing g-recaptcha-response
         ]);
 
@@ -42,6 +45,9 @@ class AuthControllerRegisterTest extends TestCase
             'academic_year' => '2nd Year',
             'major' => 'Computer Science',
             'university_name' => 'University of Nairobi',
+            'terms_version' => '1.0',
+            'privacy_policy_version' => '1.0',
+            'agreed_to_terms' => true,
         ]);
 
         $response->assertStatus(201)
@@ -65,6 +71,9 @@ class AuthControllerRegisterTest extends TestCase
             'academic_year' => '3rd Year',
             'major' => 'Engineering',
             'university_name' => 'Strathmore University',
+            'terms_version' => '1.0',
+            'privacy_policy_version' => '1.0',
+            'agreed_to_terms' => true,
         ]);
 
         // Should redirect to login page (since user must verify email first)
@@ -75,5 +84,3 @@ class AuthControllerRegisterTest extends TestCase
         $this->assertGuest();
     }
 }
-
-

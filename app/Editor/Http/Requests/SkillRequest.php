@@ -42,7 +42,7 @@ final class SkillRequest extends FormRequest
             'tags.*' => ['string', 'max:50'],
             'content' => ['nullable', 'string'],
             'resource_link' => ['nullable', 'string', 'url', 'max:2048'],
-'resource_links' => ['nullable', 'array'],
+            'resource_links' => ['nullable', 'array'],
             'resource_links.*.url' => ['nullable', 'url', 'max:2048'],
             'resource_links.*.label' => ['nullable', 'string', 'max:255'],
             'project_suggestion' => ['nullable', 'string'],

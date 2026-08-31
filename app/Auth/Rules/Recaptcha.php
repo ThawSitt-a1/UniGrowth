@@ -12,14 +12,15 @@ class Recaptcha implements Rule
     {
         if (empty($value)) {
             \Log::error('reCAPTCHA: No token received from frontend!');
+
             return false;
         }
-        if (!is_string($value) || $value === '') {
+        if (! is_string($value) || $value === '') {
             return false;
         }
 
         $secret = config('services.recaptcha.secret');
-        if (!is_string($secret) || $secret === '') {
+        if (! is_string($secret) || $secret === '') {
             return false;
         }
 
@@ -29,7 +30,7 @@ class Recaptcha implements Rule
             'remoteip' => request()->ip(),
         ]);
 
-        if (!$response instanceof Response) {
+        if (! $response instanceof Response) {
             return false;
         }
 
@@ -50,4 +51,3 @@ class Recaptcha implements Rule
         return 'Captcha verification failed.';
     }
 }
-

@@ -40,20 +40,21 @@ final class QuestionRequest extends FormRequest
             // matching the behaviour in EditorConsoleController::saveQuestion.
             $options = [];
             foreach ($rawOptions as $opt) {
-                if (!empty(trim((string) ($opt['option_text'] ?? '')))) {
+                if (! empty(trim((string) ($opt['option_text'] ?? '')))) {
                     $options[] = $opt;
                 }
             }
 
             if (empty($options)) {
                 $validator->errors()->add('options', 'Options are required.');
+
                 return;
             }
 
             // Count correct answers
             $correctCount = 0;
             foreach ($options as $opt) {
-                if (!empty($opt['is_correct'])) {
+                if (! empty($opt['is_correct'])) {
                     $correctCount++;
                 }
             }
@@ -76,4 +77,3 @@ final class QuestionRequest extends FormRequest
         });
     }
 }
-

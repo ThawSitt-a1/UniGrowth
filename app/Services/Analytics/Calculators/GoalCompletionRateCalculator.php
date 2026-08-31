@@ -26,4 +26,3 @@ final class GoalCompletionRateCalculator implements MetricCalculatorInterface
         return ($done / $total) * 100.0;
     }
 }
-

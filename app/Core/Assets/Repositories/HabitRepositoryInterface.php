@@ -12,4 +12,3 @@ interface HabitRepositoryInterface
 
     public function delete(int $id): bool;
 }
-

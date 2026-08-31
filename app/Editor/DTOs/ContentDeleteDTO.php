@@ -9,6 +9,5 @@ final class ContentDeleteDTO
     public function __construct(
         public readonly int $targetId,
         public readonly int $editorId,
-    ) {
-    }
+    ) {}
 }

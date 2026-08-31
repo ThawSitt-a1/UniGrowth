@@ -3,13 +3,14 @@
 namespace Tests\Unit\Assessment;
 
 use App\Assessment\DTO\QuizPayloadDTO;
-use App\Assessment\Models\Question;
+use App\Assessment\Models\Attempt;
 use App\Assessment\Models\Option;
+use App\Assessment\Models\Question;
 use App\Assessment\Models\StudentAnsweredQuestion;
-use App\Assessment\Repositories\AssessmentRepository;
 use App\Assessment\Services\QuizDeliveryService;
 use App\Auth\Models\User;
 use App\Core\Assets\Models\Skill;
+use App\Overview\Models\Season;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -18,7 +19,9 @@ class QuizDeliveryServiceTest extends TestCase
     use RefreshDatabase;
 
     private User $user;
+
     private Skill $skill;
+
     private QuizDeliveryService $service;
 
     protected function setUp(): void
@@ -29,7 +32,7 @@ class QuizDeliveryServiceTest extends TestCase
         $this->skill = Skill::factory()->create(['title' => 'Test Skill']);
 
         // Create an active season so QuizDeliveryService can check it
-        \App\Overview\Models\Season::query()->create([
+        Season::query()->create([
             'name' => 'Test Season',
             'started_at' => now()->subDays(10),
             'ends_at' => now()->addDays(10),
@@ -104,7 +107,7 @@ class QuizDeliveryServiceTest extends TestCase
         }
 
         // Create a real attempt first to satisfy FK constraint
-        $attempt = \App\Assessment\Models\Attempt::query()->create([
+        $attempt = Attempt::query()->create([
             'user_id' => $this->user->id,
             'skill_id' => $this->skill->id,
             'score' => 20,
@@ -131,12 +134,12 @@ class QuizDeliveryServiceTest extends TestCase
         $this->assertEquals(5, $quiz->totalQuestions);
 
         // Verify none of the returned questions are the answered ones
-        $returnedIds = array_map(fn($q) => $q['id'], $quiz->questions);
+        $returnedIds = array_map(fn ($q) => $q['id'], $quiz->questions);
         $this->assertNotContains((int) $questions[0]->id, $returnedIds);
         $this->assertNotContains((int) $questions[1]->id, $returnedIds);
     }
 
-/** @test */
+    /** @test */
     public function it_throws_exception_when_no_unseen_questions(): void
     {
         // Create 0 questions - should throw since none available
@@ -170,4 +173,3 @@ class QuizDeliveryServiceTest extends TestCase
         $this->assertCount(5, $quiz->questions);
     }
 }
-

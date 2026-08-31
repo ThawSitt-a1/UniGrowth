@@ -9,4 +9,3 @@ interface UserRepositoryInterface
     /** @return array<string, mixed> */
     public function fetchActivityProfile(int $userId): array;
 }
-

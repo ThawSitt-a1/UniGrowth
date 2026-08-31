@@ -12,6 +12,5 @@ final class QuestionOptionDTO
         public readonly int $questionId,
         public readonly string $optionText,
         public readonly bool $isCorrect,
-    ) {
-    }
+    ) {}
 }

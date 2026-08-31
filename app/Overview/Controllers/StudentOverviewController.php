@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Overview\Controllers;
 
-use App\Overview\Services\StudentOverviewService;
 use App\Overview\Services\SeasonService;
+use App\Overview\Services\StudentOverviewService;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 
 final class StudentOverviewController
@@ -13,8 +14,7 @@ final class StudentOverviewController
     public function __construct(
         private readonly StudentOverviewService $overviewService,
         private readonly SeasonService $seasonService,
-    ) {
-    }
+    ) {}
 
     /**
      * Get the full student overview dashboard.
@@ -27,7 +27,7 @@ final class StudentOverviewController
 
         try {
             $overview = $this->overviewService->getStudentOverview($studentId);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             return response()->json(['error' => 'Student not found.'], 404);
         }
 
@@ -79,4 +79,3 @@ final class StudentOverviewController
         ]);
     }
 }
-

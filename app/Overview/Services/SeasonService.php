@@ -18,8 +18,7 @@ final class SeasonService
         private readonly SeasonRepositoryInterface $seasonRepo,
         private readonly SeasonScoreRepositoryInterface $seasonScoreRepo,
         private readonly QuestionScoringService $scoringService,
-    ) {
-    }
+    ) {}
 
     /**
      * Get the current active season info.
@@ -61,7 +60,6 @@ final class SeasonService
         );
     }
 
-
     /**
      * Ensure an active season exists.
      * Also updates the highest_score for the season.
@@ -72,7 +70,7 @@ final class SeasonService
     {
         $season = $this->seasonRepo->getCurrentActiveSeason();
 
-        if (!$season) {
+        if (! $season) {
             throw new \RuntimeException(
                 'No active season is running. Scores can only be recorded during an active season.'
             );
@@ -134,7 +132,7 @@ final class SeasonService
     {
         $currentSeason = $this->seasonRepo->getCurrentActiveSeason();
 
-        if (!$currentSeason) {
+        if (! $currentSeason) {
             throw new \RuntimeException('No active season to end.');
         }
 
@@ -177,7 +175,7 @@ final class SeasonService
         ]);
     }
 
-/**
+    /**
      * Get season leaderboard with privacy-aware display.
      *
      * Each entry includes flags describing the user's privacy state:
@@ -213,10 +211,10 @@ final class SeasonService
                 'last_active_at' => $entry->last_active_at?->toISOString(),
                 'is_hidden_leaderboards' => $isHiddenLeaderboards,
                 'is_profile_private' => $isProfilePrivate,
-                'is_profile_viewable' => !$isProfilePrivate && !$isHiddenLeaderboards,
+                'is_profile_viewable' => ! $isProfilePrivate && ! $isHiddenLeaderboards,
             ];
 
-            if (!$isHiddenLeaderboards && !$isProfilePrivate && $user) {
+            if (! $isHiddenLeaderboards && ! $isProfilePrivate && $user) {
                 $base['avatar_path'] = $user->avatar_path;
                 $base['university_name'] = $user->university_name;
                 $base['major'] = $user->major;
@@ -242,7 +240,7 @@ final class SeasonService
     {
         $seasons = $this->seasonRepo->getSeasonHistory($limit);
 
-        return $seasons->map(fn(Season $s) => [
+        return $seasons->map(fn (Season $s) => [
             'season_id' => $s->id,
             'name' => $s->name,
             'started_at' => $s->started_at?->toISOString(),
@@ -259,4 +257,3 @@ final class SeasonService
         $this->seasonRepo->updateImage($seasonId, $imagePath);
     }
 }
-

@@ -10,6 +10,7 @@ use App\Assessment\UseCases\EvaluateQuizUseCase;
 use App\Core\Assets\Models\Skill;
 use App\Overview\Services\SeasonService;
 use App\Overview\Services\StudentOverviewService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -21,8 +22,7 @@ final class TestAssessmentController
         private readonly StudentDashboardService $dashboardService,
         private readonly SeasonService $seasonService,
         private readonly StudentOverviewService $overviewService,
-    ) {
-    }
+    ) {}
 
     /**
      * Browser-based test UI for the Skill Assessment & Ranking system.
@@ -33,7 +33,7 @@ final class TestAssessmentController
     {
         $studentId = (int) $request->user()->getAuthIdentifier();
         $skills = Skill::query()->orderBy('title')->get(['id', 'title']);
-$selectedSkillId = (int) $request->query('skill_id');
+        $selectedSkillId = (int) $request->query('skill_id');
         $quiz = null;
         $result = null;
         $dashboard = null;
@@ -45,7 +45,7 @@ $selectedSkillId = (int) $request->query('skill_id');
             } catch (\RuntimeException $e) {
                 session()->flash('error', $e->getMessage());
             } catch (\Exception $e) {
-                session()->flash('error', 'Could not generate quiz: ' . $e->getMessage());
+                session()->flash('error', 'Could not generate quiz: '.$e->getMessage());
             }
         }
 
@@ -83,7 +83,7 @@ $selectedSkillId = (int) $request->query('skill_id');
      *
      * POST /assessment/test/submit
      */
-    public function submit(Request $request): \Illuminate\Http\RedirectResponse
+    public function submit(Request $request): RedirectResponse
     {
         $studentId = (int) $request->user()->getAuthIdentifier();
         $skillId = (int) $request->input('skill_id');
@@ -108,8 +108,7 @@ $selectedSkillId = (int) $request->query('skill_id');
         } catch (\Exception $e) {
             return redirect()
                 ->route('assessment.test.index', ['skill_id' => $skillId])
-                ->with('error', 'Error: ' . $e->getMessage());
+                ->with('error', 'Error: '.$e->getMessage());
         }
     }
 }
-

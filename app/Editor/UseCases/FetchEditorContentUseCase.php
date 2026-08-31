@@ -11,8 +11,7 @@ final class FetchEditorContentUseCase
 {
     public function __construct(
         private readonly EditorContentRepositoryInterface $contentRepository,
-    ) {
-    }
+    ) {}
 
     public function execute(ContentQueryFilterDTO $filters): array
     {

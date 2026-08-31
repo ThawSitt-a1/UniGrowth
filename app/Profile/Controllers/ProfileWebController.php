@@ -2,19 +2,20 @@
 
 namespace App\Profile\Controllers;
 
-use App\Profile\Http\Requests\UpdateProfileRequest;
-use App\Profile\Http\Requests\UpdatePreferencesRequest;
-use App\Profile\Http\Requests\UploadAvatarRequest;
-use App\Profile\Http\Requests\UpdatePrivacySocialRequest;
+use App\Auth\Models\User;
 use App\Profile\Http\Requests\BugReportRequest;
 use App\Profile\Http\Requests\UpdateAccountRequest;
-use App\Profile\UseCases\ManageProfileUseCase;
-use App\Profile\UseCases\UpdatePreferencesUseCase;
-use App\Profile\UseCases\UploadProfileAssetUseCase;
-use App\Profile\UseCases\ManagePrivacyAndSocialUseCase;
+use App\Profile\Http\Requests\UpdatePreferencesRequest;
+use App\Profile\Http\Requests\UpdatePrivacySocialRequest;
+use App\Profile\Http\Requests\UpdateProfileRequest;
+use App\Profile\Http\Requests\UploadAvatarRequest;
 use App\Profile\UseCases\GenerateReportUseCase;
+use App\Profile\UseCases\ManagePrivacyAndSocialUseCase;
+use App\Profile\UseCases\ManageProfileUseCase;
 use App\Profile\UseCases\SubmitBugReportUseCase;
 use App\Profile\UseCases\UpdateAccountUseCase;
+use App\Profile\UseCases\UpdatePreferencesUseCase;
+use App\Profile\UseCases\UploadProfileAssetUseCase;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -29,8 +30,7 @@ class ProfileWebController
         private readonly GenerateReportUseCase $generateReportUseCase,
         private readonly SubmitBugReportUseCase $submitBugReportUseCase,
         private readonly UpdateAccountUseCase $updateAccountUseCase,
-    ) {
-    }
+    ) {}
 
     /**
      * Show the profile page.
@@ -46,16 +46,16 @@ class ProfileWebController
         return view('profile.index', ['profile' => $profile->toArray()]);
     }
 
-/**
+    /**
      * Show another user's public profile.
      *
      * A profile is viewable only when the target user has disabled BOTH
      * "Make my profile private" and "Hide from leaderboards". Otherwise the
      * view renders a "profile is private" notice.
      */
-public function showPublic(Request $request, int $user): View|RedirectResponse
+    public function showPublic(Request $request, int $user): View|RedirectResponse
     {
-        $target = \App\Auth\Models\User::query()->with('socialAccounts')->find($user);
+        $target = User::query()->with('socialAccounts')->find($user);
 
         if ($target === null) {
             return redirect()->route('dashboard')->with('error', 'User not found.');
@@ -79,7 +79,7 @@ public function showPublic(Request $request, int $user): View|RedirectResponse
                 'username' => $target->username,
                 'avatar_path' => $target->avatar_path,
                 'platform_score' => $target->platform_score,
-                'rank_title' => \App\Auth\Models\User::rankTitle((float) ($target->platform_score ?? 0)),
+                'rank_title' => User::rankTitle((float) ($target->platform_score ?? 0)),
                 'academic_year' => $target->academic_year,
                 'major' => $target->major,
                 'university_name' => $target->university_name,
@@ -118,7 +118,7 @@ public function showPublic(Request $request, int $user): View|RedirectResponse
             $request->validated()
         );
 
-        if (!$updated) {
+        if (! $updated) {
             return redirect()->route('profile.edit')
                 ->with('error', 'No changes were made to your profile.');
         }
@@ -239,8 +239,8 @@ public function showPublic(Request $request, int $user): View|RedirectResponse
     }
 
     /**
-      * Change password or deactivate account.
-      */
+     * Change password or deactivate account.
+     */
     public function updateAccount(UpdateAccountRequest $request): RedirectResponse
     {
         $action = $request->string('action')->toString();
@@ -289,4 +289,3 @@ public function showPublic(Request $request, int $user): View|RedirectResponse
             ->with('status', 'Your account has been permanently deleted. We\'re sorry to see you go.');
     }
 }
-

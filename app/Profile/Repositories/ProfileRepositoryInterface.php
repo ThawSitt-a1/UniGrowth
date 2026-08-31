@@ -10,4 +10,3 @@ interface ProfileRepositoryInterface
 
     public function updateAvatarPath(int $userId, string $path): bool;
 }
-

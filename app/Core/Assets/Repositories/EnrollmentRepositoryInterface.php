@@ -12,4 +12,3 @@ interface EnrollmentRepositoryInterface
 
     public function unenroll(int $userId, int $skillId): bool;
 }
-

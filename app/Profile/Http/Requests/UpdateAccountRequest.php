@@ -12,7 +12,7 @@ class UpdateAccountRequest extends FormRequest
         return true;
     }
 
-public function rules(): array
+    public function rules(): array
     {
         return [
             'action' => ['required', 'string', 'in:change_password,deactivate'],
@@ -52,4 +52,3 @@ public function rules(): array
         ];
     }
 }
-

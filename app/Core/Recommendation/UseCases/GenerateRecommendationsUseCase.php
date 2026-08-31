@@ -13,8 +13,7 @@ final class GenerateRecommendationsUseCase
     public function __construct(
         private readonly TagRepositoryInterface $tagRepository,
         private readonly TagIntersectionSimilarityService $similarityService,
-    ) {
-    }
+    ) {}
 
     /**
      * Generate personalized skill recommendations for a student.
