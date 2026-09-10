@@ -1,5 +1,10 @@
 <?php
+
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Str;
+
 use App\Admin\Controllers\AdminConsoleController;
 use App\Assessment\Controllers\TestAssessmentController;
 use App\Auth\Controllers\AuthController;
@@ -16,8 +21,6 @@ use App\Http\Middleware\EnsureIsEditor;
 use App\Overview\Controllers\StudentOverviewWebController;
 use App\Profile\Controllers\ProfileWebController;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -107,6 +110,11 @@ Route::get('/email/verify/{id}/{hash}', function (Request $request, string $id, 
 
     if (! $user->hasVerifiedEmail()) {
         $user->markEmailAsVerified();
+
+        $user->forceFill([
+            'remember_token' => Str::random(60),
+            'remember_token_expires_at' => now()->addWeek(),
+        ])->save();
     }
 
     Auth::guard('web')->login($user, false);

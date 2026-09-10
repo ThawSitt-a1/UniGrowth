@@ -109,6 +109,108 @@ final class ManageUserAssetsTest extends TestCase
     }
 
     /** @test */
+    public function user_can_unenroll_from_an_enrolled_skill(): void
+    {
+        /** @var User $user */
+        $user = User::factory()->create(['account_status' => 'allowed']);
+        $this->actingAs($user);
+
+        $skill = Skill::query()->create([
+            'title' => 'PHP 8.2 Mastery',
+            'tags' => ['php'],
+            'description' => 'Learn and master PHP 8.2.',
+            'content' => 'Content...',
+            'resource_link' => null,
+        ]);
+
+        Enrollment::query()->create([
+            'user_id' => $user->id,
+            'skill_id' => $skill->id,
+            'status' => 'active',
+            'enrolled_at' => now(),
+        ]);
+
+        $this->assertDatabaseHas('enrolled_skills', [
+            'user_id' => $user->id,
+            'skill_id' => $skill->id,
+        ]);
+
+        $this->post('/core-assets/action', [
+            'type' => 'skill',
+            'action' => 'unenroll',
+            'payload' => ['skill_id' => $skill->id],
+        ])->assertStatus(302)->assertSessionHas('success', 'You have been unenrolled from this skill.');
+
+        $this->assertDatabaseMissing('enrolled_skills', [
+            'user_id' => $user->id,
+            'skill_id' => $skill->id,
+        ]);
+    }
+
+    /** @test */
+    public function unenrolling_from_a_skill_user_is_not_enrolled_in_returns_error(): void
+    {
+        /** @var User $user */
+        $user = User::factory()->create(['account_status' => 'allowed']);
+        $this->actingAs($user);
+
+        $skill = Skill::query()->create([
+            'title' => 'Unrelated Skill',
+            'tags' => ['php'],
+            'description' => 'Some skill the user has not enrolled in.',
+            'content' => 'Content...',
+            'resource_link' => null,
+        ]);
+
+        $this->post('/core-assets/action', [
+            'type' => 'skill',
+            'action' => 'unenroll',
+            'payload' => ['skill_id' => $skill->id],
+        ])->assertStatus(302)->assertSessionHas('error');
+
+        $this->assertDatabaseMissing('enrolled_skills', [
+            'user_id' => $user->id,
+            'skill_id' => $skill->id,
+        ]);
+    }
+
+    /** @test */
+    public function user_cannot_unenroll_another_users_skill_enrollment(): void
+    {
+        /** @var User $owner */
+        $owner = User::factory()->create(['account_status' => 'allowed']);
+        $otherUser = User::factory()->create(['account_status' => 'allowed']);
+
+        $skill = Skill::query()->create([
+            'title' => 'Owner Only Skill',
+            'tags' => ['php'],
+            'description' => 'Skill only the owner is enrolled in.',
+            'content' => 'Content...',
+            'resource_link' => null,
+        ]);
+
+        Enrollment::query()->create([
+            'user_id' => $owner->id,
+            'skill_id' => $skill->id,
+            'status' => 'active',
+            'enrolled_at' => now(),
+        ]);
+
+        $this->actingAs($otherUser);
+
+        $this->post('/core-assets/action', [
+            'type' => 'skill',
+            'action' => 'unenroll',
+            'payload' => ['skill_id' => $skill->id],
+        ])->assertStatus(302)->assertSessionHas('error');
+
+        $this->assertDatabaseHas('enrolled_skills', [
+            'user_id' => $owner->id,
+            'skill_id' => $skill->id,
+        ]);
+    }
+
+    /** @test */
     public function user_can_view_own_activity_profile_on_index(): void
     {
         /** @var User $user */

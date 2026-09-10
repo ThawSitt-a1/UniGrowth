@@ -33,7 +33,7 @@ class ProfileUpdateManager extends Component
     {
         return [
             'profile_photo' => ['nullable', 'image', 'mimes:jpeg,png', 'max:2048'],
-            'username' => ['required', 'string', 'max:50', 'alpha_dash'],
+            'username' => ['required', 'string', 'max:50', 'regex:/^[a-zA-Z0-9._\s-]+$/'],
             'major' => ['nullable', 'string', 'max:100'],
             'academic_year' => ['nullable', 'string', 'max:50'],
             'university_name' => ['nullable', 'string', 'max:150'],
@@ -47,7 +47,7 @@ class ProfileUpdateManager extends Component
             'profile_photo.max' => 'Profile picture size must not exceed 2MB.',
             'profile_photo.mimes' => 'Profile picture must be a JPG or PNG file.',
             'username.required' => 'Username is required.',
-            'username.alpha_dash' => 'Username may only contain letters, numbers, dashes, and underscores.',
+            'username.regex' => 'The username may only contain letters, numbers, spaces, dots, underscores, and hyphens.',
             'username.max' => 'Username cannot exceed 50 characters.',
         ];
     }

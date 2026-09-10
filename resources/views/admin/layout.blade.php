@@ -4,9 +4,139 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Admin Console') — {{ $platformName ?? 'UniGrowth' }}</title>
+    @include('partials.preconnect')
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script>
+        (function() {
+            const html = document.documentElement;
+            const saved = localStorage.getItem('adminTheme');
+            if (saved === 'dark') {
+                html.setAttribute('data-bs-theme', 'dark');
+            }
+            html.classList.add('no-transition');
+            window.addEventListener('load', function() {
+                html.classList.remove('no-transition');
+            });
+        })();
+    </script>
     <style>
+        [data-bs-theme="dark"] body { background: #0f172a !important; }
+        [data-bs-theme="dark"] .admin-main { background: #0f172a !important; }
+        [data-bs-theme="dark"] .admin-topbar.bg-body { background-color: #1e293b !important; }
+        [data-bs-theme="dark"] .content-card,
+        [data-bs-theme="dark"] .stat-card { background: #1e293b !important; border-color: #334155 !important; }
+        [data-bs-theme="dark"] .page-title { color: #f1f5f9 !important; }
+        [data-bs-theme="dark"] .table-admin td,
+        [data-bs-theme="dark"] .table-admin th { color: #e2e8f0 !important; }
+        [data-bs-theme="dark"] .table-admin thead th { color: #94a3b8 !important; }
+        [data-bs-theme="dark"] .text-muted { color: #94a3b8 !important; }
+        [data-bs-theme="dark"] .text-dark { color: #f1f5f9 !important; }
+        [data-bs-theme="dark"] .text-success { color: #6ee7b7 !important; }
+        [data-bs-theme="dark"] [style*="color: #1a1a2e"] { color: #f1f5f9 !important; }
+        [data-bs-theme="dark"] .page-title { color: #f1f5f9 !important; }
+        [data-bs-theme="dark"] hr { border-color: #334155 !important; }
+        [data-bs-theme="dark"] .empty-state i,
+        [data-bs-theme="dark"] .empty-state p { color: #94a3b8 !important; }
+        [data-bs-theme="dark"] .badge.bg-secondary { background-color: #334155 !important; color: #e2e8f0 !important; }
+        [data-bs-theme="dark"] ::-webkit-scrollbar { width: 10px; height: 10px; }
+        [data-bs-theme="dark"] ::-webkit-scrollbar-track { background: #0f172a; }
+        [data-bs-theme="dark"] ::-webkit-scrollbar-thumb { background: #334155; border-radius: 6px; }
+        [data-bs-theme="dark"] .stat-icon[style*="background: #ede9fe"],
+        [data-bs-theme="dark"] [style*="background: #ede9fe"] { background-color: #2e1065 !important; }
+        [data-bs-theme="dark"] .stat-icon[style*="color: #6d28d9"],
+        [data-bs-theme="dark"] [style*="color: #6d28d9"] { color: #c4b5fd !important; }
+        [data-bs-theme="dark"] .stat-icon[style*="background: #dbeafe"],
+        [data-bs-theme="dark"] [style*="background: #dbeafe"] { background-color: #1e3a8a !important; }
+        [data-bs-theme="dark"] .stat-icon[style*="color: #1e40af"],
+        [data-bs-theme="dark"] [style*="color: #1e40af"] { color: #93c5fd !important; }
+        [data-bs-theme="dark"] .stat-icon[style*="background: #fef3c7"],
+        [data-bs-theme="dark"] [style*="background: #fef3c7"] { background-color: #78350f !important; }
+        [data-bs-theme="dark"] .stat-icon[style*="color: #b45309"],
+        [data-bs-theme="dark"] [style*="color: #b45309"] { color: #fcd34d !important; }
+        [data-bs-theme="dark"] .stat-icon[style*="background: #fee2e2"],
+        [data-bs-theme="dark"] [style*="background: #fee2e2"] { background-color: #7f1d1d !important; }
+        [data-bs-theme="dark"] .stat-icon[style*="color: #dc2626"],
+        [data-bs-theme="dark"] [style*="color: #dc2626"] { color: #fca5a5 !important; }
+        [data-bs-theme="dark"] .stat-icon[style*="background: #ecfdf5"],
+        [data-bs-theme="dark"] [style*="background: #ecfdf5"] { background-color: #064e3b !important; }
+        [data-bs-theme="dark"] .stat-icon[style*="color: #059669"],
+        [data-bs-theme="dark"] [style*="color: #059669"] { color: #6ee7b7 !important; }
+        [data-bs-theme="dark"] .stat-icon[style*="background: #e0f2fe"],
+        [data-bs-theme="dark"] [style*="background: #e0f2fe"] { background-color: #164e63 !important; }
+        [data-bs-theme="dark"] .stat-icon[style*="color: #0369a1"],
+        [data-bs-theme="dark"] [style*="color: #0369a1"] { color: #7dd3fc !important; }
+        [data-bs-theme="dark"] .stat-icon[style*="background: #d1fae5"],
+        [data-bs-theme="dark"] [style*="background: #d1fae5"] { background-color: #065f46 !important; }
+        [data-bs-theme="dark"] .stat-icon[style*="color: #065f46"],
+        [data-bs-theme="dark"] [style*="color: #065f46"] { color: #6ee7b7 !important; }
+        [data-bs-theme="dark"] .badge-role.user { background: #164e63 !important; color: #7dd3fc !important; }
+        [data-bs-theme="dark"] .badge-role.editor { background: #78350f !important; color: #fcd34d !important; }
+        [data-bs-theme="dark"] .badge-role.admin { background: #2e1065 !important; color: #c4b5fd !important; }
+        [data-bs-theme="dark"] .badge-status.allowed,
+        [data-bs-theme="dark"] .badge-status.resolved { background: #064e3b !important; color: #6ee7b7 !important; }
+        [data-bs-theme="dark"] .badge-status.banned { background: #7f1d1d !important; color: #fca5a5 !important; }
+        [data-bs-theme="dark"] .badge-status.suspended,
+        [data-bs-theme="dark"] .badge-status.pending { background: #78350f !important; color: #fcd34d !important; }
+        [data-bs-theme="dark"] .badge-status.reviewed { background: #164e63 !important; color: #7dd3fc !important; }
+        [data-bs-theme="dark"] .badge-status.in_progress { background: #1e3a8a !important; color: #93c5fd !important; }
+        [data-bs-theme="dark"] .btn-admin-action { border-color: #334155 !important; }
+        [data-bs-theme="dark"] .btn-admin-action.ban,
+        [data-bs-theme="dark"] .btn-admin-action.delete { background: #7f1d1d !important; color: #fca5a5 !important; border-color: #991b1b !important; }
+        [data-bs-theme="dark"] .btn-admin-action.ban:hover,
+        [data-bs-theme="dark"] .btn-admin-action.delete:hover { background: #991b1b !important; border-color: #b91c1c !important; }
+        [data-bs-theme="dark"] .btn-admin-action.suspend,
+        [data-bs-theme="dark"] .btn-admin-action.demote { background: #78350f !important; color: #fcd34d !important; border-color: #92400e !important; }
+        [data-bs-theme="dark"] .btn-admin-action.suspend:hover,
+        [data-bs-theme="dark"] .btn-admin-action.demote:hover { background: #92400e !important; }
+        [data-bs-theme="dark"] .btn-admin-action.promote,
+        [data-bs-theme="dark"] .btn-admin-action.restore,
+        [data-bs-theme="dark"] .btn-admin-action.complete { background: #064e3b !important; color: #6ee7b7 !important; border-color: #14532d !important; }
+        [data-bs-theme="dark"] .btn-admin-action.promote:hover,
+        [data-bs-theme="dark"] .btn-admin-action.restore:hover,
+        [data-bs-theme="dark"] .btn-admin-action.complete:hover { background: #065f46 !important; }
+        [data-bs-theme="dark"] .btn-admin-action.view { background: #273449 !important; color: #cbd5e1 !important; border-color: #334155 !important; }
+        [data-bs-theme="dark"] .btn-admin-action.view:hover { background: #334155 !important; }
+        [data-bs-theme="dark"] .btn-admin-action.edit { background: #1e3a8a !important; color: #93c5fd !important; border-color: #1e40af !important; }
+        [data-bs-theme="dark"] .btn-admin-action.edit:hover { background: #1e40af !important; }
+        [data-bs-theme="dark"] .season-badge.active { background: #064e3b !important; color: #6ee7b7 !important; }
+        [data-bs-theme="dark"] .season-badge.inactive { background: #273449 !important; color: #94a3b8 !important; }
+        [data-bs-theme="dark"] .bg-light { background-color: #1e293b !important; }
+        [data-bs-theme="dark"] .bg-light.rounded-3 { border: 1px solid #334155; }
+        [data-bs-theme="dark"] .form-check-input { background-color: #0f172a; border-color: #334155; }
+        [data-bs-theme="dark"] .form-check-input:checked { background-color: #6366f1; border-color: #6366f1; }
+        [data-bs-theme="dark"] .table-admin { --bs-table-color: #e2e8f0; --bs-table-border-color: #334155; }
+        [data-bs-theme="dark"] .table-admin thead th { color: #94a3b8 !important; }
+        [data-bs-theme="dark"] .table-admin td { color: #e2e8f0; }
+        [data-bs-theme="dark"] .table-admin tbody tr:hover { background-color: #273449 !important; }
+        [data-bs-theme="dark"] .modal-admin .modal-content { background-color: #1e293b !important; color: #e2e8f0; border: 1px solid #334155; }
+        [data-bs-theme="dark"] .modal-admin .modal-header,
+        [data-bs-theme="dark"] .modal-admin .modal-footer { border-color: #334155 !important; }
+        [data-bs-theme="dark"] .modal-admin .modal-title { color: #f1f5f9 !important; }
+        [data-bs-theme="dark"] .modal-admin .btn-close { filter: invert(1) grayscale(100%) brightness(200%); }
+        [data-bs-theme="dark"] .form-control-admin,
+        [data-bs-theme="dark"] .form-select.form-control-admin { background-color: #0f172a !important; color: #e2e8f0 !important; border-color: #334155 !important; }
+        [data-bs-theme="dark"] .form-control-admin:focus,
+        [data-bs-theme="dark"] .form-select.form-control-admin:focus { background-color: #0f172a !important; border-color: #6366f1 !important; }
+        [data-bs-theme="dark"] .form-label-admin { color: #cbd5e1 !important; }
+        [data-bs-theme="dark"] .btn-search { background-color: #273449 !important; border-color: #334155 !important; color: #cbd5e1 !important; }
+        [data-bs-theme="dark"] .btn-search:hover { background-color: #6366f1 !important; border-color: #6366f1 !important; color: #fff !important; }
+        [data-bs-theme="dark"] .admin-sidebar { background: #0b0a24 !important; }
+        [data-bs-theme="dark"] .admin-sidebar-brand { border-bottom-color: rgba(255, 255, 255, 0.08); }
+        [data-bs-theme="dark"] .admin-sidebar-nav .nav-link.active { background: rgba(124, 58, 237, 0.35); }
+        [data-bs-theme="dark"] .content-card .card-header-custom { border-bottom-color: #334155 !important; }
+        [data-bs-theme="dark"] .content-card .card-header-custom h5 { color: #f1f5f9 !important; }
+        [data-bs-theme="dark"] .stat-card,
+        [data-bs-theme="dark"] .content-card { background: #1e293b !important; border-color: #334155 !important; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4) !important; }
+        [data-bs-theme="dark"] .stat-card:hover,
+        [data-bs-theme="dark"] .content-card:hover { box-shadow: 0 4px 16px rgba(99, 102, 241, 0.15) !important; border-color: rgba(99, 102, 241, 0.4) !important; }
+        [data-bs-theme="dark"] .stat-value,
+        [data-bs-theme="dark"] [style*="color: #1a1a2e"] { color: #f1f5f9 !important; }
+
+        .no-transition,
+        .no-transition * {
+            transition: none !important;
+        }
         :root {
             --admin-sidebar-w: 260px;
         }
@@ -16,8 +146,6 @@
             min-height: 100vh;
             display: flex;
         }
-
-        /* ===== Sidebar ===== */
         .admin-sidebar {
             position: fixed; top: 0; left: 0; bottom: 0;
             width: var(--admin-sidebar-w);
@@ -79,6 +207,9 @@
             .sidebar-toggle { display: inline-flex; align-items: center; justify-content: center; }
             .admin-topbar { padding: 0.65rem 1rem; }
             .admin-content { padding: 1rem; }
+            .admin-topbar .topbar-actions { gap: 0.35rem !important; }
+            .table-admin .btn-admin-action { font-size: 0.65rem; padding: 0.2rem 0.45rem; }
+            .table-admin .actions-cell { gap: 0.2rem; }
         }
         @media (min-width: 768px) and (max-width: 991.98px) {
             .admin-sidebar { width: 220px; }
@@ -213,14 +344,14 @@
     <!-- Main Content -->
     <div class="admin-main">
         <!-- Top Bar -->
-        <div class="admin-topbar border-bottom bg-body">
+        <div class="admin-topbar border-bottom bg-body d-flex flex-wrap align-items-center gap-3">
             <div class="d-flex align-items-center gap-3">
                 <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Toggle sidebar">
                     <i class="bi bi-list"></i>
                 </button>
                 <h1 class="page-title h5 fw-semibold mb-0 text-body-emphasis">@yield('title', 'Dashboard')</h1>
             </div>
-            <div class="d-flex align-items-center gap-2">
+            <div class="d-flex align-items-center gap-2 flex-wrap topbar-actions ms-auto">
                 @if(isset($seasonStatus))
                     @if(!empty($seasonStatus['has_active_season']))
                         <span class="season-badge active"><i class="bi bi-fire"></i>{{ $seasonStatus['name'] ?? 'Active Season' }}</span>
@@ -232,12 +363,12 @@
                     <i class="bi bi-sun-fill" id="themeIcon"></i>
                 </button>
                 <a href="{{ route('dashboard') }}" class="btn btn-sm btn-outline-secondary rounded-2 text-decoration-none">
-                    <i class="bi bi-box-arrow-up-right me-1"></i>Main Site
+                    <i class="bi bi-box-arrow-up-right d-none d-sm-inline me-1"></i><span class="d-sm-none">Site</span><span class="d-none d-sm-inline">Main Site</span>
                 </a>
                 <form method="POST" action="{{ route('logout') }}" class="m-0">
                     @csrf
                     <button type="submit" class="btn btn-sm btn-outline-danger rounded-2">
-                        <i class="bi bi-box-arrow-right me-1"></i>Logout
+                        <i class="bi bi-box-arrow-right d-none d-sm-inline me-1"></i><span class="d-sm-none">Out</span><span class="d-none d-sm-inline">Logout</span>
                     </button>
                 </form>
             </div>

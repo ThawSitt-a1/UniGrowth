@@ -70,7 +70,7 @@
                         <h6>Screenshot</h6>
                         @if(!empty($report['screenshot_url']))
                             <a href="{{ $report['screenshot_url'] }}" target="_blank" rel="noopener noreferrer">
-                                <img src="{{ $report['screenshot_url'] }}" alt="Bug screenshot" class="img-fluid rounded border" style="max-height: 520px; width: auto;">
+                                <img src="{{ $report['screenshot_url'] }}" alt="Bug screenshot" class="img-fluid rounded border" style="max-height: 520px; max-width: 100%; height: auto; border-radius: 6px; object-fit: cover;">
                             </a>
                             <p class="text-muted small mt-2">Click the screenshot to view full size.</p>
                         @elseif(!empty($report['screenshot_path']))

@@ -24,7 +24,7 @@ class UpdateProfileRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'username' => ['nullable', 'string', 'max:50', 'alpha_dash'],
+            'username' => ['nullable', 'string', 'max:50', 'regex:/^[a-zA-Z0-9._\s-]+$/'],
             'academic_year' => ['nullable', 'string', 'max:50'],
             'major' => ['nullable', 'string', 'max:100'],
             'university_name' => ['nullable', 'string', 'max:150'],
@@ -34,7 +34,7 @@ class UpdateProfileRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'username.alpha_dash' => 'Username may only contain letters, numbers, dashes, and underscores.',
+            'username.regex' => 'The username may only contain letters, numbers, spaces, dots, underscores, and hyphens.',
             'username.max' => 'Username cannot exceed 50 characters.',
             'academic_year.max' => 'Academic year cannot exceed 50 characters.',
             'major.max' => 'Major cannot exceed 100 characters.',

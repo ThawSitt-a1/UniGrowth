@@ -208,8 +208,8 @@
                         Banned users will see a policy violation message and cannot access the platform.
                     </p>
                     <div class="mb-3">
-                        <label class="form-label-admin" for="banReason">Reason (optional)</label>
-                        <textarea name="reason" id="banReason" class="form-control form-control-admin" rows="2" placeholder="Why is this user being banned?"></textarea>
+                        <label class="form-label-admin" for="banReason">Reason <span class="text-danger">*</span></label>
+                        <textarea name="reason" id="banReason" class="form-control form-control-admin" rows="2" placeholder="Why is this user being banned?" required></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -240,6 +240,10 @@
                         You are about to permanently delete <strong id="deleteUsername" class="text-dark"></strong>.
                         All associated data (enrollments, goals, habits, quiz attempts, scores, bug reports) will also be removed.
                     </p>
+                    <div class="mb-3">
+                        <label class="form-label-admin" for="deleteReason">Reason <span class="text-danger">*</span></label>
+                        <textarea name="reason" id="deleteReason" class="form-control form-control-admin" rows="2" placeholder="Why is this user being deleted?" required></textarea>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>

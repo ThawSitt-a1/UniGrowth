@@ -10,6 +10,7 @@ use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\Exceptions\PostTooLargeException;
 use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
@@ -30,6 +31,8 @@ class Handler extends ExceptionHandler
         'password_confirmation',
     ];
 
+    private static int $renderDepth = 0;
+
     public function register(): void
     {
         $this->reportable(function (Throwable $e) {
@@ -38,6 +41,37 @@ class Handler extends ExceptionHandler
     }
 
     public function render($request, Throwable $e): Response
+    {
+        if (self::$renderDepth > 0) {
+            Log::error('Recursive exception in handler', ['exception' => get_class($e), 'message' => $e->getMessage()]);
+            return $this->renderFallback($request, $e);
+        }
+
+        self::$renderDepth++;
+
+        try {
+            return $this->doRender($request, $e);
+        } finally {
+            self::$renderDepth--;
+        }
+    }
+
+    private function renderFallback($request, Throwable $e): Response
+    {
+        if ($e instanceof ValidationException) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'error' => 'Validation failed.',
+                    'messages' => $e->errors(),
+                ], 422);
+            }
+            return redirect()->back()->withErrors($e->errors())->withInput();
+        }
+
+        return response()->json(['error' => 'An unexpected error occurred.'], 500);
+    }
+
+    private function doRender($request, Throwable $e): Response
     {
         if ($e instanceof ValidationException) {
             if ($request->expectsJson()) {
@@ -121,11 +155,17 @@ class Handler extends ExceptionHandler
         }
 
         if ($request->expectsJson()) {
+            Log::error('Unhandled exception', ['exception' => get_class($e), 'message' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
             return response()->json([
                 'error' => 'An unexpected error occurred. Please try again later.',
             ], 500);
         }
 
-        return parent::render($request, $e);
+        try {
+            return parent::render($request, $e);
+        } catch (Throwable $inner) {
+            Log::error('Exception in parent::render', ['exception' => get_class($inner), 'message' => $inner->getMessage(), 'trace' => $inner->getTraceAsString()]);
+            return $this->renderFallback($request, $inner);
+        }
     }
 }

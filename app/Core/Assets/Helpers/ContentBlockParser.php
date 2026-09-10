@@ -168,6 +168,87 @@ final class ContentBlockParser
     }
 
     /**
+     * Render parsed content blocks directly to HTML.
+     */
+    public static function renderToHtml(string $content): string
+    {
+        $blocks = self::parse($content);
+        $html = '';
+
+        foreach ($blocks as $block) {
+            switch ($block['type']) {
+                case 'h2':
+                    $html .= '<h2 id="' . htmlspecialchars($block['id'], ENT_QUOTES) . '">' . htmlspecialchars($block['content'], ENT_QUOTES) . '<a href="#' . htmlspecialchars($block['id'], ENT_QUOTES) . '" class="section-anchor"><i class="bi bi-link"></i></a></h2>';
+                    break;
+                case 'h3':
+                    $html .= '<h3 id="' . htmlspecialchars($block['id'], ENT_QUOTES) . '">' . htmlspecialchars($block['content'], ENT_QUOTES) . '<a href="#' . htmlspecialchars($block['id'], ENT_QUOTES) . '" class="section-anchor"><i class="bi bi-link"></i></a></h3>';
+                    break;
+                case 'paragraph':
+                    $html .= '<p>' . nl2br(htmlspecialchars($block['content'], ENT_QUOTES)) . '</p>';
+                    break;
+                case 'code':
+                    $lang = htmlspecialchars($block['language'] ?? 'plaintext', ENT_QUOTES);
+                    $code = htmlspecialchars($block['content'], ENT_QUOTES);
+                    $html .= '<pre><code class="language-' . $lang . '">' . $code . '</code></pre>';
+                    break;
+                case 'callout':
+                    $type = htmlspecialchars($block['calloutType'], ENT_QUOTES);
+                    $content = htmlspecialchars($block['content'], ENT_QUOTES);
+                    $icon = $type === 'info'
+                        ? '<i class="bi bi-info-circle-fill"></i> Info'
+                        : '<i class="bi bi-exclamation-triangle-fill"></i> Warning';
+                    $html .= '<div class="callout ' . $type . '"><div class="callout-title">' . $icon . '</div><p class="mb-0">' . $content . '</p></div>';
+                    break;
+                case 'image':
+                    $html .= '<img src="' . htmlspecialchars($block['url'], ENT_QUOTES) . '" alt="' . htmlspecialchars($block['alt'], ENT_QUOTES) . '" class="img-fluid">';
+                    break;
+                case 'video':
+                    $html .= '<div class="ratio ratio-16by9"><iframe src="' . htmlspecialchars($block['url'], ENT_QUOTES) . '" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe></div>';
+                    break;
+            }
+        }
+
+        return $html;
+    }
+
+    /**
+     * Render learning steps to HTML.
+     */
+    public static function renderStepsToHtml(string $content): string
+    {
+        $steps = self::parseSteps($content);
+
+        if (empty($steps)) {
+            return '';
+        }
+
+        $html = '<hr class="section-divider"><div id="steps"><div class="d-flex align-items-center gap-2 mb-3"><i class="bi bi-list-steps fs-4" style="color: #6366f1;"></i><h5 class="fw-bold mb-0" style="color: #0f172a;">Learning Steps</h5></div><div class="d-flex flex-column gap-3">';
+
+        foreach ($steps as $index => $step) {
+            $html .= '<div class="card border-0 step-card"><div class="card-body"><div class="d-flex align-items-start gap-3"><span class="step-number">' . ($index + 1) . '</span><div class="flex-grow-1">';
+            $html .= '<h6 class="card-title mb-2">' . htmlspecialchars($step['title'], ENT_QUOTES) . '</h6>';
+
+            if (!empty($step['description'])) {
+                $html .= '<p class="card-text mb-2">' . nl2br(htmlspecialchars($step['description'], ENT_QUOTES)) . '</p>';
+            }
+
+            if (!empty($step['resources'])) {
+                $html .= '<div class="step-resources mt-2">';
+                foreach ($step['resources'] as $res) {
+                    $html .= '<div class="mb-1"><a href="' . htmlspecialchars($res['url'], ENT_QUOTES) . '" target="_blank" rel="noopener noreferrer" class="text-decoration-none" style="color: #6366f1; font-family: \'SF Mono\', Monaco, monospace; font-size: 0.85rem; word-break: break-all;"><i class="bi bi-link-45deg me-1"></i>' . htmlspecialchars($res['url'], ENT_QUOTES) . '</a></div>';
+                }
+                $html .= '</div>';
+            }
+
+            $html .= '</div></div></div></div>';
+        }
+
+        $html .= '</div></div>';
+
+        return $html;
+    }
+
+    /**
      * Extract headings for TOC generation.
      */
     public static function extractHeadings(string $content): array

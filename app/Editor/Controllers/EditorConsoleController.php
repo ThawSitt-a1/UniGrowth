@@ -149,6 +149,12 @@ final class EditorConsoleController
                 resourceLink: $request->input('resource_link', ''),
                 resourceLinks: $resourceLinks,
                 projectSuggestion: $request->input('project_suggestion', ''),
+                contentHtml: ! empty($request->input('content'))
+                    ? ContentBlockParser::renderToHtml($request->input('content', ''))
+                    : '',
+                learningSteps: ! empty($request->input('content'))
+                    ? ContentBlockParser::parseSteps($request->input('content', ''))
+                    : [],
             );
 
             $this->manageSkillUseCase->execute($dto);

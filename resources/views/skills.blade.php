@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $platformName ?? 'UniGrowth' }} — Skills & Recommendations</title>
+    @include('partials.preconnect')
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
@@ -257,7 +258,7 @@
                 <div class="d-flex flex-wrap gap-2 align-items-center mb-3">
                     <div class="search-shell flex-grow-1">
                         <i class="bi bi-search search-icon"></i>
-                        <input type="text" id="tagSearchInput" class="search-input" autocomplete="off" placeholder="Search tags, e.g. php, design, data..." value="{{ $selectedTag ?? '' }}">
+                        <input type="text" id="tagSearchInput" class="search-input" autocomplete="off" placeholder="Search tags, enrolled skills, e.g. php, design, enrolled..." value="{{ $selectedTag ?? '' }}">
                     </div>
                     <button type="button" id="resetTagSearch" class="btn btn-outline-soft"><i class="bi bi-arrow-counterclockwise me-1"></i>Reset</button>
                 </div>
@@ -272,7 +273,7 @@
                 @if (!empty($availableSkills['skills']))
                     <div class="row g-3" id="skillsGrid">
                         @foreach ($availableSkills['skills'] as $skill)
-                            <div class="col-12 col-md-6 skill-col" data-search="{{ Str::lower($skill['title'] . ' ' . $skill['description'] . ' ' . implode(' ', $skill['tags'] ?? [])) }}">
+                                <div class="col-12 col-md-6 skill-col" data-search="{{ Str::lower($skill['title'] . ' ' . $skill['description'] . ' ' . implode(' ', $skill['tags'] ?? []) . ' ' . ($skill['is_enrolled'] ? 'enrolled my-skills' : '')) }}">
                                 <div class="skill-card {{ $skill['is_enrolled'] ? 'enrolled' : '' }} {{ $skill['is_active'] ? '' : 'suspended' }} d-flex flex-column">
                                     <div class="d-flex justify-content-between align-items-start gap-2 mb-3">
                                         <div>

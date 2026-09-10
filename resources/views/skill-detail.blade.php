@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    @php use App\Core\Assets\Helpers\ContentBlockParser; @endphp
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $skill->title }} — {{ $platformName ?? 'UniGrowth' }}</title>
+    @include('partials.preconnect')
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
@@ -147,7 +149,42 @@
                     @if(!empty($isSuspended))
                         <span class="badge bg-warning text-dark mb-2 px-3 py-2"><i class="bi bi-slash-circle me-1"></i>Suspended</span>
                     @elseif($isEnrolled)
-                        <span class="badge bg-success mb-2 px-3 py-2"><i class="bi bi-check-circle me-1"></i>Enrolled</span>
+                        <div class="d-flex flex-column align-items-lg-end gap-2">
+                            <span class="badge bg-success mb-0 px-3 py-2"><i class="bi bi-check-circle me-1"></i>Enrolled</span>
+                            <button type="button" class="btn btn-outline-danger btn-sm px-3" data-bs-toggle="modal" data-bs-target="#unenrollSkillModal">
+                                <i class="bi bi-box-arrow-left me-1"></i>Unenroll
+                            </button>
+                        </div>
+
+                        <div class="modal fade" id="unenrollSkillModal" tabindex="-1" aria-labelledby="unenrollSkillModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content" style="border-radius: 16px; border: none;">
+                                    <div class="modal-header" style="border-bottom: 1px solid #f1f5f9;">
+                                        <h5 class="modal-title fw-bold" id="unenrollSkillModalLabel" style="color: #0f172a;">
+                                            <i class="bi bi-box-arrow-left me-2" style="color: #dc2626;"></i>Unenroll from this skill?
+                                        </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body" style="color: #475569;">
+                                        <p class="mb-2">You are about to unenroll from <strong>{{ $skill->title }}</strong>.</p>
+                                        <p class="small text-muted mb-0">Your learning progress for this skill will be removed. You can re-enroll at any time.</p>
+                                    </div>
+                                    <div class="modal-footer" style="border-top: 1px solid #f1f5f9;">
+                                        <button type="button" class="btn btn-light" data-bs-dismiss="modal" style="border-radius: 10px;">Cancel</button>
+                                        <form action="{{ route('core-assets.action') }}" method="POST" class="m-0">
+                                            @csrf
+                                            <input type="hidden" name="type" value="skill">
+                                            <input type="hidden" name="action" value="unenroll">
+                                            <input type="hidden" name="payload[skill_id]" value="{{ $skill->id }}">
+                                            <input type="hidden" name="redirect" value="{{ route('core-assets.skills.detail', $skill->slug) }}">
+                                            <button type="submit" class="btn btn-danger px-4" style="border-radius: 10px;">
+                                                <i class="bi bi-box-arrow-left me-1"></i>Yes, unenroll
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     @else
                         <form action="{{ route('core-assets.action') }}" method="POST">
                             @csrf
@@ -214,53 +251,12 @@
                     <div class="detail-card p-4 p-lg-5">
                         <!-- Content Section -->
                         <div id="content" class="reading-content">
-                            @if(!empty($contentBlocks))
-                                @foreach($contentBlocks as $block)
-                                    @switch($block['type'])
-                                        @case('h2')
-                                            <h2 id="{{ $block['id'] }}">
-                                                {{ $block['content'] }}
-                                                <a href="#{{ $block['id'] }}" class="section-anchor"><i class="bi bi-link"></i></a>
-                                            </h2>
-                                            @break
-                                        @case('h3')
-                                            <h3 id="{{ $block['id'] }}">
-                                                {{ $block['content'] }}
-                                                <a href="#{{ $block['id'] }}" class="section-anchor"><i class="bi bi-link"></i></a>
-                                            </h3>
-                                            @break
-                                        @case('paragraph')
-                                            <p>{!! nl2br(e($block['content'])) !!}</p>
-                                            @break
-                                        @case('code')
-                                            <pre><code class="language-{{ $block['language'] }}">{{ e($block['content']) }}</code></pre>
-                                            @break
-                                        @case('callout')
-                                            <div class="callout {{ $block['calloutType'] }}">
-                                                <div class="callout-title">
-                                                    @if($block['calloutType'] === 'info')
-                                                        <i class="bi bi-info-circle-fill"></i> Info
-                                                    @else
-                                                        <i class="bi bi-exclamation-triangle-fill"></i> Warning
-                                                    @endif
-                                                </div>
-                                                <p class="mb-0">{{ $block['content'] }}</p>
-                                            </div>
-                                            @break
-                                        @case('image')
-                                            <img src="{{ $block['url'] }}" alt="{{ $block['alt'] }}" class="img-fluid">
-                                            @break
-                                        @case('video')
-                                            <div class="ratio ratio-16by9">
-                                                <iframe src="{{ $block['url'] }}" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
-                                            </div>
-                                            @break
-                                    @endswitch
-                                @endforeach
-@elseif(!empty($learningSteps))
-                                <div class="text-center py-5 text-muted">
-                                    <i class="bi bi-list-steps fs-1 d-block mb-3"></i>
-                                    <p class="mb-0">This skill is structured as a set of learning steps below. Scrolling down to the Learning Steps section to begin.</p>
+                            @if(!empty($contentHtml))
+                                {!! $contentHtml !!}
+                            @elseif(!empty($learningSteps))
+                                <div class="text-center py-3 text-muted">
+                                    <i class="bi bi-list-steps fs-4 d-block mb-2"></i>
+                                    <p class="mb-0">Scroll down to the Learning Steps section to begin.</p>
                                 </div>
                             @else
                                 <div class="text-center py-5 text-muted">
@@ -270,41 +266,13 @@
                             @endif
                         </div>
 
-<!-- Learning Steps -->
-                        @if(!empty($learningSteps))
-                            <hr class="section-divider">
-                            <div id="steps">
-                                <div class="d-flex align-items-center gap-2 mb-3">
-                                    <i class="bi bi-list-steps fs-4" style="color: #6366f1;"></i>
-                                    <h5 class="fw-bold mb-0" style="color: #0f172a;">Learning Steps</h5>
-                                </div>
-                                <div class="d-flex flex-column gap-3">
-@foreach($learningSteps as $step)
-                                        <div class="card border-0 step-card">
-                                            <div class="card-body">
-                                                <div class="d-flex align-items-start gap-3">
-                                                    <span class="step-number">{{ $loop->iteration }}</span>
-                                                    <div class="flex-grow-1">
-                                                        <h6 class="card-title mb-2">{{ $step['title'] }}</h6>
-                                                        @if(!empty($step['description']))
-                                                            <p class="card-text mb-2">{!! nl2br(e($step['description'])) !!}</p>
-                                                        @endif
-                                                        @if(!empty($step['resources']))
-                                                            <div class="step-resources d-flex flex-wrap gap-2 mt-2">
-                                                                @foreach($step['resources'] as $res)
-                                                                    <a href="{{ $res['url'] }}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-light">
-                                                                        <i class="bi bi-link-45deg me-1"></i>{{ $res['label'] }}
-                                                                    </a>
-                                                                @endforeach
-                                                            </div>
-                                                        @endif
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </div>
+                        @php
+                            $stepsHtml = !empty($learningSteps)
+                                ? ContentBlockParser::renderStepsToHtml($skill->content ?? '')
+                                : '';
+                        @endphp
+                        @if(!empty($stepsHtml))
+                            {!! $stepsHtml !!}
                         @endif
 
                         @php

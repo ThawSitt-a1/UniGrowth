@@ -3,11 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Create your {{ $platformName ?? 'UniGrowth' }} account — set goals, develop skills, and track your personal growth throughout your university journey.">
     <title>{{ $platformName ?? 'UniGrowth' }} — Student Development Platform</title>
+    @include('partials.preconnect', ['recaptcha' => true])
     <!-- Bootstrap 5 CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"></noscript>
     <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="{{ asset('css/bootstrap-icons.min.css') }}" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="{{ asset('css/bootstrap-icons.min.css') }}"></noscript>
     <!-- Google reCAPTCHA Script -->
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <style>
@@ -363,7 +367,9 @@
 
                                 <!-- reCAPTCHA -->
                                 <div class="d-flex justify-content-center py-2 flex-column align-items-center">
-                                    <div class="g-recaptcha" data-sitekey="{{ config('services.recaptcha.key') }}"></div>
+                                    <div style="width: 304px; height: 78px; max-width: 100%;">
+                                        <div class="g-recaptcha" data-sitekey="{{ config('services.recaptcha.key') }}" style="width: 100%; height: 100%;"></div>
+                                    </div>
                                     @error('g-recaptcha-response')
                                         <p class="text-danger small text-center mt-1 mb-0">{{ $message }}</p>
                                     @enderror
@@ -383,8 +389,8 @@
                                 <div class="form-check">
                                     <input type="checkbox" name="agreed_to_terms" id="agreed_to_terms" class="form-check-input @error('agreed_to_terms') is-invalid @enderror" value="1" {{ old('agreed_to_terms') ? 'checked' : '' }}>
                                     <label class="form-check-label small text-secondary" for="agreed_to_terms">
-                                        I agree to the <a href="{{ route('terms-of-service') }}" target="_blank" class="text-decoration-none fw-semibold" style="color: #6366f1;">Terms of Service</a>
-                                        and <a href="{{ route('privacy-policy') }}" target="_blank" class="text-decoration-none fw-semibold" style="color: #6366f1;">Privacy Policy</a>
+                                        I agree to the <a href="{{ route('terms-of-service') }}" target="_blank" class="fw-semibold" style="color: #6366f1;">Terms of Service</a>
+                                        and <a href="{{ route('privacy-policy') }}" target="_blank" class="fw-semibold" style="color: #6366f1;">Privacy Policy</a>
                                     </label>
                                     @error('agreed_to_terms')
                                         <p class="text-danger small mt-1 mb-0">{{ $message }}</p>
@@ -405,7 +411,7 @@
                         <div class="mt-4 pt-4 border-top text-center">
                             <p class="small text-secondary mb-0">
                                 Already have an account?
-                                <a href="/login" class="fw-semibold text-decoration-none" style="color: #6366f1;">
+                                <a href="/login" class="fw-semibold" style="color: #6366f1;">
                                     Sign in
                                 </a>
                             </p>

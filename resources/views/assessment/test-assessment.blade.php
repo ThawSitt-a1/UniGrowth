@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UniGrowth — Skill Assessment</title>
     <!-- Bootstrap 5 CDN -->
+    @include('partials.preconnect', ['fonts' => true])
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -703,9 +704,9 @@ MAIN CONTENT
     @if ($hasActiveSeason)
     <div class="row g-4 mb-4">
 
-        {{-- SEASON SCORE (restored design) --}}
+        {{-- SEASON SCORE --}}
         @if ($dashboard)
-        <div class="col-12 col-lg-4">
+        <div class="col-12 col-lg-6">
             <div class="form-card overflow-hidden h-100 animate-fade-up">
                 <div class="card-header-gradient">
                     <h3 class="h5 fw-bold text-white mb-0">
@@ -743,54 +744,9 @@ MAIN CONTENT
         </div>
         @endif
 
-        {{-- SKILL PROFICIENCY (restored table design) --}}
-        @if ($dashboard && !empty($dashboard['skill_progress']))
-        <div class="col-12 col-lg-4">
-            <div class="form-card overflow-hidden h-100 animate-fade-up stagger-1">
-                <div class="card-header-gradient">
-                    <h3 class="h5 fw-bold text-white mb-0">
-                        <i class="bi bi-bar-chart-steps me-2"></i>Skill Proficiency
-                    </h3>
-                </div>
-                <div class="p-0">
-                    <table class="table table-custom table-hover align-middle mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th class="px-4">Skill</th>
-                                <th class="px-4 text-end">Score</th>
-                                <th class="px-4 text-end">Attempts</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($dashboard['skill_progress'] as $sp)
-                                <tr>
-                                    <td class="px-4">
-                                        <span class="fw-semibold" style="color: var(--gray-700); font-size: 0.85rem;">
-                                            {{ $sp['skill_title'] }}
-                                        </span>
-                                    </td>
-                                    <td class="px-4 text-end">
-                                        <span class="fw-bold" style="color: var(--indigo);">
-                                            {{ number_format((float) ($sp['proficiency_score'] ?? 0), 1) }}
-                                        </span>
-                                    </td>
-                                    <td class="px-4 text-end">
-                                        <span class="badge" style="background: #eef2ff; color: #4338ca; font-size: 0.75rem;">
-                                            {{ (int) ($sp['attempts_count'] ?? 0) }}
-                                        </span>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-        @endif
-
-        {{-- LEADERBOARD (restored design) --}}
+        {{-- LEADERBOARD --}}
         @if (!empty($leaderboard))
-        <div class="col-12 col-lg-4">
+        <div class="col-12 col-lg-6">
             <div class="form-card overflow-hidden h-100 animate-fade-up stagger-2">
                 <div class="card-header-gradient">
                     <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
@@ -893,7 +849,7 @@ MAIN CONTENT
             </div>
         </div>
         @else
-        <div class="col-12 col-lg-4">
+        <div class="col-12 col-lg-6">
             <div class="form-card overflow-hidden h-100 animate-fade-up stagger-2">
                 <div class="card-header-gradient">
                     <h3 class="h5 fw-bold text-white mb-0"><i class="bi bi-trophy-fill me-2"></i>Leaderboard</h3>
@@ -1172,7 +1128,7 @@ MAIN CONTENT
                                         </span>
                                         <div class="flex-grow-1">
                                             <small class="fw-semibold" style="color: var(--gray-700);">
-                                                Question #{{ $qr['question_id'] }}
+                                                {{ $qr['skill_name'] }}
                                             </small>
                                             <small class="d-block text-muted">
                                                 {{ $qr['correct'] ? 'Correct answer' : 'Incorrect answer' }}

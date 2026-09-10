@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $platformName ?? 'UniGrowth' }} — My Goals & Habits</title>
     <!-- Bootstrap 5 CDN -->
+    @include('partials.preconnect')
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -559,12 +560,87 @@ MAIN CONTENT
 </div>
 
             {{--
-            ACTIVE GOALS
+            ENROLLED SKILLS
             --}}
             @php
                 $activeGoals = collect($profile['goals'] ?? [])->where('status', '!=', 'completed')->values();
                 $completedGoals = collect($profile['goals'] ?? [])->where('status', 'completed')->values();
+                $enrolledSkills = collect($profile['enrolled_skills'] ?? []);
             @endphp
+
+            @if ($enrolledSkills->count() > 0)
+                <div class="form-card p-4 p-lg-5 mb-4">
+                    <div class="section-header">
+                        <div class="d-flex align-items-center justify-content-center rounded-circle text-white flex-shrink-0" style="width: 40px; height: 40px; background: linear-gradient(135deg, #6366f1, #7c3aed);">
+                            <i class="bi bi-book"></i>
+                        </div>
+                        <div class="d-flex flex-wrap align-items-center justify-content-between w-100 gap-2">
+                            <div>
+                                <h5 class="fw-bold mb-0" style="color: #1f2937;">My Enrolled Skills</h5>
+                                <small class="text-muted">{{ $enrolledSkills->count() }} skill{{ $enrolledSkills->count() !== 1 ? 's' : '' }} in progress</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-column gap-3">
+                        @foreach ($enrolledSkills as $enrollment)
+                            <div class="goal-card d-flex flex-wrap align-items-center justify-content-between gap-3">
+                                <div class="d-flex align-items-start gap-3 flex-grow-1 min-width-0">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                                         style="width: 38px; height: 38px; background: #eef2ff; color: #4f46e5;">
+                                        <i class="bi bi-mortarboard"></i>
+                                    </div>
+                                    <div class="min-width-0 flex-grow-1">
+                                        <p class="fw-semibold mb-0 text-truncate" style="color: #1f2937; font-size: 0.95rem;">
+                                            <a href="{{ route('core-assets.skills.detail', ['identifier' => $enrollment['skill_id']]) }}" class="text-decoration-none" style="color: inherit;">
+                                                {{ $enrollment['skill_title'] ?? 'Skill #' . $enrollment['skill_id'] }}
+                                            </a>
+                                        </p>
+                                        <small class="text-muted">
+                                            Enrolled {{ \Carbon\Carbon::parse($enrollment['enrolled_at'] ?? now())->diffForHumans() }}
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="d-flex gap-2 goal-actions flex-shrink-0">
+                                    <button type="button" class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#unenrollSkillModal-{{ $enrollment['skill_id'] }}" style="background: #fef2f2; color: #dc2626; border: none; border-radius: 8px; font-weight: 600;">
+                                        <i class="bi bi-box-arrow-left me-1"></i>Unenroll
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="modal fade" id="unenrollSkillModal-{{ $enrollment['skill_id'] }}" tabindex="-1" aria-labelledby="unenrollSkillModalLabel-{{ $enrollment['skill_id'] }}" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content" style="border-radius: 16px; border: none;">
+                                        <div class="modal-header" style="border-bottom: 1px solid #f1f5f9;">
+                                            <h5 class="modal-title fw-bold" id="unenrollSkillModalLabel-{{ $enrollment['skill_id'] }}" style="color: #0f172a;">
+                                                <i class="bi bi-box-arrow-left me-2" style="color: #dc2626;"></i>Unenroll from this skill?
+                                            </h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body" style="color: #475569;">
+                                            <p class="mb-2">You are about to unenroll from <strong>{{ $enrollment['skill_title'] ?? 'Skill #' . $enrollment['skill_id'] }}</strong>.</p>
+                                            <p class="small text-muted mb-0">Your learning progress for this skill will be removed. You can re-enroll at any time.</p>
+                                        </div>
+                                        <div class="modal-footer" style="border-top: 1px solid #f1f5f9;">
+                                            <button type="button" class="btn btn-light" data-bs-dismiss="modal" style="border-radius: 10px;">Cancel</button>
+                                            <form action="{{ route('core-assets.action') }}" method="POST" class="m-0">
+                                                @csrf
+                                                <input type="hidden" name="type" value="skill">
+                                                <input type="hidden" name="action" value="unenroll">
+                                                <input type="hidden" name="payload[skill_id]" value="{{ $enrollment['skill_id'] }}">
+                                                <input type="hidden" name="redirect" value="{{ route('core-assets.index') }}">
+                                                <button type="submit" class="btn btn-danger px-4" style="border-radius: 10px;">
+                                                    <i class="bi bi-box-arrow-left me-1"></i>Yes, unenroll
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
 
             @if ($activeGoals->count() > 0)
                 <div class="form-card p-4 p-lg-5 mb-4">

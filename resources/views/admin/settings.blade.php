@@ -14,7 +14,7 @@
             </h6>
             <div class="row g-3 mb-4">
                 <div class="col-md-6">
-                    <form method="POST" action="{{ route('admin.settings.update') }}" class="d-flex align-items-end gap-2">
+                    <form method="POST" action="{{ route('admin.settings.update') }}" class="d-flex align-items-end gap-2 flex-wrap">
                         @csrf
                         <div class="flex-grow-1">
                             <label class="form-label-admin" for="site_platform_name">Platform Name</label>
@@ -30,7 +30,7 @@
                     </form>
                 </div>
                 <div class="col-md-6">
-                    <form method="POST" action="{{ route('admin.settings.update') }}" class="d-flex align-items-end gap-2">
+                    <form method="POST" action="{{ route('admin.settings.update') }}" class="d-flex align-items-end gap-2 flex-wrap">
                         @csrf
                         <div class="flex-grow-1">
                             <label class="form-label-admin" for="support_email">Support Email</label>
@@ -91,24 +91,7 @@
                     </form>
                 </div>
             </div>
-            <div class="row g-3 mb-4">
-                <div class="col-md-6">
-                    <form method="POST" action="{{ route('admin.settings.update') }}" class="d-flex align-items-end gap-2">
-                        @csrf
-                        <div class="flex-grow-1">
-                            <label class="form-label-admin" for="max_login_attempts">Max Login Attempts</label>
-                            <input type="number" name="setting_value" id="max_login_attempts"
-                                   class="form-control form-control-admin"
-                                   value="{{ $settings['max_login_attempts'] ?? '5' }}" min="1" max="20">
-                            <input type="hidden" name="setting_key" value="max_login_attempts">
-                        </div>
-                        <button type="submit" class="btn btn-sm btn-outline-primary">
-                            <i class="bi bi-check-lg"></i>
-                        </button>
-                    </form>
-                </div>
-                <div class="col-md-6">
-                    <form method="POST" action="{{ route('admin.settings.update') }}" class="d-flex align-items-end gap-2">
+                    <form method="POST" action="{{ route('admin.settings.update') }}" class="d-flex align-items-end gap-2 flex-wrap">
                         @csrf
                         <div class="flex-grow-1">
                             <label class="form-label-admin" for="system_sender_email">System Sender Email</label>
@@ -266,35 +249,37 @@
                                  Started: {{ $seasonStatus['started_at'] ? \Carbon\Carbon::parse($seasonStatus['started_at'])->format('M j, Y') : 'N/A' }}<br>
                                  Ends: {{ $seasonStatus['ends_at'] ? \Carbon\Carbon::parse($seasonStatus['ends_at'])->format('M j, Y g:i A') : 'N/A' }}
                              </div>
-                             @if(!empty($seasonStatus['image']))
-                                 <div class="mb-2 p-2 bg-white rounded-3 d-inline-block">
-                                     <img src="{{ asset('storage/' . $seasonStatus['image']) }}" alt="Current season" style="max-height: 80px; max-width: 160px; border-radius: 6px; object-fit: cover;">
-                                 </div>
-                                 <form method="POST" action="{{ route('admin.seasons.image') }}" enctype="multipart/form-data" class="d-inline ms-2">
-                                     @csrf
-                                     <input type="hidden" name="season_id" value="{{ $seasonStatus['season_id'] }}">
-                                     <input type="file" name="season_image" class="form-control form-control-admin d-inline-block" style="width: auto; display: inline-block;" accept="image/*" required>
-                                     <button type="submit" class="btn btn-sm btn-outline-primary ms-1">
-                                         <i class="bi bi-arrow-repeat me-1"></i>Change
-                                     </button>
-                                 </form>
-                                 <form method="POST" action="{{ route('admin.seasons.image') }}" class="d-inline ms-1" onsubmit="return confirm('Remove current season image?')">
-                                     @csrf
-                                     <input type="hidden" name="season_id" value="{{ $seasonStatus['season_id'] }}">
-                                     <button type="submit" class="btn btn-sm btn-outline-danger">
-                                         <i class="bi bi-trash me-1"></i>Remove
-                                     </button>
-                                 </form>
-                             @else
-                                 <form method="POST" action="{{ route('admin.seasons.image') }}" enctype="multipart/form-data" class="d-flex align-items-center gap-2">
-                                     @csrf
-                                     <input type="hidden" name="season_id" value="{{ $seasonStatus['season_id'] }}">
-                                     <input type="file" name="season_image" class="form-control form-control-admin" accept="image/*" required>
-                                     <button type="submit" class="btn btn-sm btn-outline-primary">
-                                         <i class="bi bi-upload me-1"></i>Upload Image
-                                     </button>
-                                 </form>
-                             @endif
+                              @if(!empty($seasonStatus['image']))
+                                  <div class="d-flex flex-wrap align-items-center gap-2">
+                                      <div class="mb-2 p-2 bg-white rounded-3 d-inline-block">
+                                          <img src="{{ asset('storage/' . $seasonStatus['image']) }}" alt="Current season" style="max-height: 80px; max-width: 160px; border-radius: 6px; object-fit: cover;">
+                                      </div>
+                                      <form method="POST" action="{{ route('admin.seasons.image') }}" enctype="multipart/form-data" class="d-flex align-items-center gap-2 flex-wrap">
+                                          @csrf
+                                          <input type="hidden" name="season_id" value="{{ $seasonStatus['season_id'] }}">
+                                          <input type="file" name="season_image" class="form-control form-control-admin" style="width: auto;" accept="image/*" required>
+                                          <button type="submit" class="btn btn-sm btn-outline-primary">
+                                              <i class="bi bi-arrow-repeat me-1"></i>Change
+                                          </button>
+                                      </form>
+                                      <form method="POST" action="{{ route('admin.seasons.image') }}" class="d-inline" onsubmit="return confirm('Remove current season image?')">
+                                          @csrf
+                                          <input type="hidden" name="season_id" value="{{ $seasonStatus['season_id'] }}">
+                                          <button type="submit" class="btn btn-sm btn-outline-danger">
+                                              <i class="bi bi-trash me-1"></i>Remove
+                                          </button>
+                                      </form>
+                                  </div>
+                              @else
+                                  <form method="POST" action="{{ route('admin.seasons.image') }}" enctype="multipart/form-data" class="d-flex align-items-center gap-2 flex-wrap">
+                                      @csrf
+                                      <input type="hidden" name="season_id" value="{{ $seasonStatus['season_id'] }}">
+                                      <input type="file" name="season_image" class="form-control form-control-admin" accept="image/*" required>
+                                      <button type="submit" class="btn btn-sm btn-outline-primary">
+                                          <i class="bi bi-upload me-1"></i>Upload Image
+                                      </button>
+                                  </form>
+                              @endif
                              <form method="POST" action="{{ route('admin.seasons.end') }}" class="mt-2">
                                  @csrf
                                  <button type="submit" class="btn btn-sm btn-outline-warning">

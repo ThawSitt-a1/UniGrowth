@@ -35,14 +35,24 @@ class AuthController
         try {
             $user = $this->authenticateUserUseCase->execute($dto);
         } catch (\RuntimeException $e) {
+            $message = $e->getMessage();
+
+            if (str_contains($message, 'banned')) {
+                $error = 'You are banned due to violation of our policy. Contact ourcompany@gmail.com';
+            } elseif (str_contains($message, 'suspended')) {
+                $error = 'Your account has been suspended due to a policy violation. Contact ourcompany@gmail.com';
+            } else {
+                $error = 'Invalid credentials.';
+            }
+
             if ($request->expectsJson()) {
                 return response()->json([
-                    'message' => 'Invalid credentials.',
+                    'message' => $error,
                 ], 401);
             }
 
             return redirect()->back()
-                ->withErrors(['email' => 'Invalid credentials.'])
+                ->withErrors(['email' => $error])
                 ->withInput($request->only('email'));
         }
 

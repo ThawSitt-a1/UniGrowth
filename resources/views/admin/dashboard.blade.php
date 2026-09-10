@@ -10,7 +10,7 @@
     <!-- Metric Cards Row -->
     <div class="row g-3 mb-4">
         <!-- Signups -->
-        <div class="col-xl-3 col-lg-6 col-md-6">
+        <div class="col-xl-4 col-lg-6 col-md-6">
             <div class="stat-card">
                 <div class="stat-icon" style="background: #ede9fe; color: #6d28d9;">
                     <i class="bi bi-person-plus"></i>
@@ -25,7 +25,7 @@
         </div>
 
         <!-- Popular Skill -->
-        <div class="col-xl-3 col-lg-6 col-md-6">
+        <div class="col-xl-4 col-lg-6 col-md-6">
             <div class="stat-card">
                 <div class="stat-icon" style="background: #fef3c7; color: #b45309;">
                     <i class="bi bi-star"></i>
@@ -41,7 +41,7 @@
         </div>
 
         <!-- Banned Users + Total Skills -->
-        <div class="col-xl-3 col-lg-6 col-md-6">
+        <div class="col-xl-4 col-lg-6 col-md-6">
 
 <div class="stat-card d-flex flex-column justify-content-between" style="height: 100%;">
 
@@ -91,10 +91,10 @@
 
 </div>
 
-    <!-- Second Row: Quick Stats & Season Management -->
+    <!-- Second Row: Quick Stats -->
     <div class="row g-3 mb-4">
         <!-- Total Registered Users -->
-        <div class="col-xl-4 col-lg-6">
+        <div class="col-xl-6 col-lg-6">
             <div class="stat-card d-flex align-items-center gap-3">
                 <div class="stat-icon" style="background: #e0f2fe; color: #0369a1; margin-bottom: 0;">
                     <i class="bi bi-people"></i>
@@ -107,7 +107,7 @@
         </div>
 
         <!-- Active Users -->
-        <div class="col-xl-4 col-lg-6">
+        <div class="col-xl-6 col-lg-6">
             <div class="stat-card d-flex align-items-center gap-3">
                 <div class="stat-icon" style="background: #d1fae5; color: #065f46; margin-bottom: 0;">
                     <i class="bi bi-person-check"></i>
@@ -118,36 +118,137 @@
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Season Management -->
-        <div class="col-xl-4 col-lg-12">
-            <div class="content-card">
+    <!-- Time Frame Filter -->
+    <div class="d-flex justify-content-end mb-4">
+        <div class="d-flex align-items-center gap-2">
+            <span class="small text-muted">Time frame:</span>
+            <a href="{{ route('admin.dashboard', ['time_frame' => '7d']) }}"
+               class="btn-admin-action {{ ($timeFrame ?? 'all') === '7d' ? 'view' : '' }}">7d</a>
+            <a href="{{ route('admin.dashboard', ['time_frame' => '30d']) }}"
+               class="btn-admin-action {{ ($timeFrame ?? 'all') === '30d' ? 'view' : '' }}">30d</a>
+            <a href="{{ route('admin.dashboard', ['time_frame' => 'all']) }}"
+               class="btn-admin-action {{ ($timeFrame ?? 'all') === 'all' ? 'view' : '' }}">All</a>
+        </div>
+    </div>
+
+    <!-- Registration Metrics -->
+    <div class="row g-3 mb-4">
+        <div class="col-xl-4 col-lg-6">
+            <div class="content-card h-100">
                 <div class="card-header-custom">
-                    <h5><i class="bi bi-calendar-event me-2"></i>Season Management</h5>
+                    <h5><i class="bi bi-building me-2"></i>Top Universities</h5>
                 </div>
                 <div class="card-body-custom">
-                    @if(!empty($seasonStatus['has_active_season']))
+                    @if(!empty($metrics['university_distribution']))
+                        <div class="d-flex flex-column gap-2">
+                            @foreach($metrics['university_distribution'] as $university => $count)
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <span class="small text-truncate" style="max-width: 70%;">{{ $university }}</span>
+                                    <span class="badge bg-primary">{{ $count }}</span>
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <p class="small text-muted mb-0">No university data available yet.</p>
+                    @endif
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-lg-6">
+            <div class="content-card h-100">
+                <div class="card-header-custom">
+                    <h5><i class="bi bi-calendar-check me-2"></i>Academic Year</h5>
+                </div>
+                <div class="card-body-custom">
+                    @if(!empty($metrics['academic_year_distribution']))
+                        <div class="d-flex flex-column gap-2">
+                            @foreach($metrics['academic_year_distribution'] as $year => $count)
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <span class="small">{{ $year }}</span>
+                                    <span class="badge bg-success">{{ $count }}</span>
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <p class="small text-muted mb-0">No academic year data available yet.</p>
+                    @endif
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-lg-12">
+            <div class="content-card h-100">
+                <div class="card-header-custom">
+                    <h5><i class="bi bi-book me-2"></i>Majors</h5>
+                </div>
+                <div class="card-body-custom">
+                    @if(!empty($metrics['major_distribution']))
+                        <div class="d-flex flex-column gap-2">
+                            @foreach($metrics['major_distribution'] as $major => $count)
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <span class="small text-truncate" style="max-width: 70%;">{{ $major }}</span>
+                                    <span class="badge bg-info">{{ $count }}</span>
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <p class="small text-muted mb-0">No major data available yet.</p>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Season Management Section -->
+    <div class="content-card mb-4">
+        <div class="card-header-custom d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <h5><i class="bi bi-calendar-event me-2"></i>Season Management</h5>
+            @if(!empty($seasonStatus['has_active_season']))
+                <button type="button" class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#startSeasonModal">
+                    <i class="bi bi-stop-circle me-1"></i>End Current Season
+                </button>
+            @else
+                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#startSeasonModal">
+                    <i class="bi bi-play-fill me-1"></i>Start New Season
+                </button>
+            @endif
+        </div>
+        <div class="card-body-custom">
+            @if(!empty($seasonStatus['has_active_season']))
+                <div class="row g-4 align-items-center">
+                    <div class="col-md-4">
                         <div class="d-flex align-items-center gap-2 mb-2">
                             <span class="season-badge active"><i class="bi bi-fire"></i>Active</span>
                             <span class="fw-semibold" style="color: #1a1a2e;">{{ $seasonStatus['name'] }}</span>
                         </div>
-                        <div class="small text-muted mb-3">
+                        <div class="small text-muted">
                             Started: {{ $seasonStatus['started_at'] ? \Carbon\Carbon::parse($seasonStatus['started_at'])->format('M j, Y') : 'N/A' }}<br>
                             Ends: {{ $seasonStatus['ends_at'] ? \Carbon\Carbon::parse($seasonStatus['ends_at'])->format('M j, Y g:i A') : 'N/A' }}
                         </div>
+                    </div>
+                    <div class="col-md-4">
                         @if(!empty($seasonStatus['image']))
-                            <div class="mb-3 p-2 bg-light rounded-3 d-inline-block">
-                                <img src="{{ asset('storage/' . $seasonStatus['image']) }}" alt="Current season" style="max-height: 100px; max-width: 200px; border-radius: 6px; object-fit: cover;">
+                            <div class="p-2 bg-light rounded-3 d-inline-block">
+                                <img src="{{ asset('storage/' . $seasonStatus['image']) }}" alt="Current season" style="max-height: 80px; max-width: 160px; border-radius: 6px; object-fit: cover;">
                             </div>
-                            <form method="POST" action="{{ route('admin.seasons.image') }}" enctype="multipart/form-data" class="d-inline ms-2">
+                        @else
+                            <div class="text-muted small fst-italic">No season image uploaded</div>
+                        @endif
+                    </div>
+                    <div class="col-md-4">
+                        @if(!empty($seasonStatus['image']))
+                            <form method="POST" action="{{ route('admin.seasons.image') }}" enctype="multipart/form-data" class="d-flex align-items-center gap-2 flex-wrap">
                                 @csrf
                                 <input type="hidden" name="season_id" value="{{ $seasonStatus['season_id'] }}">
-                                <input type="file" name="season_image" class="form-control form-control-admin d-inline-block" style="width: auto; display: inline-block;" accept="image/*" required>
-                                <button type="submit" class="btn btn-sm btn-outline-primary ms-1">
+                                <input type="file" name="season_image" class="form-control form-control-admin" style="width: auto;" accept="image/*" required>
+                                <button type="submit" class="btn btn-sm btn-outline-primary">
                                     <i class="bi bi-arrow-repeat me-1"></i>Change
                                 </button>
                             </form>
-                            <form method="POST" action="{{ route('admin.seasons.image') }}" class="d-inline ms-1" onsubmit="return confirm('Remove current season image?')">
+                            <form method="POST" action="{{ route('admin.seasons.image') }}" class="d-inline mt-2" onsubmit="return confirm('Remove current season image?')">
                                 @csrf
                                 <input type="hidden" name="season_id" value="{{ $seasonStatus['season_id'] }}">
                                 <button type="submit" class="btn btn-sm btn-outline-danger">
@@ -155,7 +256,7 @@
                                 </button>
                             </form>
                         @else
-                            <form method="POST" action="{{ route('admin.seasons.image') }}" enctype="multipart/form-data" class="mb-3">
+                            <form method="POST" action="{{ route('admin.seasons.image') }}" enctype="multipart/form-data">
                                 @csrf
                                 <input type="hidden" name="season_id" value="{{ $seasonStatus['season_id'] }}">
                                 <div class="mb-2">
@@ -167,33 +268,16 @@
                                 </button>
                             </form>
                         @endif
-                        <form method="POST" action="{{ route('admin.seasons.end') }}">
-                            @csrf
-                            <button type="submit" class="btn btn-sm btn-outline-warning">
-                                <i class="bi bi-stop-circle me-1"></i>End Season
-                            </button>
-                        </form>
-                    @else
-                        <p class="small text-muted mb-2">No active season running.</p>
-                        <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#startSeasonModal">
-                            <i class="bi bi-play-fill me-1"></i>Start New Season
-                        </button>
-                    @endif
+                    </div>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Time Frame Filter -->
-    <div class="d-flex justify-content-end mb-3">
-        <div class="d-flex align-items-center gap-2">
-            <span class="small text-muted">Time frame:</span>
-            <a href="{{ route('admin.dashboard', ['time_frame' => '7d']) }}"
-               class="btn-admin-action {{ ($timeFrame ?? 'all') === '7d' ? 'view' : '' }}">7d</a>
-            <a href="{{ route('admin.dashboard', ['time_frame' => '30d']) }}"
-               class="btn-admin-action {{ ($timeFrame ?? 'all') === '30d' ? 'view' : '' }}">30d</a>
-            <a href="{{ route('admin.dashboard', ['time_frame' => 'all']) }}"
-               class="btn-admin-action {{ ($timeFrame ?? 'all') === 'all' ? 'view' : '' }}">All</a>
+            @else
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                    <p class="small text-muted mb-0">No active season running. Start a new season to enable competition features.</p>
+                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#startSeasonModal">
+                        <i class="bi bi-play-fill me-1"></i>Start New Season
+                    </button>
+                </div>
+            @endif
         </div>
     </div>
 

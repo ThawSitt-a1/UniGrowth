@@ -1,9 +1,11 @@
-user A
-kyaw@example.com
+admin A
+Kyaw Kyaw
+    kyaw@example.com
 iamthebestok12@#
 
 
 user B
+Aung Aung
 aung@example.com
 areyouthebest123
 

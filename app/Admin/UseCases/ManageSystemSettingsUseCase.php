@@ -17,7 +17,6 @@ final class ManageSystemSettingsUseCase
         'content_approval_required',
         'allow_user_registration',
         'require_email_verification',
-        'max_login_attempts',
         // Site Identity
         'site_platform_name',
         'site_logo_path',

@@ -102,6 +102,39 @@ final class MetricsRepository implements MetricsRepositoryInterface
             $popularSkillEnrollments = (int) $popularSkillData->total;
         }
 
+        // University distribution
+        $universityDistribution = User::query()
+            ->select('university_name', DB::raw('COUNT(*) as total'))
+            ->whereNotNull('university_name')
+            ->where('university_name', '!=', '')
+            ->groupBy('university_name')
+            ->orderByDesc('total')
+            ->limit(10)
+            ->pluck('total', 'university_name')
+            ->toArray();
+
+        // Academic year distribution
+        $academicYearDistribution = User::query()
+            ->select('academic_year', DB::raw('COUNT(*) as total'))
+            ->whereNotNull('academic_year')
+            ->where('academic_year', '!=', '')
+            ->groupBy('academic_year')
+            ->orderByDesc('total')
+            ->limit(10)
+            ->pluck('total', 'academic_year')
+            ->toArray();
+
+        // Major distribution
+        $majorDistribution = User::query()
+            ->select('major', DB::raw('COUNT(*) as total'))
+            ->whereNotNull('major')
+            ->where('major', '!=', '')
+            ->groupBy('major')
+            ->orderByDesc('total')
+            ->limit(10)
+            ->pluck('total', 'major')
+            ->toArray();
+
         return new PlatformMetricsDTO(
             totalRegisteredUsers: $totalRegisteredUsers,
             activeUsers: $activeUsers,
@@ -116,6 +149,9 @@ final class MetricsRepository implements MetricsRepositoryInterface
             stickinessRatio: $stickinessRatio,
             popularSkill: $popularSkill,
             popularSkillEnrollments: $popularSkillEnrollments,
+            universityDistribution: $universityDistribution,
+            academicYearDistribution: $academicYearDistribution,
+            majorDistribution: $majorDistribution,
         );
     }
 }

@@ -21,6 +21,9 @@ final class PlatformMetricsDTO
         public readonly float $stickinessRatio = 0.0,
         public readonly string $popularSkill = 'N/A',
         public readonly int $popularSkillEnrollments = 0,
+        public readonly array $universityDistribution = [],
+        public readonly array $academicYearDistribution = [],
+        public readonly array $majorDistribution = [],
     ) {}
 
     /**
@@ -42,6 +45,9 @@ final class PlatformMetricsDTO
             'stickiness_ratio' => $this->stickinessRatio,
             'popular_skill' => $this->popularSkill,
             'popular_skill_enrollments' => $this->popularSkillEnrollments,
+            'university_distribution' => $this->universityDistribution,
+            'academic_year_distribution' => $this->academicYearDistribution,
+            'major_distribution' => $this->majorDistribution,
         ];
     }
 }

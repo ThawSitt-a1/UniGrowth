@@ -77,7 +77,7 @@ final class CoreAssetsController
 
         $isEnrolled = false;
         $questions = collect();
-        $contentBlocks = [];
+        $contentHtml = '';
         $headings = [];
         $learningSteps = [];
         $projectSuggestion = $skill->project_suggestion ?? '';
@@ -93,26 +93,31 @@ final class CoreAssetsController
                 ->with('options')
                 ->get();
 
-            // Parse content blocks for enhanced rendering
-            $contentBlocks = ! empty($skill->content)
-                ? ContentBlockParser::parse($skill->content)
-                : [];
+            // Use pre-rendered HTML when available; fall back to runtime parsing
+            // for skills that haven't been re-saved since this feature was added.
+            $contentHtml = ! empty($skill->content_html)
+                ? $skill->content_html
+                : (! empty($skill->content)
+                    ? ContentBlockParser::renderToHtml($skill->content)
+                    : '');
 
             $headings = ! empty($skill->content)
                 ? ContentBlockParser::extractHeadings($skill->content)
                 : [];
 
-            // Parse structured learning steps from content (legacy markdown format)
-            $learningSteps = ! empty($skill->content)
-                ? ContentBlockParser::parseSteps($skill->content)
-                : [];
+            // Use pre-parsed learning steps when available; otherwise parse from text.
+            $learningSteps = ! empty($skill->learning_steps)
+                ? $skill->learning_steps
+                : (! empty($skill->content)
+                    ? ContentBlockParser::parseSteps($skill->content)
+                    : []);
         }
 
         return view('skill-detail', [
             'skill' => $skill,
             'isEnrolled' => $isEnrolled,
             'questions' => $questions,
-            'contentBlocks' => $contentBlocks,
+            'contentHtml' => $contentHtml,
             'headings' => $headings,
             'learningSteps' => $learningSteps,
             'projectSuggestion' => $projectSuggestion,
@@ -146,6 +151,12 @@ final class CoreAssetsController
             return $fallbackRoute->with('error', $e->getMessage());
         }
 
-        return $fallbackRoute->with('success', 'Action completed successfully.');
+        $successMessage = match (true) {
+            $dto->type === 'skill' && $dto->action === 'enroll' => 'You have successfully enrolled in this skill.',
+            $dto->type === 'skill' && $dto->action === 'unenroll' => 'You have been unenrolled from this skill.',
+            default => 'Action completed successfully.',
+        };
+
+        return $fallbackRoute->with('success', $successMessage);
     }
 }

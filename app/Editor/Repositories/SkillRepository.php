@@ -25,6 +25,8 @@ final class SkillRepository implements SkillRepositoryInterface
                 'resource_link' => $data->resourceLink ?? '',
                 'resource_links' => $data->resourceLinks ?? [],
                 'project_suggestion' => $data->projectSuggestion ?? '',
+                'content_html' => $data->contentHtml ?? '',
+                'learning_steps' => $data->learningSteps ?? [],
             ];
 
             if ($data->isActive !== null) {
@@ -46,6 +48,8 @@ final class SkillRepository implements SkillRepositoryInterface
             'resource_link' => $data->resourceLink ?? '',
             'resource_links' => $data->resourceLinks ?? [],
             'project_suggestion' => $data->projectSuggestion ?? '',
+            'content_html' => $data->contentHtml ?? '',
+            'learning_steps' => $data->learningSteps ?? [],
             'is_active' => $data->isActive ?? true,
             'locked_by_admin' => false,
         ]);

@@ -4,10 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $platformName ?? 'UniGrowth' }} — Sign In</title>
+    @include('partials.preconnect', ['recaptcha' => true])
     <!-- Bootstrap 5 CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"></noscript>
     <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="{{ asset('css/bootstrap-icons.min.css') }}" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="{{ asset('css/bootstrap-icons.min.css') }}"></noscript>
     <!-- Google reCAPTCHA Script -->
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <style>
@@ -131,14 +134,13 @@
             font-size: 0.85rem;
         }
         .forgot-link {
-            color: #6366f1;
+            color: #4f46e5;
             font-size: 0.85rem;
             font-weight: 500;
-            text-decoration: none;
             transition: color 0.2s;
         }
         .forgot-link:hover {
-            color: #4f46e5;
+            color: #3730a3;
             text-decoration: underline;
         }
         /* Responsive styles for mobile */
@@ -297,7 +299,9 @@
 
                                 <!-- reCAPTCHA -->
                                 <div class="d-flex justify-content-center py-2 flex-column align-items-center">
-                                    <div class="g-recaptcha" data-sitekey="{{ config('services.recaptcha.key') }}"></div>
+                                    <div style="width: 304px; height: 78px; max-width: 100%;">
+                                        <div class="g-recaptcha" data-sitekey="{{ config('services.recaptcha.key') }}" style="width: 100%; height: 100%;"></div>
+                                    </div>
                                     @error('g-recaptcha-response')
                                         <p class="text-danger small text-center mt-1 mb-0">{{ $message }}</p>
                                     @enderror
@@ -328,15 +332,15 @@
                         <div class="mt-4 pt-4 border-top text-center">
                             <p class="small text-secondary mb-0">
                                 Don't have an account?
-                                <a href="/register" class="fw-semibold text-decoration-none" style="color: #6366f1;">
+                                <a href="/register" class="fw-semibold" style="color: #6366f1;">
                                     Create one
                                 </a>
                             </p>
                             <p class="small text-muted mt-2 mb-0">
                                 By signing in, you agree to our
-                                <a href="{{ route('terms-of-service') }}" target="_blank" class="text-decoration-none" style="color: #6366f1;">Terms of Service</a>
+                                <a href="{{ route('terms-of-service') }}" target="_blank" style="color: #6366f1;">Terms of Service</a>
                                 and
-                                <a href="{{ route('privacy-policy') }}" target="_blank" class="text-decoration-none" style="color: #6366f1;">Privacy Policy</a>
+                                <a href="{{ route('privacy-policy') }}" target="_blank" style="color: #6366f1;">Privacy Policy</a>
                             </p>
                         </div>
                     </div>

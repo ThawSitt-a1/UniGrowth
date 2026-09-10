@@ -38,5 +38,8 @@ class DatabaseSeeder extends Seeder
 
         // Seed questions and options for skill assessment testing
         $this->call(AssessmentSeeder::class);
+
+        // Seed dedicated topics: HTML, CSS, PHP Laravel, Computer Basic
+        $this->call(TopicSeeder::class);
     }
 }

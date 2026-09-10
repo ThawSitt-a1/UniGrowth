@@ -32,6 +32,8 @@ final class Skill extends Model
     protected $casts = [
         'tags' => 'array',
         'resource_links' => 'array',
+        'learning_steps' => 'array',
+        'content_html' => 'string',
         'is_active' => 'boolean',
     ];
 

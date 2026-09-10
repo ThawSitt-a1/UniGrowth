@@ -31,7 +31,7 @@ class RegisterRequest extends FormRequest
         return [
             'username' => ['required', 'string',
                 'max:50', 'unique:users,username',
-                'regex:/^[a-zA-Z0-9._-]+$/'],
+                'regex:/^[a-zA-Z0-9._\s-]+$/'],
             'email' => ['required', 'string', 'email',
                 'max:254', 'unique:users,email',
                 'regex:/^(?!.*admin)/i'],
@@ -58,6 +58,7 @@ class RegisterRequest extends FormRequest
             'username.required' => 'A username is required.',
             'username.max' => 'The username cannot exceed 50 characters.',
             'username.unique' => 'This username is already taken.',
+            'username.regex' => 'The username may only contain letters, numbers, spaces, dots, underscores, and hyphens.',
 
             // Email messages
             'email.required' => 'An email address is required.',

@@ -37,10 +37,10 @@ final class RegisterUserUseCase
             'consented_at' => $credentials->consented ? now() : null,
         ];
 
-        // If "remember me" was checked, pre-generate remember_token with 30-day expiry
+        // If "remember me" was checked, pre-generate remember_token with 7-day expiry
         if ($credentials->remember) {
             $userData['remember_token'] = Str::random(60);
-            $userData['remember_token_expires_at'] = now()->addDays(30);
+            $userData['remember_token_expires_at'] = now()->addWeek();
         }
 
         $user = $this->userRepository->create($userData);

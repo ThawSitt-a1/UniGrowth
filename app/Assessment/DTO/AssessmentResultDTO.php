@@ -7,7 +7,7 @@ namespace App\Assessment\DTO;
 final class AssessmentResultDTO
 {
     /**
-     * @param  array<int, array{question_id: int, correct: bool, correct_option_ids: int[]}>  $questionResults
+     * @param  array<int, array{question_id: int, correct: bool, correct_option_ids: int[], marks: float, skill_name: string}>  $questionResults
      */
     public function __construct(
         public readonly int $attemptId,
@@ -34,7 +34,16 @@ final class AssessmentResultDTO
             'max_score' => $this->maxScore,
             'percentage' => $this->percentage,
             'passed' => $this->passed,
-            'question_results' => $this->questionResults,
+            'question_results' => array_map(
+                fn (array $qr): array => [
+                    'question_id' => $qr['question_id'],
+                    'correct' => $qr['correct'],
+                    'correct_option_ids' => $qr['correct_option_ids'],
+                    'marks' => $qr['marks'],
+                    'skill_name' => $qr['skill_name'],
+                ],
+                $this->questionResults,
+            ),
             'proficiency_score' => $this->proficiencyScore,
         ];
     }

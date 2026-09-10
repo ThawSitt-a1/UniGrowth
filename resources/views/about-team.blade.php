@@ -4,8 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meet Our Team — UniGrowth</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    @include('partials.preconnect')
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"></noscript>
+    <link rel="stylesheet" href="{{ asset('css/bootstrap-icons.min.css') }}" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="{{ asset('css/bootstrap-icons.min.css') }}"></noscript>
     <style>
         body {
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
@@ -268,7 +271,7 @@
             <div class="col-lg-4 col-md-6">
                 <div class="member-card">
                     <div class="member-avatar">P</div>
-                    <span class="member-role">P</span>
+                    <span class="member-role">Frontend Support</span>
                     <h5 class="fw-bold mb-1">Pyae Sone Thu</h5>
                     <p class="small text-muted mb-2">Frontend & UI Support</p>
                     <p class="small text-muted mb-0" style="line-height: 1.6;">
@@ -322,6 +325,6 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" defer></script>
 </body>
 </html>

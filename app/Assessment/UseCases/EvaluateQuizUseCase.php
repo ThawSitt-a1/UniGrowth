@@ -79,6 +79,7 @@ final class EvaluateQuizUseCase
                 'correct' => $isCorrect,
                 'correct_option_ids' => $correctOptionIds,
                 'marks' => $marks,
+                'skill_name' => $skill->title,
             ];
         }
 
@@ -114,17 +115,11 @@ final class EvaluateQuizUseCase
             );
         });
 
-        // Calculate weighted proficiency score
-        $weightedScore = $this->rankingService->calculateWeightedScore(
-            $this->getAverageDifficulty($questionIds),
-            $percentage,
-        );
-
-        // Update proficiency (weighted) and lifetime platform score (raw marks earned)
+        // Update proficiency (raw score) and lifetime platform score (raw marks earned)
         $this->rankingService->updateProficiencyAndPlatformScore(
             $studentId,
             $skillId,
-            $weightedScore,
+            $rawScore,
             $rawScore,
         );
 
@@ -144,7 +139,7 @@ final class EvaluateQuizUseCase
             percentage: $percentage,
             passed: $passed,
             questionResults: $questionResults,
-            proficiencyScore: $weightedScore,
+            proficiencyScore: $rawScore,
         );
     }
 

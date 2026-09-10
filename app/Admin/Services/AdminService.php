@@ -91,6 +91,7 @@ final class AdminService
     {
         $query = User::query()
             ->select(['id', 'username', 'email', 'role', 'account_status', 'suspended_until', 'platform_score', 'email_verified_at', 'created_at'])
+            ->where('role', '!=', User::ROLE_ADMIN)
             ->orderBy('created_at', 'desc');
 
         if ($roleFilter && $roleFilter !== 'all') {

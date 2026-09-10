@@ -38,7 +38,6 @@ return new class extends Migration
             // User Registration & Access Controls
             ['setting_key' => 'allow_user_registration', 'setting_value' => 'true'],
             ['setting_key' => 'require_email_verification', 'setting_value' => 'true'],
-            ['setting_key' => 'max_login_attempts', 'setting_value' => '5'],
         ];
 
         DB::table('system_settings')->insert($defaults);

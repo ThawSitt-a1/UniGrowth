@@ -62,7 +62,7 @@ final class AdminConsoleController
     {
         $request->validate([
             'status' => ['required', 'string', 'in:allowed,banned'],
-            'reason' => ['nullable', 'string', 'max:1000'],
+            'reason' => ['required', 'string', 'max:1000'],
         ]);
 
         try {
@@ -314,7 +314,7 @@ final class AdminConsoleController
         }
     }
 
-    public function deleteUser(int $id): RedirectResponse
+    public function deleteUser(Request $request, int $id): RedirectResponse
     {
         $currentUserId = (int) request()->user()->id;
 
@@ -323,6 +323,10 @@ final class AdminConsoleController
                 ->back()
                 ->with('error', 'You cannot delete your own account.');
         }
+
+        $request->validate([
+            'reason' => ['required', 'string', 'max:1000'],
+        ]);
 
         try {
             $this->adminService->deleteUser($id);

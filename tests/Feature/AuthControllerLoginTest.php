@@ -111,4 +111,63 @@ class AuthControllerLoginTest extends TestCase
         // Verify the user is NOT authenticated
         $this->assertGuest();
     }
+
+    public function test_login_with_banned_account_returns_banned_message(): void
+    {
+        Http::fake(function () {
+            return Http::response(['success' => true], 200);
+        });
+
+        User::query()->create([
+            'username' => 'banneduser',
+            'email' => 'banned@example.com',
+            'password' => Hash::make('CorrectPassword1!'),
+            'role' => 'user',
+            'email_verified_at' => now(),
+            'account_status' => 'banned',
+        ]);
+
+        $response = $this->postJson('/login', [
+            'email' => 'banned@example.com',
+            'password' => 'CorrectPassword1!',
+            'g-recaptcha-response' => 'test-token',
+        ]);
+
+        $response->assertStatus(401)
+            ->assertJson([
+                'message' => 'You are banned due to violation of our policy. Contact ourcompany@gmail.com',
+            ]);
+
+        $this->assertGuest();
+    }
+
+    public function test_login_with_suspended_account_returns_suspended_message(): void
+    {
+        Http::fake(function () {
+            return Http::response(['success' => true], 200);
+        });
+
+        User::query()->create([
+            'username' => 'suspendeduser',
+            'email' => 'suspended@example.com',
+            'password' => Hash::make('CorrectPassword1!'),
+            'role' => 'user',
+            'email_verified_at' => now(),
+            'account_status' => 'suspended',
+            'suspended_until' => now()->addDays(7),
+        ]);
+
+        $response = $this->postJson('/login', [
+            'email' => 'suspended@example.com',
+            'password' => 'CorrectPassword1!',
+            'g-recaptcha-response' => 'test-token',
+        ]);
+
+        $response->assertStatus(401)
+            ->assertJson([
+                'message' => 'Your account has been suspended due to a policy violation. Contact ourcompany@gmail.com',
+            ]);
+
+        $this->assertGuest();
+    }
 }
