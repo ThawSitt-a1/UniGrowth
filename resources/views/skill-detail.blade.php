@@ -297,7 +297,7 @@
                         @if(!empty($resourceLinks))
                             <hr class="section-divider">
                             <div id="resources">
-<h5 class="fw-bold mb-3" style="color: #0f172a;"><i class="bi bi-link-45deg me-2"></i>Premium Resources</h5>
+<h5 class="fw-bold mb-3" style="color: #0f172a;"><i class="bi bi-link-45deg me-2"></i>Additional Resources</h5>
                                 <div class="callout info">
                                     <p class="mb-2 fw-semibold">Supplemental Reading</p>
                                     <p class="text-muted small mb-3">Explore these external resources to deepen your understanding of the topics covered in this lesson.</p>

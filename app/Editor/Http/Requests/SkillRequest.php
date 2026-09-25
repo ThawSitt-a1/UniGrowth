@@ -35,8 +35,8 @@ final class SkillRequest extends FormRequest
     {
         return [
             'skill_id' => ['nullable', 'integer', 'exists:skills,id'],
-            'title' => ['required', 'string', 'max:255'],
-            'slug' => ['required', 'string', 'max:255', Rule::unique('skills', 'slug')->ignore($this->input('skill_id'))],
+            'title' => ['nullable', 'string', 'max:255'],
+            'slug' => ['nullable', 'string', 'max:255', Rule::unique('skills', 'slug')->ignore($this->input('skill_id'))],
             'description' => ['nullable', 'string'],
             'tags' => ['nullable', 'array'],
             'tags.*' => ['string', 'max:50'],

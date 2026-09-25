@@ -207,7 +207,7 @@
         <div class="card-header-custom d-flex flex-wrap align-items-center justify-content-between gap-3">
             <h5><i class="bi bi-calendar-event me-2"></i>Season Management</h5>
             @if(!empty($seasonStatus['has_active_season']))
-                <button type="button" class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#startSeasonModal">
+                <button type="button" class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#endSeasonModal">
                     <i class="bi bi-stop-circle me-1"></i>End Current Season
                 </button>
             @else
@@ -278,6 +278,29 @@
                     </button>
                 </div>
             @endif
+        </div>
+    </div>
+
+    <!-- End Season Modal -->
+    <div class="modal fade modal-admin" id="endSeasonModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <form class="modal-content" method="POST" action="{{ route('admin.seasons.end') }}">
+                @csrf
+                <div class="modal-header">
+                    <h5 class="modal-title fw-semibold">End Current Season</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-0">You are about to end the current season <strong>{{ $seasonStatus['name'] ?? '' }}</strong>.</p>
+                    <p class="small text-muted mt-2 mb-0">All scores will be snapshotted and archived. You can start a new season whenever you're ready — there is no obligation to start one immediately.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-sm btn-warning">
+                        <i class="bi bi-stop-circle me-1"></i>End Season
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 

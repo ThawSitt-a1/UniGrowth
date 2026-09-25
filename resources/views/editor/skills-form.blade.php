@@ -25,21 +25,21 @@
                 <div class="row g-3">
                     <!-- Title -->
                     <div class="col-12 col-md-6">
-                        <label class="form-label-editor" for="title">Skill Title <span class="text-danger">*</span></label>
+                        <label class="form-label-editor" for="title">Skill Title</label>
                         <input type="text" id="title" name="title"
                                class="form-control form-control-editor @error('title') is-invalid @enderror"
                                value="{{ old('title', $skill->title ?? '') }}"
-                               placeholder="e.g. Introduction to Algebra" required maxlength="255">
+                               placeholder="e.g. Introduction to Algebra" maxlength="255">
                         @error('title') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
                     <!-- Slug -->
                     <div class="col-12 col-md-6">
-                        <label class="form-label-editor" for="slug">Slug <span class="text-danger">*</span></label>
+                        <label class="form-label-editor" for="slug">Slug</label>
                         <input type="text" id="slug" name="slug"
                                class="form-control form-control-editor @error('slug') is-invalid @enderror"
                                value="{{ old('slug', $skill->slug ?? '') }}"
-                               placeholder="e.g. intro-to-algebra" required maxlength="255">
+                               placeholder="e.g. intro-to-algebra" maxlength="255">
                         @error('slug') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         <div class="form-text small text-muted">URL-friendly identifier. Auto-generated from title.</div>
                     </div>

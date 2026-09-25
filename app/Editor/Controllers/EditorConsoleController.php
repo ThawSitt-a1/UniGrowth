@@ -9,6 +9,7 @@ use App\Assessment\Services\QuestionScoringService;
 use App\Core\Assets\Models\Skill;
 use App\Editor\DTOs\ContentQueryFilterDTO;
 use App\Editor\DTOs\QuestionDataDTO;
+use App\Core\Assets\Helpers\ContentBlockParser;
 use App\Editor\DTOs\QuestionOptionDTO;
 use App\Editor\DTOs\SkillDataDTO;
 use App\Editor\Http\Requests\OptionRequest;
@@ -20,6 +21,7 @@ use App\Editor\UseCases\ManageQuestionUseCase;
 use App\Editor\UseCases\ManageSkillUseCase;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 final class EditorConsoleController
@@ -138,11 +140,19 @@ final class EditorConsoleController
                 }
             }
 
+            $rawTitle = trim((string) $request->input('title', ''));
+            $rawSlug = trim((string) $request->input('slug', ''));
+
+            // Auto-generate fallbacks when the editor leaves these blank so the
+            // database unique constraints on title/slug are never violated.
+            $title = $rawTitle !== '' ? $rawTitle : 'Untitled Skill ' . time();
+            $slug = $rawSlug !== '' ? $rawSlug : Str::slug($title);
+
             $dto = new SkillDataDTO(
                 skillId: $request->input('skill_id') ? (int) $request->input('skill_id') : null,
                 editorId: $editorId,
-                title: $request->input('title'),
-                slug: $request->input('slug'),
+                title: $title,
+                slug: $slug,
                 description: $request->input('description', ''),
                 tags: $request->input('tags', []),
                 content: $request->input('content', ''),
